@@ -2,7 +2,7 @@ import * as p5 from "p5";
 import { World } from "./world";
 
 let world: World;
-const numAnts: number = 100;
+const numAnts: number = 300;
 
 export const sketch = (p: p5) => {
   p.setup = () => {
