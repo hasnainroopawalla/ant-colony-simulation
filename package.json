@@ -5,7 +5,7 @@
   "homepage": "https://hasnainroopawalla.github.io/ant-colony-simulation",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "webpack serve --open",
     "build": "webpack",
     "predeploy": "npm run build",
@@ -17,6 +17,7 @@
   "devDependencies": {
     "@types/p5": "^1.6.2",
     "gh-pages": "^5.0.0",
+    "jest": "^29.6.2",
     "p5": "^1.7.0",
     "ts-loader": "^9.4.4",
     "typescript": "^5.1.6",
