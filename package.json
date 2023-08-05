@@ -1,19 +1,23 @@
 {
-  "name": "aco-p5",
+  "name": "ant-colony-simulation",
   "version": "1.0.0",
-  "description": "",
+  "description": "Ant colony simulation with TypeScript and p5.js",
+  "homepage": "https://hasnainroopawalla.github.io/ant-colony-simulation",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve --open",
-    "build": "webpack"
+    "build": "webpack",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
-    "p5": "^1.7.0",
     "@types/p5": "^1.6.2",
+    "gh-pages": "^5.0.0",
+    "p5": "^1.7.0",
     "ts-loader": "^9.4.4",
     "typescript": "^5.1.6",
     "webpack": "^5.88.2",
