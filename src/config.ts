@@ -23,6 +23,6 @@ export const config = {
     steeringLimit: 0.4,
     size: 3,
     color: "#000000",
-    showPerceptionRange: true,
+    showPerceptionRange: false,
   },
 };

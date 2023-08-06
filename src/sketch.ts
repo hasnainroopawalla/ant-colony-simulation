@@ -3,7 +3,7 @@ import { World } from "./world";
 import { config } from "./config";
 
 let world: World;
-const numAnts: number = 1;
+const numAnts: number = 200;
 
 export const sketch = (p: p5) => {
   p.setup = () => {

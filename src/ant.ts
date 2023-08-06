@@ -36,12 +36,12 @@ export class Ant {
   }
 
   private approachTarget(target: p5.Vector) {
-    // speed control (maxSpeed)
+    // speed control
     const speedControl = target
       .copy()
       .sub(this.position)
       .setMag(config.ant.maxSpeed);
-    // steering control (steeringLimit)
+    // steering control
     return speedControl.sub(this.velocity).limit(config.ant.steeringLimit);
   }
 
@@ -73,11 +73,14 @@ export class Ant {
 
   private handleSearchingForFood() {
     // check if food item exists within perception range
-    this.targetFoodItem = this.world.getFoodItemInPerceptionRange(
-      this.position,
-      config.ant.perceptionRange
-    );
+    if (!this.targetFoodItem) {
+      this.targetFoodItem = this.world.getFoodItemInPerceptionRange(
+        this.position,
+        config.ant.perceptionRange
+      );
+    }
 
+    // noop if no food item is found within perception range
     if (!this.targetFoodItem) {
       return;
     }
