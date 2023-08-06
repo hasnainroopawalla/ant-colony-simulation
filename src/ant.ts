@@ -97,9 +97,6 @@ export class Ant {
   }
 
   private handleReturningHome() {
-    // TODO: improve rendering of ant with food particle
-    this.targetFoodItem.position.set(this.position);
-
     // check if the food item is delivered to the colony
     if (this.colony.collide(this.position)) {
       this.targetFoodItem.delivered();
@@ -141,30 +138,41 @@ export class Ant {
     this.acceleration.set(0);
   }
 
-  public render() {
-    // ant
+  // TODO: Create a wrapper for render methods to handle push/pop logic
+  private renderAnt() {
     this.p.push();
-    this.p.strokeWeight(2);
+    this.p.strokeWeight(config.ant.strokeWeight);
     this.p.fill(config.ant.color);
     this.p.translate(this.position.x, this.position.y);
     this.angle = this.velocity.heading();
     this.p.rotate(this.angle);
     this.p.ellipse(0, 0, config.ant.size * 2, config.ant.size / 1.5);
+    this.isReturningHome() && this.renderAntWithFoodItem();
     this.p.pop();
+  }
 
-    // perception range
-    if (config.ant.perception.show) {
-      this.p.push();
-      // TODO: add to config
-      this.p.strokeWeight(config.ant.perception.strokeWeight);
-      // TODO: add to config
-      this.p.fill(config.ant.perception.gray, config.ant.perception.alpha);
-      this.p.circle(
-        this.position.x,
-        this.position.y,
-        config.ant.perception.range * 2
-      );
-      this.p.pop();
-    }
+  private renderAntWithFoodItem() {
+    this.p.push();
+    this.p.fill(config.foodItem.color);
+    this.p.strokeWeight(config.foodItem.strokeWeight);
+    this.p.circle(config.ant.size / 2, 0, config.foodItem.size);
+    this.p.pop();
+  }
+
+  private renderPerceptionRange() {
+    this.p.push();
+    this.p.strokeWeight(config.ant.perception.strokeWeight);
+    this.p.fill(config.ant.perception.gray, config.ant.perception.alpha);
+    this.p.circle(
+      this.position.x,
+      this.position.y,
+      config.ant.perception.range * 2
+    );
+    this.p.pop();
+  }
+
+  public render() {
+    this.renderAnt();
+    config.ant.perception.show && this.renderPerceptionRange();
   }
 }

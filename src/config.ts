@@ -6,7 +6,7 @@ export const config = {
     background: "#78624f",
   },
   foodItem: {
-    size: 5, // diameter
+    size: 4, // diameter
     color: "#39FF14",
     strokeWeight: 0,
   },
@@ -22,6 +22,7 @@ export const config = {
     steeringLimit: 0.4,
     size: 3,
     color: "#000000",
+    strokeWeight: 2,
     perception: {
       show: false,
       range: 50,

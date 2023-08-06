@@ -57,7 +57,7 @@ export class FoodItem {
   }
 
   public render() {
-    if (this.isDelivered()) {
+    if (this.isPickedUp() || this.isDelivered()) {
       return;
     }
     this.p.push();
