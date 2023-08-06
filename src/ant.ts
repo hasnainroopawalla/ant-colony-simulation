@@ -1,5 +1,5 @@
 import * as p5 from "p5";
-import { FoodItem, IFoodItemState } from "./food-item";
+import { FoodItem } from "./food-item";
 import { World } from "./world";
 import { Colony } from "./colony";
 import { config } from "./config";
@@ -17,7 +17,7 @@ export class Ant {
   acceleration: p5.Vector;
   angle: number;
   wanderAngle: number;
-  state: IAntState = IAntState.SearchingForFood;
+  state: IAntState;
   colony: Colony;
   targetFoodItem: FoodItem | null;
 
@@ -33,6 +33,7 @@ export class Ant {
     this.angle = p.random(this.p.TWO_PI);
     this.velocity = p5.Vector.fromAngle(this.angle);
     this.acceleration = p.createVector();
+    this.searchingForFood();
   }
 
   private approachTarget(target: p5.Vector) {
@@ -61,7 +62,7 @@ export class Ant {
   private handleWandering() {
     this.wanderAngle += this.p.random(-0.5, 0.5);
     const circlePos = this.velocity.copy();
-    circlePos.setMag(config.ant.perceptionRange).add(this.position);
+    circlePos.setMag(config.ant.perception.range).add(this.position);
     const circleOffset = p5.Vector.fromAngle(
       this.wanderAngle + this.velocity.heading()
     );
@@ -76,7 +77,7 @@ export class Ant {
     if (!this.targetFoodItem) {
       this.targetFoodItem = this.world.getFoodItemInPerceptionRange(
         this.position,
-        config.ant.perceptionRange
+        config.ant.perception.range
       );
     }
 
@@ -87,8 +88,8 @@ export class Ant {
 
     // check if the food item is picked up
     if (this.targetFoodItem.collide(this.position)) {
-      this.targetFoodItem.state = IFoodItemState.PickedUp;
-      this.state = IAntState.ReturningHome;
+      this.targetFoodItem.pickedUp();
+      this.returningHome();
     }
 
     const approachFood = this.approachTarget(this.targetFoodItem.position);
@@ -101,21 +102,37 @@ export class Ant {
 
     // check if the food item is delivered to the colony
     if (this.colony.collide(this.position)) {
-      this.targetFoodItem.state = IFoodItemState.Delivered;
+      this.targetFoodItem.delivered();
       this.targetFoodItem = null;
-      this.state = IAntState.SearchingForFood;
+      this.searchingForFood();
     }
 
     const approachColony = this.approachTarget(this.colony.position);
     this.applyForce(approachColony);
   }
 
+  public searchingForFood() {
+    this.state = IAntState.SearchingForFood;
+  }
+
+  public returningHome() {
+    this.state = IAntState.ReturningHome;
+  }
+
+  public isSearchingForFood() {
+    return this.state === IAntState.SearchingForFood;
+  }
+
+  public isReturningHome() {
+    return this.state === IAntState.ReturningHome;
+  }
+
   public update() {
     this.handleEdgeCollision();
     this.handleWandering();
 
-    this.state === IAntState.SearchingForFood && this.handleSearchingForFood();
-    this.state === IAntState.ReturningHome && this.handleReturningHome();
+    this.isSearchingForFood() && this.handleSearchingForFood();
+    this.isReturningHome() && this.handleReturningHome();
 
     // update values
     this.velocity.add(this.acceleration);
@@ -136,29 +153,18 @@ export class Ant {
     this.p.pop();
 
     // perception range
-    if (config.ant.showPerceptionRange) {
+    if (config.ant.perception.show) {
       this.p.push();
       // TODO: add to config
-      this.p.strokeWeight(1);
+      this.p.strokeWeight(config.ant.perception.strokeWeight);
       // TODO: add to config
-      this.p.fill(255, 30);
+      this.p.fill(config.ant.perception.gray, config.ant.perception.alpha);
       this.p.circle(
         this.position.x,
         this.position.y,
-        config.ant.perceptionRange * 2
+        config.ant.perception.range * 2
       );
       this.p.pop();
     }
   }
-
-  // perceptionRange() {
-  //   this.p.beginShape();
-  //   this.p.vertex(this.position.x, this.position.y);
-  //   for (let angle = -1 / 2; angle <= 1 / 2; angle += this.p.PI / 16) {
-  //     let x = this.p.cos(angle) * config.ant.perceptionRange + this.position.x;
-  //     let y = this.p.sin(angle) * config.ant.perceptionRange + this.position.y;
-  //     this.p.vertex(x, y);
-  //   }
-  //   this.p.endShape(this.p.CLOSE);
-  // }
 }

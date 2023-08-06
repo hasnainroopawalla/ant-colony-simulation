@@ -1,6 +1,6 @@
 import * as p5 from "p5";
 import { Ant } from "./ant";
-import { FoodItem, IFoodItemState } from "./food-item";
+import { FoodItem } from "./food-item";
 import { Colony } from "./colony";
 import { config } from "./config";
 
@@ -36,14 +36,14 @@ export class World {
     }
   }
 
+  // TODO: this method should limit the perception to only in FRONT of the ant
   public getFoodItemInPerceptionRange(
     antPosition: p5.Vector,
     perceptionRange: number
   ): FoodItem | null {
     for (let i = 0; i < this.foodItems.length; i++) {
       const foodItem = this.foodItems[i];
-      // TODO: Replace direct enum comparisons with methods
-      if (foodItem.state !== IFoodItemState.Spawned) {
+      if (!foodItem.isSpawned()) {
         continue;
       }
       const distanceSquared =
@@ -53,6 +53,7 @@ export class World {
           (foodItem.position.y - antPosition.y);
 
       if (distanceSquared <= perceptionRange * perceptionRange) {
+        foodItem.reserved();
         return foodItem;
       }
     }

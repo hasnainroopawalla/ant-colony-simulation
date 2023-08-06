@@ -2,6 +2,7 @@ import { config } from "./config";
 
 export enum IFoodItemState {
   Spawned,
+  Reserved,
   PickedUp,
   Delivered,
 }
@@ -14,7 +15,33 @@ export class FoodItem {
   constructor(p: p5, x: number, y: number) {
     this.p = p;
     this.position = p.createVector(x, y);
+    this.spawned();
+  }
+
+  public spawned() {
     this.state = IFoodItemState.Spawned;
+  }
+  public reserved() {
+    this.state = IFoodItemState.Reserved;
+  }
+  public pickedUp() {
+    this.state = IFoodItemState.PickedUp;
+  }
+  public delivered() {
+    this.state = IFoodItemState.Delivered;
+  }
+
+  public isSpawned() {
+    return this.state === IFoodItemState.Spawned;
+  }
+  public isReserved() {
+    return this.state === IFoodItemState.Reserved;
+  }
+  public isPickedUp() {
+    return this.state === IFoodItemState.PickedUp;
+  }
+  public isDelivered() {
+    return this.state === IFoodItemState.Delivered;
   }
 
   public collide(antPosition: p5.Vector) {
@@ -30,7 +57,7 @@ export class FoodItem {
   }
 
   public render() {
-    if (this.state === IFoodItemState.Delivered) {
+    if (this.isDelivered()) {
       return;
     }
     this.p.push();

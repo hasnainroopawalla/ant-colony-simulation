@@ -17,12 +17,17 @@ export const config = {
     size: 70, // diameter
   },
   ant: {
-    perceptionRange: 50,
     wanderStrength: 1,
     maxSpeed: 3,
     steeringLimit: 0.4,
     size: 3,
     color: "#000000",
-    showPerceptionRange: false,
+    perception: {
+      show: false,
+      range: 50,
+      gray: 255,
+      alpha: 30,
+      strokeWeight: 1,
+    },
   },
 };
