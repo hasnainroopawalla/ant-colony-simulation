@@ -86,7 +86,7 @@ export class Ant {
       return;
     }
 
-    // check if the food item is picked up
+    // check if reserved food item is picked up
     if (this.targetFoodItem.collide(this.position)) {
       this.targetFoodItem.pickedUp();
       this.returningHome();
@@ -97,10 +97,12 @@ export class Ant {
   }
 
   private handleReturningHome() {
-    // check if the food item is delivered to the colony
+    // TODO: ants should not be rendered over colonies
+    // check if food item is delivered to colony
     if (this.colony.collide(this.position)) {
       this.targetFoodItem.delivered();
       this.targetFoodItem = null;
+      this.colony.incrementFoodCount();
       this.searchingForFood();
     }
 
@@ -124,6 +126,13 @@ export class Ant {
     return this.state === IAntState.ReturningHome;
   }
 
+  private updatePosition() {
+    this.velocity.add(this.acceleration);
+    this.velocity.limit(config.ant.maxSpeed);
+    this.position.add(this.velocity);
+    this.acceleration.set(0);
+  }
+
   public update() {
     this.handleEdgeCollision();
     this.handleWandering();
@@ -131,11 +140,7 @@ export class Ant {
     this.isSearchingForFood() && this.handleSearchingForFood();
     this.isReturningHome() && this.handleReturningHome();
 
-    // update values
-    this.velocity.add(this.acceleration);
-    this.velocity.limit(config.ant.maxSpeed);
-    this.position.add(this.velocity);
-    this.acceleration.set(0);
+    this.updatePosition();
   }
 
   // TODO: Create a wrapper for render methods to handle push/pop logic

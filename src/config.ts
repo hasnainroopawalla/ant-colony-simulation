@@ -15,6 +15,9 @@ export const config = {
   },
   colony: {
     size: 70, // diameter
+    color: "#ffffff",
+    strokeWeight: 1,
+    textSize: 20,
   },
   ant: {
     wanderStrength: 1,
