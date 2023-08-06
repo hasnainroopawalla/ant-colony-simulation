@@ -1,21 +1,21 @@
 import * as p5 from "p5";
 import { World } from "./world";
+import { config } from "./config";
 
 let world: World;
-const numAnts: number = 300;
+const numAnts: number = 200;
 
 export const sketch = (p: p5) => {
   p.setup = () => {
     world = new World(p);
     p.createCanvas(p.windowWidth, p.windowHeight);
-    p.frameRate(60);
+    p.frameRate(config.sketch.frameRate);
     for (let i = 0; i < numAnts; i++) {
       world.createAnt();
     }
   };
 
   p.draw = () => {
-    p.background("#78624f");
     world.render();
   };
 

@@ -1,5 +1,8 @@
+import { config } from "./config";
+
 export enum IFoodItemState {
   Spawned,
+  Reserved,
   PickedUp,
   Delivered,
 }
@@ -12,14 +15,55 @@ export class FoodItem {
   constructor(p: p5, x: number, y: number) {
     this.p = p;
     this.position = p.createVector(x, y);
+    this.spawned();
+  }
+
+  public spawned() {
     this.state = IFoodItemState.Spawned;
+  }
+  public reserved() {
+    this.state = IFoodItemState.Reserved;
+  }
+  public pickedUp() {
+    this.state = IFoodItemState.PickedUp;
+  }
+  public delivered() {
+    this.state = IFoodItemState.Delivered;
+  }
+
+  public isSpawned() {
+    return this.state === IFoodItemState.Spawned;
+  }
+  public isReserved() {
+    return this.state === IFoodItemState.Reserved;
+  }
+  public isPickedUp() {
+    return this.state === IFoodItemState.PickedUp;
+  }
+  public isDelivered() {
+    return this.state === IFoodItemState.Delivered;
+  }
+
+  public collide(antPosition: p5.Vector) {
+    return (
+      this.p.dist(
+        antPosition.x,
+        antPosition.y,
+        this.position.x,
+        this.position.y
+      ) <
+      config.foodItem.size / 2
+    );
   }
 
   public render() {
+    if (this.isPickedUp() || this.isDelivered()) {
+      return;
+    }
     this.p.push();
-    this.p.strokeWeight(0);
-    this.p.fill("#39FF14");
-    this.p.circle(this.position.x, this.position.y, 5);
+    this.p.strokeWeight(config.foodItem.strokeWeight);
+    this.p.fill(config.foodItem.color);
+    this.p.circle(this.position.x, this.position.y, config.foodItem.size);
     this.p.pop();
   }
 }
