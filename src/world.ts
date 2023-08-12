@@ -5,6 +5,7 @@ import { FoodItem } from "./food-item";
 import { Colony } from "./colony";
 import { config } from "./config";
 import { IPheromoneType, Pheromone } from "./pheromone";
+import { circleCollision, distance } from "./utils";
 
 export class World {
   ants: Ant[];
@@ -51,11 +52,13 @@ export class World {
       if (!foodItem.isSpawned()) {
         continue;
       }
-      const distanceSquared =
-        Math.pow(foodItem.position.x - antPosition.x, 2) +
-        Math.pow(foodItem.position.y - antPosition.y, 2);
-
-      if (distanceSquared <= Math.pow(perceptionRange, 2)) {
+      if (
+        circleCollision(
+          foodItem.position,
+          antPosition,
+          config.ant.perception.range * 2
+        )
+      ) {
         foodItem.reserved();
         return foodItem;
       }

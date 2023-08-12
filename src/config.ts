@@ -21,14 +21,14 @@ export const config = {
   },
   ant: {
     wanderStrength: 1,
-    maxSpeed: 3,
-    steeringLimit: 0.7,
+    maxSpeed: 2.5,
+    steeringLimit: 0.4,
     size: 2,
     color: "#000000",
     strokeWeight: 2,
     perception: {
       show: false,
-      range: 50,
+      range: 50, // radius
       gray: 255,
       alpha: 30,
       strokeWeight: 1,
