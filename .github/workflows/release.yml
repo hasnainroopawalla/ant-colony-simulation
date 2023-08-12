@@ -1,11 +1,10 @@
-name: Deploy
+name: Release
 on:
-  push:
-    branches:
-      - master
+  release:
+    types: [published]
 
 jobs:
-  build-test-deploy:
+  build-test-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -14,10 +13,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18.x"
-      - run: npm install
-      - run: npm run build
-      - run: npm test
-      - name: Deploy
+      - name: Install dependencies
+        run: npm install
+      - name: Build package
+        run: npm run build
+      - name: Run tests
+        run: npm test
+      - name: Trigger deploy
         uses: crazy-max/ghaction-github-pages@v3
         with:
           target_branch: release

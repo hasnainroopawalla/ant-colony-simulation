@@ -47,12 +47,10 @@ export class World {
         continue;
       }
       const distanceSquared =
-        (foodItem.position.x - antPosition.x) *
-          (foodItem.position.x - antPosition.x) +
-        (foodItem.position.y - antPosition.y) *
-          (foodItem.position.y - antPosition.y);
+        Math.pow(foodItem.position.x - antPosition.x, 2) +
+        Math.pow(foodItem.position.y - antPosition.y, 2);
 
-      if (distanceSquared <= perceptionRange * perceptionRange) {
+      if (distanceSquared <= Math.pow(perceptionRange, 2)) {
         foodItem.reserved();
         return foodItem;
       }

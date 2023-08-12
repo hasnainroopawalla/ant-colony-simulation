@@ -1,4 +1,6 @@
 const path = require('path');
+var webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     mode: "development",
@@ -21,5 +23,13 @@ module.exports = {
     },
     devServer: {
         static: './build',
-    }
+    },
+    plugins: [
+        new webpack.DefinePlugin({
+            VERSION: JSON.stringify(require("./package.json").version),
+        }),
+        new HtmlWebpackPlugin({
+            template: 'public/index.html',
+        })
+    ],
 };
