@@ -37,14 +37,15 @@ export const config = {
   pheromone: {
     size: 3,
     strokeWeight: 0,
-    distanceBetween: 10,
-    show: true,
-    evaporationRate: 0.007,
+    distanceBetween: 20,
+    evaporationRate: 0.004,
     wander: {
-      color: "#1AA7EC",
+      show: false,
+      colorRGB: [26, 166, 236],
     },
     food: {
-      color: "#D21F3C",
+      show: true,
+      colorRGB: [210, 31, 61],
     },
   },
 };

@@ -44,6 +44,10 @@ export class FoodItem {
     return this.state === IFoodItemState.Delivered;
   }
 
+  public shouldBeDestroyed() {
+    return this.isDelivered();
+  }
+
   public collide(antPosition: p5.Vector) {
     return circleCollision(antPosition, this.position, config.foodItem.size);
   }
