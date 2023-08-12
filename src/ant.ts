@@ -4,6 +4,8 @@ import { FoodItem } from "./food-item";
 import { World } from "./world";
 import { Colony } from "./colony";
 import { config } from "./config";
+import { IPheromoneType, Pheromone } from "./pheromone";
+import { distance } from "./utils";
 
 export enum IAntState {
   ReturningHome,
@@ -28,6 +30,8 @@ export class Ant {
       this.colony.position.x,
       this.colony.position.y
     );
+    // TODO: Move IPheromoneType to Pheromone
+    // this.world.depositPheromone(this.position.copy(), IPheromoneType.Wander);
     this.wanderAngle = 0;
     this.angle = p5i.random(p5i.TWO_PI);
     this.velocity = p5m.Vector.fromAngle(this.angle);
@@ -50,12 +54,15 @@ export class Ant {
   }
 
   private handleEdgeCollision() {
+    // left / right
     if (this.position.x > p5i.windowWidth - 10 || this.position.x < 10) {
       this.velocity.x *= -1;
     }
+    // top / bottom
     if (this.position.y > p5i.windowHeight - 10 || this.position.y < 10) {
       this.velocity.y *= -1;
     }
+    // TODO: ants should not be rendered over colonies
   }
 
   private handleWandering() {
@@ -96,7 +103,6 @@ export class Ant {
   }
 
   private handleReturningHome() {
-    // TODO: ants should not be rendered over colonies
     // check if food item is delivered to colony
     if (this.colony.collide(this.position)) {
       this.targetFoodItem.delivered();
@@ -107,6 +113,13 @@ export class Ant {
 
     const approachColony = this.approachTarget(this.colony.position);
     this.applyForce(approachColony);
+  }
+
+  private handlePheromoneDeposit() {
+    this.world.depositPheromone(
+      this.position.copy(),
+      this.isSearchingForFood() ? IPheromoneType.Wander : IPheromoneType.Food
+    );
   }
 
   public searchingForFood() {
@@ -135,6 +148,7 @@ export class Ant {
   public update() {
     this.handleEdgeCollision();
     this.handleWandering();
+    this.handlePheromoneDeposit();
 
     this.isSearchingForFood() && this.handleSearchingForFood();
     this.isReturningHome() && this.handleReturningHome();

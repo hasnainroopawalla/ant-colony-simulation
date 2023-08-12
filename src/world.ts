@@ -4,16 +4,20 @@ import { Ant } from "./ant";
 import { FoodItem } from "./food-item";
 import { Colony } from "./colony";
 import { config } from "./config";
+import { IPheromoneType, Pheromone } from "./pheromone";
+import { distance } from "./utils";
 
 export class World {
   ants: Ant[];
   foodItems: FoodItem[];
   colonies: Colony[];
+  pheromones: Pheromone[];
 
   constructor() {
     this.ants = [];
     this.foodItems = [];
     this.colonies = [new Colony()];
+    this.pheromones = [];
   }
 
   public createAnt() {
@@ -32,6 +36,21 @@ export class World {
         );
       }
     }
+  }
+
+  private shouldPheromoneBeDeposited(position: p5.Vector) {
+    if (this.pheromones.length === 0) {
+      return true;
+    }
+    return (
+      distance(position, this.pheromones.at(-1).position) >
+      config.pheromone.distanceBetween
+    );
+  }
+
+  public depositPheromone(position: p5.Vector, type: IPheromoneType) {
+    this.shouldPheromoneBeDeposited(position) &&
+      this.pheromones.push(new Pheromone(position, type));
   }
 
   // TODO: this method should limit the perception to only in FRONT of the ant
@@ -55,6 +74,17 @@ export class World {
     }
   }
 
+  private renderPheromones() {
+    for (let i = 0; i < this.pheromones.length; i++) {
+      const pheromone = this.pheromones[i];
+      pheromone.evaporate();
+      if (pheromone.strength <= 0) {
+        this.pheromones.splice(i, 1);
+      }
+      pheromone.render();
+    }
+  }
+
   public render() {
     p5i.background(config.world.background);
     this.colonies.map((colony) => {
@@ -67,5 +97,6 @@ export class World {
     this.foodItems.map((food) => {
       food.render();
     });
+    config.pheromone.show && this.renderPheromones();
   }
 }

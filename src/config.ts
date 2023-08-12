@@ -22,7 +22,7 @@ export const config = {
   ant: {
     wanderStrength: 1,
     maxSpeed: 3,
-    steeringLimit: 0.4,
+    steeringLimit: 0.7,
     size: 2,
     color: "#000000",
     strokeWeight: 2,
@@ -32,6 +32,19 @@ export const config = {
       gray: 255,
       alpha: 30,
       strokeWeight: 1,
+    },
+  },
+  pheromone: {
+    size: 3,
+    strokeWeight: 0,
+    distanceBetween: 10,
+    show: true,
+    evaporationRate: 0.007,
+    wander: {
+      color: "#1AA7EC",
+    },
+    food: {
+      color: "#D21F3C",
     },
   },
 };
