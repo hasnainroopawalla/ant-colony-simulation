@@ -3,11 +3,11 @@ import { World } from "./world";
 import { config } from "./config";
 
 let world: World;
-const numAnts: number = 200;
+const numAnts: number = 700;
 
-export const sketch = (p: p5) => {
+const sketch = (p: p5) => {
   p.setup = () => {
-    world = new World(p);
+    world = new World();
     p.createCanvas(p.windowWidth, p.windowHeight);
     p.frameRate(config.sketch.frameRate);
     for (let i = 0; i < numAnts; i++) {
@@ -24,4 +24,4 @@ export const sketch = (p: p5) => {
   };
 };
 
-export const myp5 = new p5(sketch, document.body);
+export const p5i = new p5(sketch, document.body);

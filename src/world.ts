@@ -1,33 +1,31 @@
-import * as p5 from "p5";
+import * as p5m from "p5";
+import { p5i } from "./sketch";
 import { Ant } from "./ant";
 import { FoodItem } from "./food-item";
 import { Colony } from "./colony";
 import { config } from "./config";
 
 export class World {
-  p: p5;
   ants: Ant[];
   foodItems: FoodItem[];
   colonies: Colony[];
 
-  constructor(p: p5) {
-    this.p = p;
+  constructor() {
     this.ants = [];
     this.foodItems = [];
-    this.colonies = [new Colony(p)];
+    this.colonies = [new Colony()];
   }
 
   public createAnt() {
-    this.ants.push(new Ant(this.p, this.colonies[0], this));
+    this.ants.push(new Ant(this.colonies[0], this));
   }
 
   public createFoodCluster(clusterSize: number = 5) {
-    const [spawnX, spawnY] = [this.p.mouseX, this.p.mouseY];
+    const [spawnX, spawnY] = [p5i.mouseX, p5i.mouseY];
     for (let i = 0; i < clusterSize; i++) {
       for (let j = 0; j < clusterSize; j++) {
         this.foodItems.push(
           new FoodItem(
-            this.p,
             i * config.foodCluster.spacing + spawnX,
             j * config.foodCluster.spacing + spawnY
           )
@@ -38,7 +36,7 @@ export class World {
 
   // TODO: this method should limit the perception to only in FRONT of the ant
   public getFoodItemInPerceptionRange(
-    antPosition: p5.Vector,
+    antPosition: p5m.Vector,
     perceptionRange: number
   ): FoodItem | null {
     for (let i = 0; i < this.foodItems.length; i++) {
@@ -58,7 +56,7 @@ export class World {
   }
 
   public render() {
-    this.p.background(config.world.background);
+    p5i.background(config.world.background);
     this.colonies.map((colony) => {
       colony.render();
     });

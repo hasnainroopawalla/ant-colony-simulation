@@ -1,4 +1,5 @@
-import * as p5 from "p5";
+import * as p5m from "p5";
+import { p5i } from "./sketch";
 import { FoodItem } from "./food-item";
 import { World } from "./world";
 import { Colony } from "./colony";
@@ -10,7 +11,6 @@ export enum IAntState {
 }
 
 export class Ant {
-  p: p5;
   world: World;
   position: p5.Vector;
   velocity: p5.Vector;
@@ -21,18 +21,17 @@ export class Ant {
   colony: Colony;
   targetFoodItem: FoodItem | null;
 
-  constructor(p: p5, colony: Colony, world: World) {
-    this.p = p;
+  constructor(colony: Colony, world: World) {
     this.world = world;
     this.colony = colony;
-    this.position = p.createVector(
+    this.position = p5i.createVector(
       this.colony.position.x,
       this.colony.position.y
     );
     this.wanderAngle = 0;
-    this.angle = p.random(this.p.TWO_PI);
-    this.velocity = p5.Vector.fromAngle(this.angle);
-    this.acceleration = p.createVector();
+    this.angle = p5i.random(p5i.TWO_PI);
+    this.velocity = p5m.Vector.fromAngle(this.angle);
+    this.acceleration = p5i.createVector();
     this.searchingForFood();
   }
 
@@ -51,19 +50,19 @@ export class Ant {
   }
 
   private handleEdgeCollision() {
-    if (this.position.x > this.p.windowWidth - 10 || this.position.x < 10) {
+    if (this.position.x > p5i.windowWidth - 10 || this.position.x < 10) {
       this.velocity.x *= -1;
     }
-    if (this.position.y > this.p.windowHeight - 10 || this.position.y < 10) {
+    if (this.position.y > p5i.windowHeight - 10 || this.position.y < 10) {
       this.velocity.y *= -1;
     }
   }
 
   private handleWandering() {
-    this.wanderAngle += this.p.random(-0.5, 0.5);
+    this.wanderAngle += p5i.random(-0.5, 0.5);
     const circlePos = this.velocity.copy();
     circlePos.setMag(config.ant.perception.range).add(this.position);
-    const circleOffset = p5.Vector.fromAngle(
+    const circleOffset = p5m.Vector.fromAngle(
       this.wanderAngle + this.velocity.heading()
     );
     circleOffset.mult(config.ant.wanderStrength);
@@ -145,35 +144,35 @@ export class Ant {
 
   // TODO: Create a wrapper for render methods to handle push/pop logic
   private renderAnt() {
-    this.p.push();
-    this.p.strokeWeight(config.ant.strokeWeight);
-    this.p.fill(config.ant.color);
-    this.p.translate(this.position.x, this.position.y);
+    p5i.push();
+    p5i.strokeWeight(config.ant.strokeWeight);
+    p5i.fill(config.ant.color);
+    p5i.translate(this.position.x, this.position.y);
     this.angle = this.velocity.heading();
-    this.p.rotate(this.angle);
-    this.p.ellipse(0, 0, config.ant.size * 2, config.ant.size / 1.5);
+    p5i.rotate(this.angle);
+    p5i.ellipse(0, 0, config.ant.size * 2, config.ant.size / 1.5);
     this.isReturningHome() && this.renderAntWithFoodItem();
-    this.p.pop();
+    p5i.pop();
   }
 
   private renderAntWithFoodItem() {
-    this.p.push();
-    this.p.fill(config.foodItem.color);
-    this.p.strokeWeight(config.foodItem.strokeWeight);
-    this.p.circle(config.ant.size / 2, 0, config.foodItem.size);
-    this.p.pop();
+    p5i.push();
+    p5i.fill(config.foodItem.color);
+    p5i.strokeWeight(config.foodItem.strokeWeight);
+    p5i.circle(config.ant.size / 2, 0, config.foodItem.size);
+    p5i.pop();
   }
 
   private renderPerceptionRange() {
-    this.p.push();
-    this.p.strokeWeight(config.ant.perception.strokeWeight);
-    this.p.fill(config.ant.perception.gray, config.ant.perception.alpha);
-    this.p.circle(
+    p5i.push();
+    p5i.strokeWeight(config.ant.perception.strokeWeight);
+    p5i.fill(config.ant.perception.gray, config.ant.perception.alpha);
+    p5i.circle(
       this.position.x,
       this.position.y,
       config.ant.perception.range * 2
     );
-    this.p.pop();
+    p5i.pop();
   }
 
   public render() {
