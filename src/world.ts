@@ -4,7 +4,7 @@ import { Ant } from "./ant";
 import { FoodItem } from "./food-item";
 import { Colony } from "./colony";
 import { config } from "./config";
-import { IPheromoneType, Pheromone } from "./pheromone";
+import { Pheromone } from "./pheromone";
 import { circleCollision } from "./utils";
 
 export class World {
@@ -38,8 +38,8 @@ export class World {
     }
   }
 
-  public depositPheromone(position: p5.Vector, type: IPheromoneType) {
-    this.pheromones.push(new Pheromone(position, type));
+  public depositPheromone(pheromone: Pheromone) {
+    this.pheromones.push(pheromone);
   }
 
   // TODO: this method should limit the perception to only in FRONT of the ant
@@ -95,7 +95,6 @@ export class World {
       ant.update();
       ant.render();
     });
-    console.log(this.foodItems.length);
     this.renderFoodItems();
     this.renderPheromones();
   }

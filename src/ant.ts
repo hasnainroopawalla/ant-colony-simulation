@@ -4,7 +4,7 @@ import { FoodItem } from "./food-item";
 import { World } from "./world";
 import { Colony } from "./colony";
 import { config } from "./config";
-import { IPheromoneType } from "./pheromone";
+import { IPheromoneType, Pheromone } from "./pheromone";
 import { distance } from "./utils";
 
 export enum IAntState {
@@ -23,7 +23,7 @@ export class Ant {
   colony: Colony;
   targetFoodItem: FoodItem | null;
   // TODO: rename
-  lastPheromonePosition: p5.Vector;
+  lastDepositedPheromone?: Pheromone;
 
   constructor(colony: Colony, world: World) {
     this.world = world;
@@ -32,7 +32,6 @@ export class Ant {
       this.colony.position.x,
       this.colony.position.y
     );
-    this.lastPheromonePosition = this.position.copy();
     this.wanderAngle = 0;
     this.angle = p5i.random(p5i.TWO_PI);
     this.velocity = p5m.Vector.fromAngle(this.angle);
@@ -117,21 +116,25 @@ export class Ant {
   }
 
   private shouldPheromoneBeDeposited() {
+    if (!this.lastDepositedPheromone) {
+      return true;
+    }
     return (
-      distance(this.position, this.lastPheromonePosition, true) >
+      distance(this.position, this.lastDepositedPheromone.position, true) >
       config.pheromone.distanceBetween
     );
   }
 
   private handlePheromoneDeposit() {
-    if (this.shouldPheromoneBeDeposited()) {
-      this.lastPheromonePosition = this.position.copy();
-      this.world.depositPheromone(
-        this.position.copy(),
-        // TODO: Move IPheromoneType to Pheromone
-        this.isSearchingForFood() ? IPheromoneType.Wander : IPheromoneType.Food
-      );
+    if (!this.shouldPheromoneBeDeposited()) {
+      return;
     }
+    this.lastDepositedPheromone = new Pheromone(
+      this.position.copy(),
+      // TODO: remove IPheromone dependency
+      this.isSearchingForFood() ? IPheromoneType.Wander : IPheromoneType.Food
+    );
+    this.world.depositPheromone(this.lastDepositedPheromone);
   }
 
   public searchingForFood() {
