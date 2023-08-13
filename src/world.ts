@@ -5,7 +5,7 @@ import { FoodItem } from "./food-item";
 import { Colony } from "./colony";
 import { config } from "./config";
 import { IPheromoneType, Pheromone } from "./pheromone";
-import { circleCollision, distance } from "./utils";
+import { circleCollision } from "./utils";
 
 export class World {
   ants: Ant[];

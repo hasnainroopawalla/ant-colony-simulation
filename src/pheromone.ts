@@ -14,7 +14,7 @@ export class Pheromone {
   constructor(position: p5.Vector, type: IPheromoneType) {
     this.position = position;
     this.type = type;
-    this.strength = 1;
+    this.strength = 255;
   }
 
   public evaporate() {
@@ -39,7 +39,7 @@ export class Pheromone {
         : config.pheromone.food.colorRGB;
 
     p5i.push();
-    p5i.fill(colorR, colorG, colorB, this.strength * 200);
+    p5i.fill(colorR, colorG, colorB, this.strength);
     p5i.strokeWeight(config.pheromone.strokeWeight);
     p5i.circle(this.position.x, this.position.y, config.pheromone.size);
     p5i.pop();

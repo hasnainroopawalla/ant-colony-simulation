@@ -4,17 +4,29 @@ import { distance, circleCollision } from "../src/utils";
 let circlePosition: p5m.Vector;
 let circleDiameter: number;
 
-describe("distance", () => {
-  test("should return the Euclidean distance between 2 points in a 2D space", () => {
-    expect(distance(new p5m.Vector(2, 3), new p5m.Vector(2, 7))).toBe(4);
+describe("Squared distance", () => {
+  test("should return the squared distance between 2 points in a 2D space", () => {
+    expect(distance(new p5m.Vector(2, 3), new p5m.Vector(2, 7))).toBe(16);
   });
   test("should return 0 if both points are the same", () => {
     expect(distance(new p5m.Vector(2, 3), new p5m.Vector(2, 3))).toBe(0);
   });
+  test("should return the squared distance between 2 points in a 2D space float", () => {
+    expect(distance(new p5m.Vector(3, 5), new p5m.Vector(-2, 4))).toBe(26);
+  });
+});
+
+describe("euclideanDistance", () => {
+  test("should return the Euclidean distance between 2 points in a 2D space", () => {
+    expect(distance(new p5m.Vector(2, 3), new p5m.Vector(2, 7), true)).toBe(4);
+  });
+  test("should return 0 if both points are the same", () => {
+    expect(distance(new p5m.Vector(2, 3), new p5m.Vector(2, 3), true)).toBe(0);
+  });
   test("should return the Euclidean distance between 2 points in a 2D space float", () => {
-    expect(distance(new p5m.Vector(3, 5), new p5m.Vector(-2, 4))).toBeCloseTo(
-      5.099
-    );
+    expect(
+      distance(new p5m.Vector(3, 5), new p5m.Vector(-2, 4), true)
+    ).toBeCloseTo(5.099);
   });
 });
 

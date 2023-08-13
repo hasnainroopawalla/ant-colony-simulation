@@ -38,7 +38,7 @@ export const config = {
     size: 3,
     strokeWeight: 0,
     distanceBetween: 20,
-    evaporationRate: 0.004,
+    evaporationRate: 1,
     wander: {
       show: false,
       colorRGB: [26, 166, 236],

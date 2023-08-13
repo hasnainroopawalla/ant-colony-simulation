@@ -118,7 +118,7 @@ export class Ant {
 
   private shouldPheromoneBeDeposited() {
     return (
-      distance(this.position, this.lastPheromonePosition) >
+      distance(this.position, this.lastPheromonePosition, true) >
       config.pheromone.distanceBetween
     );
   }
