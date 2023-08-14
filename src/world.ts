@@ -65,14 +65,18 @@ export class World {
     }
   }
 
-  private renderPheromones() {
-    for (let i = 0; i < this.pheromones.length; i++) {
-      const pheromone = this.pheromones[i];
-      if (pheromone.shouldBeDestroyed()) {
-        this.pheromones.splice(i, 1);
-      }
-      pheromone.render();
-      pheromone.evaporate();
+  private renderAnts() {
+    for (let i = 0; i < this.ants.length; i++) {
+      const ant = this.ants[i];
+      ant.update();
+      ant.render();
+    }
+  }
+
+  private renderColonies() {
+    for (let i = 0; i < this.colonies.length; i++) {
+      const colonies = this.colonies[i];
+      colonies.render();
     }
   }
 
@@ -86,15 +90,21 @@ export class World {
     }
   }
 
+  private renderPheromones() {
+    for (let i = 0; i < this.pheromones.length; i++) {
+      const pheromone = this.pheromones[i];
+      if (pheromone.shouldBeDestroyed()) {
+        this.pheromones.splice(i, 1);
+      }
+      pheromone.render();
+      pheromone.evaporate();
+    }
+  }
+
   public render() {
     p5i.background(config.world.background);
-    this.colonies.map((colony) => {
-      colony.render();
-    });
-    this.ants.map((ant) => {
-      ant.update();
-      ant.render();
-    });
+    this.renderAnts();
+    this.renderColonies();
     this.renderFoodItems();
     this.renderPheromones();
   }
