@@ -22,7 +22,6 @@ export class Ant {
   state: IAntState;
   colony: Colony;
   targetFoodItem: FoodItem | null;
-  // TODO: rename
   lastDepositedPheromone?: Pheromone;
 
   constructor(colony: Colony, world: World) {
