@@ -11,7 +11,7 @@ export const config = {
     strokeWeight: 0,
   },
   foodCluster: {
-    spacing: 17,
+    spacing: 0,
   },
   colony: {
     size: 70, // diameter

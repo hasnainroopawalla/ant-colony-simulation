@@ -47,11 +47,13 @@ export class World {
     antPosition: p5m.Vector,
     perceptionRange: number
   ): FoodItem | null {
+    let count = 0;
     for (let i = 0; i < this.foodItems.length; i++) {
       const foodItem = this.foodItems[i];
       if (!foodItem.isSpawned()) {
         continue;
       }
+      count++;
       if (
         circleCollision(
           foodItem.position,
@@ -60,9 +62,11 @@ export class World {
         )
       ) {
         foodItem.reserved();
+        console.log(count);
         return foodItem;
       }
     }
+    console.log(count);
   }
 
   private renderAnts() {
