@@ -1,33 +1,35 @@
-import * as p5 from "p5";
+import * as p5m from "p5";
+import { p5i } from "./sketch";
 import { Ant } from "./ant";
 import { FoodItem } from "./food-item";
 import { Colony } from "./colony";
 import { config } from "./config";
+import { Pheromone } from "./pheromone";
+import { circleCollision } from "./utils";
 
 export class World {
-  p: p5;
   ants: Ant[];
   foodItems: FoodItem[];
   colonies: Colony[];
+  pheromones: Pheromone[];
 
-  constructor(p: p5) {
-    this.p = p;
+  constructor() {
     this.ants = [];
     this.foodItems = [];
-    this.colonies = [new Colony(p)];
+    this.colonies = [new Colony()];
+    this.pheromones = [];
   }
 
   public createAnt() {
-    this.ants.push(new Ant(this.p, this.colonies[0], this));
+    this.ants.push(new Ant(this.colonies[0], this));
   }
 
   public createFoodCluster(clusterSize: number = 5) {
-    const [spawnX, spawnY] = [this.p.mouseX, this.p.mouseY];
+    const [spawnX, spawnY] = [p5i.mouseX, p5i.mouseY];
     for (let i = 0; i < clusterSize; i++) {
       for (let j = 0; j < clusterSize; j++) {
         this.foodItems.push(
           new FoodItem(
-            this.p,
             i * config.foodCluster.spacing + spawnX,
             j * config.foodCluster.spacing + spawnY
           )
@@ -36,9 +38,13 @@ export class World {
     }
   }
 
+  public depositPheromone(pheromone: Pheromone) {
+    this.pheromones.push(pheromone);
+  }
+
   // TODO: this method should limit the perception to only in FRONT of the ant
   public getFoodItemInPerceptionRange(
-    antPosition: p5.Vector,
+    antPosition: p5m.Vector,
     perceptionRange: number
   ): FoodItem | null {
     for (let i = 0; i < this.foodItems.length; i++) {
@@ -46,28 +52,60 @@ export class World {
       if (!foodItem.isSpawned()) {
         continue;
       }
-      const distanceSquared =
-        Math.pow(foodItem.position.x - antPosition.x, 2) +
-        Math.pow(foodItem.position.y - antPosition.y, 2);
-
-      if (distanceSquared <= Math.pow(perceptionRange, 2)) {
+      if (
+        circleCollision(
+          foodItem.position,
+          antPosition,
+          config.ant.perception.range * 2
+        )
+      ) {
         foodItem.reserved();
         return foodItem;
       }
     }
   }
 
-  public render() {
-    this.p.background(config.world.background);
-    this.colonies.map((colony) => {
-      colony.render();
-    });
-    this.ants.map((ant) => {
+  private renderAnts() {
+    for (let i = 0; i < this.ants.length; i++) {
+      const ant = this.ants[i];
       ant.update();
       ant.render();
-    });
-    this.foodItems.map((food) => {
-      food.render();
-    });
+    }
+  }
+
+  private renderColonies() {
+    for (let i = 0; i < this.colonies.length; i++) {
+      const colonies = this.colonies[i];
+      colonies.render();
+    }
+  }
+
+  private renderFoodItems() {
+    for (let i = 0; i < this.foodItems.length; i++) {
+      const foodItem = this.foodItems[i];
+      if (foodItem.shouldBeDestroyed()) {
+        this.foodItems.splice(i, 1);
+      }
+      foodItem.render();
+    }
+  }
+
+  private renderPheromones() {
+    for (let i = 0; i < this.pheromones.length; i++) {
+      const pheromone = this.pheromones[i];
+      if (pheromone.shouldBeDestroyed()) {
+        this.pheromones.splice(i, 1);
+      }
+      pheromone.render();
+      pheromone.evaporate();
+    }
+  }
+
+  public render() {
+    p5i.background(config.world.background);
+    this.renderAnts();
+    this.renderColonies();
+    this.renderFoodItems();
+    this.renderPheromones();
   }
 }

@@ -1,4 +1,6 @@
 import { config } from "./config";
+import { p5i } from "./sketch";
+import { circleCollision } from "./utils";
 
 export enum IFoodItemState {
   Spawned,
@@ -8,13 +10,11 @@ export enum IFoodItemState {
 }
 
 export class FoodItem {
-  p: p5;
   position: p5.Vector;
   state: IFoodItemState;
 
-  constructor(p: p5, x: number, y: number) {
-    this.p = p;
-    this.position = p.createVector(x, y);
+  constructor(x: number, y: number) {
+    this.position = p5i.createVector(x, y);
     this.spawned();
   }
 
@@ -44,26 +44,22 @@ export class FoodItem {
     return this.state === IFoodItemState.Delivered;
   }
 
+  public shouldBeDestroyed() {
+    return this.isDelivered();
+  }
+
   public collide(antPosition: p5.Vector) {
-    return (
-      this.p.dist(
-        antPosition.x,
-        antPosition.y,
-        this.position.x,
-        this.position.y
-      ) <
-      config.foodItem.size / 2
-    );
+    return circleCollision(antPosition, this.position, config.foodItem.size);
   }
 
   public render() {
     if (this.isPickedUp() || this.isDelivered()) {
       return;
     }
-    this.p.push();
-    this.p.strokeWeight(config.foodItem.strokeWeight);
-    this.p.fill(config.foodItem.color);
-    this.p.circle(this.position.x, this.position.y, config.foodItem.size);
-    this.p.pop();
+    p5i.push();
+    p5i.strokeWeight(config.foodItem.strokeWeight);
+    p5i.fill(config.foodItem.color);
+    p5i.circle(this.position.x, this.position.y, config.foodItem.size);
+    p5i.pop();
   }
 }
