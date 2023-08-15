@@ -1,6 +1,27 @@
 import { p5i } from "./sketch";
+import { circleCollision } from "./utils";
 
 type Point = { x: number; y: number };
+
+export class Circle {
+  x: number;
+  y: number;
+  r: number;
+
+  constructor(x: number, y: number, r: number) {
+    this.x = x;
+    this.y = y;
+    this.r = r;
+  }
+
+  contains(point: Point) {
+    return circleCollision(
+      p5i.createVector(point.x, point.y),
+      p5i.createVector(this.x, this.y),
+      this.r * 2
+    );
+  }
+}
 
 export class Rectangle {
   x: number;
@@ -15,7 +36,7 @@ export class Rectangle {
     this.h = h;
   }
 
-  public containsPoint(point: Point) {
+  public contains(point: Point) {
     return (
       point.x >= this.x - this.w &&
       point.x <= this.x + this.w &&
@@ -24,7 +45,23 @@ export class Rectangle {
     );
   }
 
-  //   public intersects(range) {}
+  public intersectsRect(range: Rectangle): boolean {
+    return !(
+      range.x - range.w > this.x + this.w ||
+      range.x + range.w < this.x - this.w ||
+      range.y - range.h > this.y + this.h ||
+      range.y + range.h < this.y - this.h
+    );
+  }
+
+  public intersects(range: Circle): boolean {
+    return (
+      range.x + range.r >= this.x - this.w &&
+      range.x - range.r <= this.x + this.w &&
+      range.y + range.r >= this.y - this.h &&
+      range.y - range.r <= this.y + this.h
+    );
+  }
 }
 
 export class Quadtree {
@@ -95,19 +132,41 @@ export class Quadtree {
       this.bottomRight.render();
       this.topRight.render();
     }
-    for (let i = 0; i < this.points.length; i++) {
-      const point = this.points[i];
-      p5i.strokeWeight(7);
+    this.points.map((point) => {
+      p5i.strokeWeight(3);
       p5i.stroke("blue");
       p5i.point(point.x, point.y);
-    }
+      p5i.strokeWeight(1);
+    });
     p5i.pop();
   }
 
-  //   public query(range) {}
+  public query(range: Circle, found?: Point[]) {
+    if (!found) {
+      found = [];
+    }
+
+    if (!this.boundary.intersects(range)) {
+      return;
+    }
+
+    this.points.map((point) => {
+      if (range.contains(point)) {
+        found.push(point);
+      }
+    });
+
+    if (this.divided) {
+      this.topLeft.query(range, found);
+      this.bottomLeft.query(range, found);
+      this.bottomRight.query(range, found);
+      this.topRight.query(range, found);
+    }
+    return found;
+  }
 
   public insert(point: Point): boolean {
-    if (!this.boundary.containsPoint(point)) {
+    if (!this.boundary.contains(point)) {
       return false;
     }
 

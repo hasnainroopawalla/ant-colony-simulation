@@ -15,9 +15,8 @@ export const distance = (
 };
 
 export const circleCollision = (
-  candidatePosition: p5.Vector,
+  pointPosition: p5.Vector,
   circlePosition: p5.Vector,
   circleDiameter: number
 ): boolean =>
-  distance(candidatePosition, circlePosition) <=
-  Math.pow(circleDiameter / 2, 2);
+  distance(pointPosition, circlePosition) <= Math.pow(circleDiameter / 2, 2);
