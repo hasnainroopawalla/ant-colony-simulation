@@ -2,16 +2,149 @@
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta charset="UTF-8">
     <title>Ant Colony Simulation</title>
     <style>
         body {
             margin: 0px;
+            display: flex;
+            justify-content: left;
+        }
+
+        .nav {
+            position: absolute;
+            z-index: 1;
+            margin-top: 20px;
+            margin-left: 20px;
+            text-align: center;
+            overflow: hidden;
+            transition: 0.2s;
+        }
+
+        .nav a {
+            /* float: left; */
+            color: #f2f2f2;
+            /* text-align: center; */
+            /* padding: 14px 16px; */
+            /* text-decoration: none; */
+            /* font-size: 17px; */
+        }
+
+        /*.nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .nav a.active {
+            background-color: #04AA6D;
+            color: white;
+        } */
+
+        .sidenav {
+            width: 0%;
+            max-height: 90%;
+            position: absolute;
+            z-index: 1;
+            margin-top: 20px;
+            margin-left: 20px;
+            border-radius: 0.75rem;
+            background-color: rgba(0, 0, 0, 0.6);
+            overflow: auto;
+            transition: 0.4s;
+            padding-top: 60px;
+        }
+
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
         }
     </style>
 </head>
 
 <body>
+    <div class="nav" id="nav">
+        <a href="javascript:void(0);" class="icon" onclick="openNav()">
+            <i class="fa fa-bars"></i>
+        </a>
+    </div>
+
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#">About</a>
+        <div class="slidecontainer">
+            hasnainhasnainhasnainhasnainhasnainhasnainhasnain <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+        </div>
+        <!-- <!-- <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a> -->
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Clients</a>
+        <a href="#">Contact</a>
+    </div>
+
 </body>
+<script>
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "25%";
+        document.getElementById("nav").style.opacity = "0";
+
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("nav").style.opacity = "1";
+    }
+    const myDiv = document.getElementById('nav');
+    // const myCanvas = document.getElementById('defaultCanvas0');
+
+    myDiv.addEventListener('mouseenter', () => {
+        const myCanvas = document.getElementById('defaultCanvas0');
+        myCanvas.style.pointerEvents = 'none';
+    });
+
+    myDiv.addEventListener('mouseleave', () => {
+        const myCanvas = document.getElementById('defaultCanvas0');
+        // myCanvas.style.pointerEvents = 'auto';
+        myCanvas.style.pointerEvents = 'none';
+        myCanvas.style.cursor = "not-allowed";
+    });
+</script>
 
 </html>

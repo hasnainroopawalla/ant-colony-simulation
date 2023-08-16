@@ -3,7 +3,7 @@ import { World } from "./world";
 import { Quadtree, Rectangle } from "./quadtree";
 
 let world: World;
-const numAnts: number = 1;
+const numAnts: number = 100;
 let quadtree: Quadtree;
 
 const sketch = (p: p5) => {
@@ -29,9 +29,9 @@ const sketch = (p: p5) => {
     world.render();
   };
 
-  p.mouseClicked = () => {
-    world.createFoodCluster(5);
-  };
+  // p.mouseClicked = () => {
+  //   world.createFoodCluster(5);
+  // };
 };
 
 export const p5i = new p5(sketch, document.body);

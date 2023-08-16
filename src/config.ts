@@ -27,7 +27,7 @@ export const config = {
     color: "#000000",
     strokeWeight: 2,
     perception: {
-      show: true,
+      show: false,
       range: 50, // radius
       gray: 255,
       alpha: 30,
@@ -49,7 +49,7 @@ export const config = {
     },
   },
   quadtree: {
-    show: true,
+    show: false,
     base: {
       // TODO: Change to hex
       color: "red",
