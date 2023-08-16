@@ -27,7 +27,7 @@ export const config = {
     color: "#000000",
     strokeWeight: 2,
     perception: {
-      show: false,
+      show: true,
       range: 50, // radius
       gray: 255,
       alpha: 30,

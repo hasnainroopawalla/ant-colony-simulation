@@ -6,14 +6,17 @@ import { Colony } from "./colony";
 import { config } from "./config";
 import { Pheromone } from "./pheromone";
 import { circleCollision } from "./utils";
+import { Quadtree } from "./quadtree";
 
 export class World {
+  quadtree: Quadtree;
   ants: Ant[];
   foodItems: FoodItem[];
   colonies: Colony[];
   pheromones: Pheromone[];
 
-  constructor() {
+  constructor(quadtree: Quadtree) {
+    this.quadtree = quadtree;
     this.ants = [];
     this.foodItems = [];
     this.colonies = [new Colony()];
@@ -28,6 +31,12 @@ export class World {
     const [spawnX, spawnY] = [p5i.mouseX, p5i.mouseY];
     for (let i = 0; i < clusterSize; i++) {
       for (let j = 0; j < clusterSize; j++) {
+        this.quadtree.insert(
+          new FoodItem(
+            i * config.foodCluster.spacing + spawnX,
+            j * config.foodCluster.spacing + spawnY
+          )
+        );
         this.foodItems.push(
           new FoodItem(
             i * config.foodCluster.spacing + spawnX,
@@ -62,11 +71,9 @@ export class World {
         )
       ) {
         foodItem.reserved();
-        console.log(count);
         return foodItem;
       }
     }
-    console.log(count);
   }
 
   private renderAnts() {
@@ -85,11 +92,12 @@ export class World {
   }
 
   private renderFoodItems() {
-    for (let i = 0; i < this.foodItems.length; i++) {
-      const foodItem = this.foodItems[i];
+    for (let i = 0; i < this.quadtree.points.length; i++) {
+      const foodItem = this.quadtree.points[i];
       if (foodItem.shouldBeDestroyed()) {
         this.foodItems.splice(i, 1);
       }
+      console.log(i);
       foodItem.render();
     }
   }

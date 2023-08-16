@@ -10,7 +10,6 @@ let range: Circle;
 
 const sketch = (p: p5) => {
   p.setup = () => {
-    world = new World();
     p.createCanvas(p.windowWidth, p.windowHeight);
     p.frameRate(config.sketch.frameRate);
 
@@ -21,38 +20,40 @@ const sketch = (p: p5) => {
       p.windowHeight / 2,
     ];
     quadtree = new Quadtree(new Rectangle(x, y, w, h));
-    range = new Circle(50, 50, 40);
+    world = new World(quadtree);
 
-    for (let i = 0; i < 50; i++) {
-      quadtree.insert({
-        x: p.random(0, x + w),
-        y: p.random(0, y + h),
-      });
-    }
-    // for (let i = 0; i < numAnts; i++) {
-    //   world.createAnt();
+    // range = new Circle(50, 50, 40);
+
+    // for (let i = 0; i < 500; i++) {
+    //   quadtree.insert({
+    //     x: p.random(0, x + w),
+    //     y: p.random(0, y + h),
+    //   });
     // }
+    for (let i = 0; i < numAnts; i++) {
+      world.createAnt();
+    }
   };
 
   p.draw = () => {
-    p.background(255);
-    p.noFill();
-    p.strokeWeight(2);
-    p.stroke("green");
-    p.circle(range.x, range.y, range.r * 2);
+    // p.background(255);
+    // p.noFill();
+    // p.strokeWeight(2);
+    // p.stroke("green");
+    // p.circle(range.x, range.y, range.r * 2);
+    world.render();
     quadtree.render();
 
-    quadtree.query(range).map((point) => {
-      p.fill("red");
-      p5i.strokeWeight(7);
-      p.point(point.x, point.y);
-    });
-    // world.render();
+    // quadtree.query(range).map((point) => {
+    //   p.fill("red");
+    //   p5i.strokeWeight(7);
+    //   p.point(point.x, point.y);
+    // });
   };
 
   p.mouseClicked = () => {
-    // world.createFoodCluster(50);
-    range = new Circle(p.mouseX, p.mouseY, 40);
+    world.createFoodCluster(5);
+    // range = new Circle(p.mouseX, p.mouseY, 40);
     // quadtree.insert({ x: p.mouseX, y: p.mouseY });
   };
 };

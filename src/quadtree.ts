@@ -45,7 +45,7 @@ export class Rectangle {
     );
   }
 
-  public intersectsRect(range: Rectangle): boolean {
+  public intersectsRectangle(range: Rectangle): boolean {
     return !(
       range.x - range.w > this.x + this.w ||
       range.x + range.w < this.x - this.w ||
@@ -118,8 +118,10 @@ export class Quadtree {
 
   public render() {
     p5i.push();
-    p5i.stroke(100);
+    p5i.stroke("red");
+    p5i.strokeWeight(1);
     p5i.rectMode(p5i.CENTER);
+    p5i.noFill();
     p5i.rect(
       this.boundary.x,
       this.boundary.y,
