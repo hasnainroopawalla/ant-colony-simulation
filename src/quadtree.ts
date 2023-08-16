@@ -1,7 +1,7 @@
+import { config } from "./config";
+import { FoodItem } from "./food-item";
 import { p5i } from "./sketch";
 import { circleCollision } from "./utils";
-
-type Point = { x: number; y: number };
 
 export class Circle {
   x: number;
@@ -14,9 +14,9 @@ export class Circle {
     this.r = r;
   }
 
-  contains(point: Point) {
+  contains(point: FoodItem) {
     return circleCollision(
-      p5i.createVector(point.x, point.y),
+      p5i.createVector(point.position.x, point.position.y),
       p5i.createVector(this.x, this.y),
       this.r * 2
     );
@@ -36,12 +36,12 @@ export class Rectangle {
     this.h = h;
   }
 
-  public contains(point: Point) {
+  public contains(point: FoodItem) {
     return (
-      point.x >= this.x - this.w &&
-      point.x <= this.x + this.w &&
-      point.y >= this.y - this.h &&
-      point.y <= this.y + this.h
+      point.position.x >= this.x - this.w &&
+      point.position.x <= this.x + this.w &&
+      point.position.y >= this.y - this.h &&
+      point.position.y <= this.y + this.h
     );
   }
 
@@ -67,7 +67,9 @@ export class Rectangle {
 export class Quadtree {
   capacity: number;
   boundary: Rectangle;
-  points: Point[];
+
+  foodItems: FoodItem[];
+
   divided: boolean;
   topLeft?: Quadtree;
   bottomLeft?: Quadtree;
@@ -78,7 +80,7 @@ export class Quadtree {
     this.capacity = 4;
     this.boundary = boundary;
     this.divided = false;
-    this.points = [];
+    this.foodItems = [];
   }
 
   private subdivide() {
@@ -117,33 +119,38 @@ export class Quadtree {
   }
 
   public render() {
-    p5i.push();
-    p5i.stroke("red");
-    p5i.strokeWeight(1);
-    p5i.rectMode(p5i.CENTER);
-    p5i.noFill();
-    p5i.rect(
-      this.boundary.x,
-      this.boundary.y,
-      this.boundary.w * 2,
-      this.boundary.h * 2
-    );
+    if (config.quadtree.show) {
+      p5i.push();
+      p5i.stroke(config.quadtree.base.color);
+      p5i.strokeWeight(config.quadtree.base.strokeWeight);
+      p5i.rectMode(p5i.CENTER);
+      p5i.noFill();
+      p5i.rect(
+        this.boundary.x,
+        this.boundary.y,
+        this.boundary.w * 2,
+        this.boundary.h * 2
+      );
+      p5i.pop();
+    }
     if (this.divided) {
       this.topLeft.render();
       this.bottomLeft.render();
       this.bottomRight.render();
       this.topRight.render();
     }
-    this.points.map((point) => {
-      p5i.strokeWeight(3);
-      p5i.stroke("blue");
-      p5i.point(point.x, point.y);
-      p5i.strokeWeight(1);
-    });
-    p5i.pop();
+
+    // TODO: Move to private render method
+    for (let i = 0; i < this.foodItems.length; i++) {
+      const foodItem = this.foodItems[i];
+      if (foodItem.shouldBeDestroyed()) {
+        this.foodItems.splice(i, 1);
+      }
+      foodItem.render();
+    }
   }
 
-  public query(range: Circle, found?: Point[]) {
+  public query(range: Circle, found?: FoodItem[]) {
     if (!found) {
       found = [];
     }
@@ -152,9 +159,26 @@ export class Quadtree {
       return;
     }
 
-    this.points.map((point) => {
-      if (range.contains(point)) {
-        found.push(point);
+    // TODO: Move to private render method
+    // Highlight the quadtrees in the perception range of the ant
+    if (config.quadtree.show) {
+      p5i.push();
+      p5i.stroke(config.quadtree.highlighted.color);
+      p5i.strokeWeight(config.quadtree.highlighted.strokeWeight);
+      p5i.rectMode(p5i.CENTER);
+      p5i.noFill();
+      p5i.rect(
+        this.boundary.x,
+        this.boundary.y,
+        this.boundary.w * 2,
+        this.boundary.h * 2
+      );
+      p5i.pop();
+    }
+
+    this.foodItems.map((foodItem) => {
+      if (range.contains(foodItem)) {
+        found.push(foodItem);
       }
     });
 
@@ -167,13 +191,13 @@ export class Quadtree {
     return found;
   }
 
-  public insert(point: Point): boolean {
+  public insert(point: FoodItem): boolean {
     if (!this.boundary.contains(point)) {
       return false;
     }
 
-    if (this.points.length < this.capacity) {
-      this.points.push(point);
+    if (this.foodItems.length < this.capacity) {
+      this.foodItems.push(point);
       return true;
     }
 

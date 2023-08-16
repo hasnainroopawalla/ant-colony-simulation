@@ -11,7 +11,7 @@ export const config = {
     strokeWeight: 0,
   },
   foodCluster: {
-    spacing: 0,
+    spacing: 7,
   },
   colony: {
     size: 70, // diameter
@@ -46,6 +46,19 @@ export const config = {
     food: {
       show: true,
       colorRGB: [210, 31, 61],
+    },
+  },
+  quadtree: {
+    show: true,
+    base: {
+      // TODO: Change to hex
+      color: "red",
+      strokeWeight: 1,
+    },
+    highlighted: {
+      // TODO: Change to hex
+      color: "white",
+      strokeWeight: 2,
     },
   },
 };

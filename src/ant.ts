@@ -81,8 +81,7 @@ export class Ant {
     // check if food item exists within perception range
     if (!this.targetFoodItem) {
       this.targetFoodItem = this.world.getFoodItemInPerceptionRange(
-        this.position,
-        config.ant.perception.range
+        this.position
       );
     }
 

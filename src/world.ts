@@ -5,20 +5,17 @@ import { FoodItem } from "./food-item";
 import { Colony } from "./colony";
 import { config } from "./config";
 import { Pheromone } from "./pheromone";
-import { circleCollision } from "./utils";
-import { Quadtree } from "./quadtree";
+import { Circle, Quadtree } from "./quadtree";
 
 export class World {
   quadtree: Quadtree;
   ants: Ant[];
-  foodItems: FoodItem[];
   colonies: Colony[];
   pheromones: Pheromone[];
 
   constructor(quadtree: Quadtree) {
     this.quadtree = quadtree;
     this.ants = [];
-    this.foodItems = [];
     this.colonies = [new Colony()];
     this.pheromones = [];
   }
@@ -31,18 +28,11 @@ export class World {
     const [spawnX, spawnY] = [p5i.mouseX, p5i.mouseY];
     for (let i = 0; i < clusterSize; i++) {
       for (let j = 0; j < clusterSize; j++) {
-        this.quadtree.insert(
-          new FoodItem(
-            i * config.foodCluster.spacing + spawnX,
-            j * config.foodCluster.spacing + spawnY
-          )
+        const foodItem = new FoodItem(
+          i * config.foodCluster.spacing + spawnX,
+          j * config.foodCluster.spacing + spawnY
         );
-        this.foodItems.push(
-          new FoodItem(
-            i * config.foodCluster.spacing + spawnX,
-            j * config.foodCluster.spacing + spawnY
-          )
-        );
+        this.quadtree.insert(foodItem);
       }
     }
   }
@@ -53,23 +43,15 @@ export class World {
 
   // TODO: this method should limit the perception to only in FRONT of the ant
   public getFoodItemInPerceptionRange(
-    antPosition: p5m.Vector,
-    perceptionRange: number
+    antPosition: p5m.Vector
   ): FoodItem | null {
-    let count = 0;
-    for (let i = 0; i < this.foodItems.length; i++) {
-      const foodItem = this.foodItems[i];
-      if (!foodItem.isSpawned()) {
-        continue;
-      }
-      count++;
-      if (
-        circleCollision(
-          foodItem.position,
-          antPosition,
-          config.ant.perception.range * 2
-        )
-      ) {
+    // TODO: avoid creating a new Circle at each call
+    const found = this.quadtree.query(
+      new Circle(antPosition.x, antPosition.y, config.ant.perception.range)
+    );
+    for (let i = 0; i < found.length; i++) {
+      const foodItem = found[i];
+      if (foodItem.isSpawned()) {
         foodItem.reserved();
         return foodItem;
       }
@@ -91,17 +73,6 @@ export class World {
     }
   }
 
-  private renderFoodItems() {
-    for (let i = 0; i < this.quadtree.points.length; i++) {
-      const foodItem = this.quadtree.points[i];
-      if (foodItem.shouldBeDestroyed()) {
-        this.foodItems.splice(i, 1);
-      }
-      console.log(i);
-      foodItem.render();
-    }
-  }
-
   private renderPheromones() {
     for (let i = 0; i < this.pheromones.length; i++) {
       const pheromone = this.pheromones[i];
@@ -115,9 +86,9 @@ export class World {
 
   public render() {
     p5i.background(config.world.background);
+    this.quadtree.render();
     this.renderAnts();
     this.renderColonies();
-    this.renderFoodItems();
     this.renderPheromones();
   }
 }
