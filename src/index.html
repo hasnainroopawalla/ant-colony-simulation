@@ -9,12 +9,12 @@
 
 <body>
     <div class="control-panel-button-container">
-        <a href="javascript:void(0);" class="control-panel-button icon" onclick="openNav()">
+        <a href="javascript:void(0);" style="color:white;" class="control-panel-button icon" onclick="openNav()">
             <i class="fa fa-bars"></i>
         </a>
     </div>
 
-    <div class="control-panel" class="sidenav">
+    <div class="control-panel" style="display: none;">
         <div class="control-panel-content">
             <a href="javascript:void(0)" class="close-button" onclick="closeNav()">&times;</a>
             <div class="control-panel-slider-container">
@@ -22,12 +22,15 @@
                 <input class="control-panel-slider" id="maxSpeed" type="range" min="0.1" max="5.0" value="2.5" step="0.1">
             </div>
             <!-- <a href="#">Clients</a> -->
-
         </div>
     </div>
 
 </body>
 <script>
+    window.onload = function () {
+        document.getElementsByClassName("control-panel")[0].style.display = "block";
+    }
+
     function openNav() {
         document.getElementsByClassName("control-panel")[0].style.width = "250px";
         document.getElementsByClassName("control-panel-button")[0].style.opacity = "0";

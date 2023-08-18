@@ -8,10 +8,11 @@ body {
 }
 
 .control-panel-button {
+    color: #fff;
     position: absolute;
     margin-top: 20px;
     margin-left: 20px;
-    color: #fff;
+    transition: 0.2s;
 }
 
 .control-panel {
