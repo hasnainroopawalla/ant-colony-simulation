@@ -19,9 +19,19 @@
             <a href="javascript:void(0)" class="close-button" onclick="closeNav()">&times;</a>
             <div class="control-panel-slider-container">
                 <span class="control-panel-slider-label">maxSpeed</span>
-                <input class="control-panel-slider" id="maxSpeed" type="range" min="0.1" max="5.0" value="2.5" step="0.1">
+                <div class="control-panel-slider-component">
+                    <input class="control-panel-slider-input" id="maxSpeed" type="range" min="0.1" max="5.0" value="2.5" step="0.1" oninput="sliderOnChange(this)">
+                    <span id="maxSpeedDisplay" class="control-panel-slider-output">2.5</span>
+
+                </div>
             </div>
-            <!-- <a href="#">Clients</a> -->
+            <div class="control-panel-slider-container">
+                <span class="control-panel-slider-label">wanderStrength</span>
+                <div class="control-panel-slider-component">
+                    <input class="control-panel-slider-input" id="wanderingStrength" type="range" min="0.1" max="5.0" value="1" step="0.1" oninput="sliderOnChange(this)">
+                    <span id="wanderingStrengthDisplay" class="control-panel-slider-output">1</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -32,29 +42,18 @@
     }
 
     function openNav() {
-        document.getElementsByClassName("control-panel")[0].style.width = "250px";
+        document.getElementsByClassName("control-panel")[0].style.width = "350px";
         document.getElementsByClassName("control-panel-button")[0].style.opacity = "0";
-
     }
 
     function closeNav() {
         document.getElementsByClassName("control-panel")[0].style.width = "0px";
         document.getElementsByClassName("control-panel-button")[0].style.opacity = "1";
     }
-    // const myDiv = document.getElementById('nav');
-    // const myCanvas = document.getElementById('defaultCanvas0');
 
-    // myDiv.addEventListener('mouseenter', () => {
-    //     const myCanvas = document.getElementById('defaultCanvas0');
-    //     myCanvas.style.pointerEvents = 'none';
-    // });
-
-    // myDiv.addEventListener('mouseleave', () => {
-    //     const myCanvas = document.getElementById('defaultCanvas0');
-    //     // myCanvas.style.pointerEvents = 'auto';
-    //     myCanvas.style.pointerEvents = 'none';
-    //     myCanvas.style.cursor = "not-allowed";
-    // });
+    function sliderOnChange(slider) {
+        document.getElementById(`${slider.id}Display`).innerHTML = slider.value;
+    }
 </script>
 
 </html>

@@ -1,6 +1,6 @@
 import { config } from "./config";
 import { FoodItem } from "./food-item";
-import { p5i } from "../sketch";
+import { p5i } from "./sketch";
 import { circleCollision } from "./utils";
 
 export class Circle {

@@ -1,12 +1,10 @@
 import * as p5 from "p5";
-import { World } from "./aco/world";
-import { Quadtree, Rectangle } from "./aco/quadtree";
-import "./styles/style.css";
+import { World } from "./world";
+import { Quadtree, Rectangle } from "./quadtree";
 
 let world: World;
 const numAnts: number = 100;
 let quadtree: Quadtree;
-let slider1: p5.Element;
 
 type ISettings = {
   maxSpeed: number;
@@ -33,8 +31,6 @@ const sketch = (p: p5) => {
     for (let i = 0; i < numAnts; i++) {
       world.createAnt();
     }
-
-    slider1 = p.select("#maxSpeed");
   };
 
   p.draw = () => {

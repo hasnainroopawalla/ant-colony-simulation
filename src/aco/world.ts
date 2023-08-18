@@ -1,5 +1,5 @@
 import * as p5m from "p5";
-import { p5i } from "../sketch";
+import { p5i } from "./sketch";
 import { Ant } from "./ant";
 import { FoodItem } from "./food-item";
 import { Colony } from "./colony";

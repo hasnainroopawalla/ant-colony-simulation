@@ -1,5 +1,5 @@
 import { config } from "./config";
-import { p5i } from "../sketch";
+import { p5i } from "./sketch";
 import { circleCollision } from "./utils";
 
 export class Colony {

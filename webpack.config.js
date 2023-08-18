@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     mode: "development",
-    entry: './src/sketch.ts',
+    entry: './src/index.ts',
     module: {
         rules: [
             {
