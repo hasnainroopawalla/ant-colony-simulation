@@ -1,11 +1,20 @@
 import * as p5 from "p5";
-import { World } from "./world";
-import { Quadtree, Rectangle } from "./quadtree";
+import { World } from "./aco/world";
+import { Quadtree, Rectangle } from "./aco/quadtree";
+import "./styles/style.css";
 
 let world: World;
 const numAnts: number = 100;
 let quadtree: Quadtree;
 let slider1: p5.Element;
+
+type ISettings = {
+  maxSpeed: number;
+};
+
+const getSettings = (): ISettings => ({
+  maxSpeed: Number(p5i.select("#maxSpeed").value()),
+});
 
 const sketch = (p: p5) => {
   p.setup = () => {
@@ -25,12 +34,12 @@ const sketch = (p: p5) => {
       world.createAnt();
     }
 
-    slider1 = p.select("#myRange");
+    slider1 = p.select("#maxSpeed");
   };
 
   p.draw = () => {
     world.render();
-    console.log(slider1.value());
+    console.log(getSettings());
   };
 
   // p.mouseClicked = () => {

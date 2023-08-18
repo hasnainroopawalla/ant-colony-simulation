@@ -1,0 +1,44 @@
+body {
+    margin: 0px;
+}
+
+.control-panel-button-container {
+    display: flex;
+    justify-content: left;
+}
+
+.control-panel-button {
+    position: absolute;
+    margin-top: 20px;
+    margin-left: 20px;
+    color: #fff;
+}
+
+.control-panel {
+    width: 0px;
+    max-height: 60%;
+    position: absolute;
+    margin-top: 20px;
+    margin-left: 20px;
+    border-radius: 0.6rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    overflow: auto;
+    padding-top: 60px;
+    transition: 0.2s;
+}
+
+.control-panel .close-button {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    display: block;
+    color: #fff;
+    position: absolute;
+    top: 0;
+    right: 10px;
+    font-size: 30px;
+}
+
+.control-panel-content {
+    width: 250px;
+    overflow: hidden;
+}

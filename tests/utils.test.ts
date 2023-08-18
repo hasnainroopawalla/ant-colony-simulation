@@ -1,5 +1,5 @@
 import * as p5m from "p5";
-import { distance, circleCollision } from "../src/utils";
+import { distance, circleCollision } from "../src/aco/utils";
 
 let circlePosition: p5m.Vector;
 let circleDiameter: number;
