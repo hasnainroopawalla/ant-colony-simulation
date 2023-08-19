@@ -1,5 +1,8 @@
 body {
   margin: 0px;
+  font-family: Tahoma;
+  font-size: 13px;
+  letter-spacing: 0.5px;
 }
 
 .control-panel-button-container {
@@ -39,36 +42,50 @@ body {
   font-size: 30px;
 }
 
-.control-panel-content {
+.control-panel > .control-panel-content {
   width: 350px;
   overflow: hidden;
 }
 
-.control-panel-slider-container {
+.control-panel .slider-container {
   display: flex;
   flex-direction: row;
-  /* justify-content: space-evenly; */
   padding: 10px;
 }
 
-.control-panel-slider-container .control-panel-slider-label {
+.control-panel .slider-title {
   color: #fff;
   margin-left: 10px;
-  margin-right: 30px;
 }
 
-.control-panel-slider-container .control-panel-slider-component {
-  margin-right: 10px;
+.control-panel .slider-output {
   color: #fff;
-}
-
-.control-panel-slider-container
-  .control-panel-slider-component
-  .control-panel-slider-output {
-  background-color: #606060;
-  border-radius: 10px;
+  background-color: #3691ec;
+  border-radius: 7px;
   align-items: center;
   padding: 4px 6px 4px 6px;
-  /* margin-right: 6px;
-  margin-bottom: 6px; */
+  margin-left: 10px;
+}
+
+.control-panel .slider-component {
+  color: #fff;
+  margin-left: auto;
+}
+
+.control-panel .slider-checkbox-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.control-panel .slider-checkbox-component {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding: 15px 0px 10px 10px;
+  margin-left: 10px;
+}
+
+.control-panel .checkbox-label {
+  color: #fff;
 }

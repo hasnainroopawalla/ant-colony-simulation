@@ -1,4 +1,4 @@
-export const config = {
+export let config = {
   sketch: {
     frameRate: 60,
   },
@@ -10,6 +10,7 @@ export const config = {
     color: "#39FF14",
     strokeWeight: 0,
   },
+
   foodCluster: {
     spacing: 7,
   },
