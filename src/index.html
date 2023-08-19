@@ -8,52 +8,53 @@
 </head>
 
 <body>
-    <div class="control-panel-button-container">
-        <a href="javascript:void(0);" style="color:white;" class="control-panel-button icon" onclick="openNav()">
-            <i class="fa fa-cog fa-lg"></i>
-        </a>
-    </div>
+    <div id="control-panel-container">
+        <div class="control-panel-button-container">
+            <a href="javascript:void(0);" style="color:white;" class="control-panel-button icon" onclick="openNav()">
+                <i class="fa fa-cog fa-lg"></i>
+            </a>
+        </div>
 
-    <div class="control-panel" style="display: none;">
-        <div class="control-panel-content">
-            <a href="javascript:void(0)" class="close-button" onclick="closeNav()">&times;</a>
-            <div class="slider-container">
-                <span class="slider-title">maxSpeed</span>
-                <div class="slider-component">
-                    <input class="slider-input" id="maxSpeed" type="range" min="0.1" max="5.0" value="2.5" step="0.1" oninput="sliderOnChange(this)">
-                    <span id="maxSpeedDisplay" class="slider-output">2.5</span>
-                </div>
-            </div>
-            <div class="slider-container">
-                <span class="slider-title">wanderStrength</span>
-                <div class="slider-component">
-                    <input class="slider-input" id="wanderStrength" type="range" min="0.1" max="5.0" value="1.0" step="0.1" oninput="sliderOnChange(this)">
-                    <span id="wanderStrengthDisplay" class="slider-output">1.0</span>
-                </div>
-            </div>
-            <div class="slider-container">
-                <span class="slider-title">steeringLimit</span>
-                <div class="slider-component">
-                    <input class="slider-input" id="steeringLimit" type="range" min="0.1" max="1.0" value="0.4" step="0.1" oninput="sliderOnChange(this)">
-                    <span id="steeringLimitDisplay" class="slider-output">0.4</span>
-                </div>
-            </div>
-            <div class="slider-checkbox-container">
-                <span class="slider-title">perceptionRange</span>
-                <div class="slider-checkbox-component">
-                    <div class="checkbox-component">
-                        <input id="showPerceptionRange" type="checkbox">
-                        <span class="checkbox-label">Render</span>
-                    </div>
+        <div class="control-panel" style="display: none;">
+            <div class="control-panel-content">
+                <a href="javascript:void(0)" class="close-button" onclick="closeNav()">&times;</a>
+                <div class="slider-container">
+                    <span class="slider-title">maxSpeed</span>
                     <div class="slider-component">
-                        <input class="slider-input" id="perceptionRange" type="range" min="10" max="100" value="50" step="1" oninput="sliderOnChange(this)">
-                        <span id="perceptionRangeDisplay" class="slider-output">50</span>
+                        <input class="slider-input" id="maxSpeed" type="range" min="0.1" max="5.0" value="2.5" step="0.1" oninput="sliderOnChange(this)">
+                        <span id="maxSpeedDisplay" class="slider-output">2.5</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <span class="slider-title">wanderStrength</span>
+                    <div class="slider-component">
+                        <input class="slider-input" id="wanderStrength" type="range" min="0.1" max="5.0" value="1.0" step="0.1" oninput="sliderOnChange(this)">
+                        <span id="wanderStrengthDisplay" class="slider-output">1.0</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <span class="slider-title">steeringLimit</span>
+                    <div class="slider-component">
+                        <input class="slider-input" id="steeringLimit" type="range" min="0.1" max="1.0" value="0.4" step="0.1" oninput="sliderOnChange(this)">
+                        <span id="steeringLimitDisplay" class="slider-output">0.4</span>
+                    </div>
+                </div>
+                <div class="slider-checkbox-container">
+                    <span class="slider-title">perceptionRange</span>
+                    <div class="slider-checkbox-component">
+                        <div class="checkbox-component">
+                            <input id="showPerceptionRange" type="checkbox">
+                            <span class="checkbox-label">Render</span>
+                        </div>
+                        <div class="slider-component">
+                            <input class="slider-input" id="perceptionRange" type="range" min="10" max="100" value="50" step="1" oninput="sliderOnChange(this)">
+                            <span id="perceptionRangeDisplay" class="slider-output">50</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </body>
 <script>
     window.onload = function () {
@@ -63,6 +64,7 @@
     function openNav() {
         document.getElementsByClassName("control-panel")[0].style.width = "350px";
         document.getElementsByClassName("control-panel-button")[0].style.opacity = "0";
+
     }
 
     function closeNav() {

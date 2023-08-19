@@ -6,6 +6,7 @@ import { config } from "./config";
 let world: World;
 const numAnts: number = 100;
 let quadtree: Quadtree;
+let canvasInteractionEnabled = true;
 
 const bindListeners = (p: p5) => {
   const maxSpeed = p
@@ -69,9 +70,20 @@ const sketch = (p: p5) => {
     world.render();
   };
 
-  // p.mouseClicked = () => {
-  //   world.createFoodCluster(5);
-  // };
+  p.select("#control-panel-container")
+    .mouseOver(() => {
+      canvasInteractionEnabled = false;
+    })
+    .mouseOut(() => {
+      canvasInteractionEnabled = true;
+    });
+
+  p.mouseClicked = () => {
+    if (!canvasInteractionEnabled) {
+      return;
+    }
+    world.createFoodCluster(5);
+  };
 };
 
 export const p5i = new p5(sketch, document.body);
