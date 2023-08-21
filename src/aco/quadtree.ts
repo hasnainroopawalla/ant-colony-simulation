@@ -1,14 +1,15 @@
 import { config } from "./config";
 import { FoodItem } from "./food-item";
-import { p5i } from "./sketch";
 import { circleCollision } from "./utils";
 
 export class Circle {
+  p: p5;
   x: number;
   y: number;
   r: number;
 
-  constructor(x: number, y: number, r: number) {
+  constructor(p: p5, x: number, y: number, r: number) {
+    this.p = p;
     this.x = x;
     this.y = y;
     this.r = r;
@@ -16,8 +17,8 @@ export class Circle {
 
   contains(point: FoodItem) {
     return circleCollision(
-      p5i.createVector(point.position.x, point.position.y),
-      p5i.createVector(this.x, this.y),
+      this.p.createVector(point.position.x, point.position.y),
+      this.p.createVector(this.x, this.y),
       this.r * 2
     );
   }
@@ -65,6 +66,7 @@ export class Rectangle {
 }
 
 export class Quadtree {
+  p: p5;
   capacity: number;
   boundary: Rectangle;
 
@@ -76,7 +78,8 @@ export class Quadtree {
   bottomRight?: Quadtree;
   topRight?: Quadtree;
 
-  constructor(boundary: Rectangle) {
+  constructor(p: p5, boundary: Rectangle) {
+    this.p = p;
     this.capacity = 4;
     this.boundary = boundary;
     this.divided = false;
@@ -85,6 +88,7 @@ export class Quadtree {
 
   private subdivide() {
     this.topLeft = new Quadtree(
+      this.p,
       new Rectangle(
         this.boundary.x - this.boundary.w / 2,
         this.boundary.y - this.boundary.h / 2,
@@ -93,6 +97,7 @@ export class Quadtree {
       )
     );
     this.bottomLeft = new Quadtree(
+      this.p,
       new Rectangle(
         this.boundary.x - this.boundary.w / 2,
         this.boundary.y + this.boundary.h / 2,
@@ -101,6 +106,7 @@ export class Quadtree {
       )
     );
     this.bottomRight = new Quadtree(
+      this.p,
       new Rectangle(
         this.boundary.x + this.boundary.w / 2,
         this.boundary.y + this.boundary.h / 2,
@@ -109,6 +115,7 @@ export class Quadtree {
       )
     );
     this.topRight = new Quadtree(
+      this.p,
       new Rectangle(
         this.boundary.x + this.boundary.w / 2,
         this.boundary.y - this.boundary.h / 2,
@@ -120,18 +127,18 @@ export class Quadtree {
 
   public render() {
     if (config.quadtree.show) {
-      p5i.push();
-      p5i.stroke(config.quadtree.base.color);
-      p5i.strokeWeight(config.quadtree.base.strokeWeight);
-      p5i.rectMode(p5i.CENTER);
-      p5i.noFill();
-      p5i.rect(
+      this.p.push();
+      this.p.stroke(config.quadtree.base.color);
+      this.p.strokeWeight(config.quadtree.base.strokeWeight);
+      this.p.rectMode(this.p.CENTER);
+      this.p.noFill();
+      this.p.rect(
         this.boundary.x,
         this.boundary.y,
         this.boundary.w * 2,
         this.boundary.h * 2
       );
-      p5i.pop();
+      this.p.pop();
     }
     if (this.divided) {
       this.topLeft.render();
@@ -162,18 +169,18 @@ export class Quadtree {
     // TODO: Move to private render method
     // Highlight the quadtrees in the perception range of the ant
     if (config.quadtree.show) {
-      p5i.push();
-      p5i.stroke(config.quadtree.highlighted.color);
-      p5i.strokeWeight(config.quadtree.highlighted.strokeWeight);
-      p5i.rectMode(p5i.CENTER);
-      p5i.noFill();
-      p5i.rect(
+      this.p.push();
+      this.p.stroke(config.quadtree.highlighted.color);
+      this.p.strokeWeight(config.quadtree.highlighted.strokeWeight);
+      this.p.rectMode(this.p.CENTER);
+      this.p.noFill();
+      this.p.rect(
         this.boundary.x,
         this.boundary.y,
         this.boundary.w * 2,
         this.boundary.h * 2
       );
-      p5i.pop();
+      this.p.pop();
     }
 
     this.foodItems.map((foodItem) => {

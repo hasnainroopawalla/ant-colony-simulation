@@ -1,5 +1,4 @@
-import * as p5m from "p5";
-import { p5i } from "./sketch";
+import p5 from "p5";
 import { Ant } from "./ant";
 import { FoodItem } from "./food-item";
 import { Colony } from "./colony";
@@ -8,27 +7,30 @@ import { Pheromone } from "./pheromone";
 import { Circle, Quadtree } from "./quadtree";
 
 export class World {
+  p: p5;
   quadtree: Quadtree;
   ants: Ant[];
   colonies: Colony[];
   pheromones: Pheromone[];
 
-  constructor(quadtree: Quadtree) {
+  constructor(p: p5, quadtree: Quadtree) {
+    this.p = p;
     this.quadtree = quadtree;
     this.ants = [];
-    this.colonies = [new Colony()];
+    this.colonies = [new Colony(this.p)];
     this.pheromones = [];
   }
 
   public createAnt() {
-    this.ants.push(new Ant(this.colonies[0], this));
+    this.ants.push(new Ant(this.p, this.colonies[0], this));
   }
 
   public createFoodCluster(clusterSize: number = 5) {
-    const [spawnX, spawnY] = [p5i.mouseX, p5i.mouseY];
+    const [spawnX, spawnY] = [this.p.mouseX, this.p.mouseY];
     for (let i = 0; i < clusterSize; i++) {
       for (let j = 0; j < clusterSize; j++) {
         const foodItem = new FoodItem(
+          this.p,
           i * config.foodCluster.spacing + spawnX,
           j * config.foodCluster.spacing + spawnY
         );
@@ -42,12 +44,15 @@ export class World {
   }
 
   // TODO: this method should limit the perception to only in FRONT of the ant
-  public getFoodItemInPerceptionRange(
-    antPosition: p5m.Vector
-  ): FoodItem | null {
+  public getFoodItemInPerceptionRange(antPosition: p5.Vector): FoodItem | null {
     // TODO: avoid creating a new Circle at each call
     const found = this.quadtree.query(
-      new Circle(antPosition.x, antPosition.y, config.ant.perception.range)
+      new Circle(
+        this.p,
+        antPosition.x,
+        antPosition.y,
+        config.ant.perception.range
+      )
     );
     for (let i = 0; i < found.length; i++) {
       const foodItem = found[i];
@@ -85,7 +90,7 @@ export class World {
   }
 
   public render() {
-    p5i.background(config.world.background);
+    this.p.background(config.world.background);
     this.quadtree.render();
     this.renderAnts();
     this.renderColonies();
