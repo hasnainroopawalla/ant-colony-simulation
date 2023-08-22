@@ -19,7 +19,7 @@ export class Pheromone {
   }
 
   public evaporate() {
-    this.strength -= config.pheromone.evaporationRate;
+    this.strength -= config.pheromoneEvaporationRate;
   }
 
   public shouldBeDestroyed() {
@@ -28,21 +28,21 @@ export class Pheromone {
 
   public render() {
     if (
-      (this.type === IPheromoneType.Wander && !config.pheromone.wander.show) ||
-      (this.type === IPheromoneType.Food && !config.pheromone.food.show)
+      (this.type === IPheromoneType.Wander && !config.showPheromoneWander) ||
+      (this.type === IPheromoneType.Food && !config.showPheromoneFood)
     ) {
       return;
     }
 
     const [colorR, colorG, colorB] =
       this.type === IPheromoneType.Wander
-        ? config.pheromone.wander.colorRGB
-        : config.pheromone.food.colorRGB;
+        ? config.pheromoneWanderColorRGB
+        : config.pheromoneFoodColorRGB;
 
     this.p.push();
     this.p.fill(colorR, colorG, colorB, this.strength);
-    this.p.strokeWeight(config.pheromone.strokeWeight);
-    this.p.circle(this.position.x, this.position.y, config.pheromone.size);
+    this.p.strokeWeight(config.pheromoneStrokeWeight);
+    this.p.circle(this.position.x, this.position.y, config.pheromoneSize);
     this.p.pop();
   }
 }

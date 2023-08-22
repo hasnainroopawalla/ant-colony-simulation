@@ -48,12 +48,12 @@ body {
 .control-panel-content .slider-container {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   padding: 10px;
 }
 
 .control-panel-content .slider-title {
   color: #fff;
-  margin-left: 10px;
 }
 
 .control-panel-content .slider-output {
@@ -62,15 +62,15 @@ body {
   border-radius: 7px;
   align-items: center;
   padding: 4px 6px 4px 6px;
-  margin-left: 10px;
 }
 
 .control-panel-content .slider-component {
-  color: #fff;
-  margin-left: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
-.control-panel-content .slider-checkbox-container {
+/* .control-panel-content .slider-checkbox-container {
   display: flex;
   flex-direction: column;
   padding: 10px;
@@ -86,4 +86,4 @@ body {
 
 .control-panel-content .checkbox-label {
   color: #fff;
-}
+} */

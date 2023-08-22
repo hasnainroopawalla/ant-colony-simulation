@@ -51,7 +51,7 @@ export class FoodItem {
   }
 
   public collide(antPosition: p5.Vector) {
-    return circleCollision(antPosition, this.position, config.foodItem.size);
+    return circleCollision(antPosition, this.position, config.foodItemSize);
   }
 
   public render() {
@@ -59,9 +59,9 @@ export class FoodItem {
       return;
     }
     this.p.push();
-    this.p.strokeWeight(config.foodItem.strokeWeight);
-    this.p.fill(config.foodItem.color);
-    this.p.circle(this.position.x, this.position.y, config.foodItem.size);
+    this.p.strokeWeight(config.foodItemStrokeWeight);
+    this.p.fill(config.foodItemColor);
+    this.p.circle(this.position.x, this.position.y, config.foodItemSize);
     this.p.pop();
   }
 }

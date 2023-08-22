@@ -1,65 +1,45 @@
-export let config = {
-  sketch: {
-    frameRate: 60,
-  },
-  world: {
-    background: "#78624f",
-  },
-  foodItem: {
-    size: 3, // diameter
-    color: "#39FF14",
-    strokeWeight: 0,
-  },
-
-  foodCluster: {
-    spacing: 7,
-  },
-  colony: {
-    size: 70, // diameter
-    color: "#ffffff",
-    strokeWeight: 1,
-    textSize: 20,
-  },
-  ant: {
-    wanderStrength: 1,
-    maxSpeed: 2.5,
-    steeringLimit: 0.4,
-    size: 2,
-    color: "#000000",
-    strokeWeight: 2,
-    perception: {
-      show: false,
-      range: 50, // radius
-      gray: 255,
-      alpha: 30,
-      strokeWeight: 1,
-    },
-  },
-  pheromone: {
-    size: 3,
-    strokeWeight: 0,
-    distanceBetween: 20,
-    evaporationRate: 1,
-    wander: {
-      show: false,
-      colorRGB: [26, 166, 236],
-    },
-    food: {
-      show: true,
-      colorRGB: [210, 31, 61],
-    },
-  },
-  quadtree: {
-    show: false,
-    base: {
-      // TODO: Change to hex
-      color: "red",
-      strokeWeight: 1,
-    },
-    highlighted: {
-      // TODO: Change to hex
-      color: "white",
-      strokeWeight: 2,
-    },
-  },
+export const config = {
+  // sketch
+  frameRate: 60,
+  // world
+  worldBackground: "#78624f",
+  // food item
+  foodItemSize: 3, // diameter
+  foodItemColor: "#39FF14",
+  foodItemStrokeWeight: 0,
+  // food cluster
+  foodClusterSpacing: 7,
+  // colony
+  colonySize: 70, // diameter
+  colonyColor: "#ffffff",
+  colonyStrokeWeight: 1,
+  colonyTextSize: 20,
+  antWanderStrength: 1,
+  antMaxSpeed: 2.5,
+  antSteeringLimit: 0.4,
+  antSize: 2,
+  antColor: "#000000",
+  antStrokeWeight: 2,
+  showAntPerceptionRange: false,
+  antPerceptionRange: 50, //radius
+  antPerceptionColorGray: 255,
+  antPerceptionColorAlpha: 30,
+  antPerceptionStrokeWeight: 1,
+  // pheromone
+  pheromoneSize: 3,
+  pheromoneStrokeWeight: 0,
+  pheromoneDistanceBetween: 20,
+  pheromoneEvaporationRate: 1,
+  showPheromoneWander: false,
+  pheromoneWanderColorRGB: [26, 166, 236],
+  showPheromoneFood: true,
+  pheromoneFoodColorRGB: [210, 31, 61],
+  // quadtree
+  showQuadtree: false,
+  quadtreeDefaultColor: "red", // TODO: Change to hex
+  quadtreeDefaultStrokeWeight: 1,
+  quadtreeHighlightedColor: "white", // TODO: Change to hex
+  quadtreeHighlightedStrokeWeight: 2,
 };
+
+export type IConfig = typeof config;

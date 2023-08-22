@@ -31,8 +31,8 @@ export class World {
       for (let j = 0; j < clusterSize; j++) {
         const foodItem = new FoodItem(
           this.p,
-          i * config.foodCluster.spacing + spawnX,
-          j * config.foodCluster.spacing + spawnY
+          i * config.foodClusterSpacing + spawnX,
+          j * config.foodClusterSpacing + spawnY
         );
         this.quadtree.insert(foodItem);
       }
@@ -51,7 +51,7 @@ export class World {
         this.p,
         antPosition.x,
         antPosition.y,
-        config.ant.perception.range
+        config.antPerceptionRange
       )
     );
     for (let i = 0; i < found.length; i++) {
@@ -90,7 +90,7 @@ export class World {
   }
 
   public render() {
-    this.p.background(config.world.background);
+    this.p.background(config.worldBackground);
     this.quadtree.render();
     this.renderAnts();
     this.renderColonies();

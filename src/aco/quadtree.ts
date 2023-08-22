@@ -126,10 +126,10 @@ export class Quadtree {
   }
 
   public render() {
-    if (config.quadtree.show) {
+    if (config.showQuadtree) {
       this.p.push();
-      this.p.stroke(config.quadtree.base.color);
-      this.p.strokeWeight(config.quadtree.base.strokeWeight);
+      this.p.stroke(config.quadtreeDefaultColor);
+      this.p.strokeWeight(config.quadtreeDefaultStrokeWeight);
       this.p.rectMode(this.p.CENTER);
       this.p.noFill();
       this.p.rect(
@@ -168,10 +168,10 @@ export class Quadtree {
 
     // TODO: Move to private render method
     // Highlight the quadtrees in the perception range of the ant
-    if (config.quadtree.show) {
+    if (config.showQuadtree) {
       this.p.push();
-      this.p.stroke(config.quadtree.highlighted.color);
-      this.p.strokeWeight(config.quadtree.highlighted.strokeWeight);
+      this.p.stroke(config.quadtreeHighlightedColor);
+      this.p.strokeWeight(config.quadtreeHighlightedStrokeWeight);
       this.p.rectMode(this.p.CENTER);
       this.p.noFill();
       this.p.rect(

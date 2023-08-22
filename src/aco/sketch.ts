@@ -1,48 +1,18 @@
+// TODO: Move all exports index.ts
 import { World } from "./world";
 import { Quadtree, Rectangle } from "./quadtree";
-import { config } from "./config";
+import { config, IConfig } from "./config";
 
 let world: World;
-const numAnts: number = 100;
 let quadtree: Quadtree;
 let canvasInteractionEnabled = true;
+const numAnts: number = 100;
 
-// TODO: move to .interface
-export enum AcoParameter {
-  maxSpeed = "maxSpeed",
-  wanderStrength = "wanderStrength",
-  steeringLimit = "steeringLimit",
-}
-
-export const updateAcoParameter = (parameter: AcoParameter, value: number) => {
-  config.ant[parameter] = value;
-};
-
-const bindListeners = (p: p5) => {
-  // const wanderStrength = p
-  //   .select("#wanderStrength")
-  //   // @ts-ignore
-  //   .input(() => {
-  //     config.ant.wanderStrength = Number(wanderStrength.value());
-  //   });
-  // const steeringLimit = p
-  //   .select("#steeringLimit")
-  //   // @ts-ignore
-  //   .input(() => {
-  //     config.ant.steeringLimit = Number(steeringLimit.value());
-  //   });
-  // const perceptionRange = p
-  //   .select("#perceptionRange")
-  //   // @ts-ignore
-  //   .input(() => {
-  //     config.ant.perception.range = Number(perceptionRange.value());
-  //   });
-  // const showPerceptionRange = p
-  //   .select("#showPerceptionRange")
-  //   // @ts-ignore
-  //   .changed(() => {
-  //     config.ant.perception.show = showPerceptionRange.checked();
-  //   });
+export const updateConfig = <T extends keyof IConfig>(
+  param: T,
+  newValue: IConfig[T]
+) => {
+  config[param] = newValue;
 };
 
 export const sketch = (p: p5) => {
@@ -63,8 +33,6 @@ export const sketch = (p: p5) => {
     for (let i = 0; i < numAnts; i++) {
       world.createAnt();
     }
-
-    // bindListeners(p);
   };
 
   p.draw = () => {

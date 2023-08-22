@@ -1,18 +1,17 @@
 import React from "react";
-import { AcoParameter } from "../../aco/sketch";
+import { updateConfig } from "../../aco/sketch";
+import { IConfig } from "../../aco/config";
 
 type ISliderProps = {
-  acoParameter: AcoParameter;
+  configParam: keyof IConfig;
   min: number;
   max: number;
   step: number;
   defaultValue: number;
-  updateAcoParameter: (parameter: AcoParameter, value: number) => void;
 };
 
 export const Slider = (props: ISliderProps) => {
-  const { acoParameter, min, max, step, defaultValue, updateAcoParameter } =
-    props;
+  const { configParam, min, max, step, defaultValue } = props;
 
   const [value, setValue] = React.useState(defaultValue);
 
@@ -21,29 +20,26 @@ export const Slider = (props: ISliderProps) => {
   };
 
   const updateValue = (event: React.FormEvent<HTMLInputElement>) => {
-    const newValue = Number((event.target as HTMLInputElement).value);
+    const element = event.target as HTMLInputElement;
+    const newValue = Number(element.value);
+    updateConfig(configParam, newValue);
     setValue(newValue);
-    updateAcoParameter(acoParameter, newValue);
   };
 
   return (
-    <div className="slider-container">
-      <span className="slider-title">{acoParameter}</span>
-      <div className="slider-component">
-        <input
-          className="slider-input"
-          type="range"
-          id={acoParameter}
-          min={min}
-          max={max}
-          defaultValue={defaultValue}
-          step={step}
-          onInput={(event) => updateValue(event)}
-        />
-        <span id={`${acoParameter}Value`} className="slider-output">
-          {formatValue()}
-        </span>
-      </div>
-    </div>
+    <>
+      <input
+        type="range"
+        id={`${configParam}Slider`}
+        min={min}
+        max={max}
+        defaultValue={defaultValue}
+        step={step}
+        onInput={(event) => updateValue(event)}
+      />
+      <span id={`${configParam}Value`} className="slider-output">
+        {formatValue()}
+      </span>
+    </>
   );
 };

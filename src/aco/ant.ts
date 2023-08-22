@@ -44,9 +44,9 @@ export class Ant {
     const speedControl = target
       .copy()
       .sub(this.position)
-      .setMag(config.ant.maxSpeed);
+      .setMag(config.antMaxSpeed);
     // steering control
-    return speedControl.sub(this.velocity).limit(config.ant.steeringLimit);
+    return speedControl.sub(this.velocity).limit(config.antSteeringLimit);
   }
 
   private applyForce(force: p5.Vector) {
@@ -68,11 +68,11 @@ export class Ant {
   private handleWandering() {
     this.wanderAngle += this.p.random(-0.5, 0.5);
     const circlePos = this.velocity.copy();
-    circlePos.setMag(config.ant.perception.range).add(this.position);
+    circlePos.setMag(config.antPerceptionRange).add(this.position);
     const circleOffset = p5.Vector.fromAngle(
       this.wanderAngle + this.velocity.heading()
     );
-    circleOffset.mult(config.ant.wanderStrength);
+    circleOffset.mult(config.antWanderStrength);
     const target = circlePos.add(circleOffset);
     const wander = this.approachTarget(target);
     this.applyForce(wander);
@@ -120,7 +120,7 @@ export class Ant {
     }
     return (
       distance(this.position, this.lastDepositedPheromone.position, true) >
-      config.pheromone.distanceBetween
+      config.pheromoneDistanceBetween
     );
   }
 
@@ -155,7 +155,7 @@ export class Ant {
 
   private updatePosition() {
     this.velocity.add(this.acceleration);
-    this.velocity.limit(config.ant.maxSpeed);
+    this.velocity.limit(config.antMaxSpeed);
     this.position.add(this.velocity);
     this.acceleration.set(0);
   }
@@ -174,38 +174,38 @@ export class Ant {
   // TODO: Create a wrapper for render methods to handle push/pop logic
   private renderAnt() {
     this.p.push();
-    this.p.strokeWeight(config.ant.strokeWeight);
-    this.p.fill(config.ant.color);
+    this.p.strokeWeight(config.antStrokeWeight);
+    this.p.fill(config.antColor);
     this.p.translate(this.position.x, this.position.y);
     this.angle = this.velocity.heading();
     this.p.rotate(this.angle);
-    this.p.ellipse(0, 0, config.ant.size * 2, config.ant.size / 1.5);
+    this.p.ellipse(0, 0, config.antSize * 2, config.antSize / 1.5);
     this.isReturningHome() && this.renderAntWithFoodItem();
     this.p.pop();
   }
 
   private renderAntWithFoodItem() {
     this.p.push();
-    this.p.fill(config.foodItem.color);
-    this.p.strokeWeight(config.foodItem.strokeWeight);
-    this.p.circle(config.ant.size / 2, 0, config.foodItem.size);
+    this.p.fill(config.foodItemColor);
+    this.p.strokeWeight(config.foodItemStrokeWeight);
+    this.p.circle(config.antSize / 2, 0, config.foodItemSize);
     this.p.pop();
   }
 
   private renderPerceptionRange() {
     this.p.push();
-    this.p.strokeWeight(config.ant.perception.strokeWeight);
-    this.p.fill(config.ant.perception.gray, config.ant.perception.alpha);
+    this.p.strokeWeight(config.antPerceptionStrokeWeight);
+    this.p.fill(config.antPerceptionColorGray, config.antPerceptionColorAlpha);
     this.p.circle(
       this.position.x,
       this.position.y,
-      config.ant.perception.range * 2
+      config.antPerceptionRange * 2
     );
     this.p.pop();
   }
 
   public render() {
     this.renderAnt();
-    config.ant.perception.show && this.renderPerceptionRange();
+    config.showAntPerceptionRange && this.renderPerceptionRange();
   }
 }

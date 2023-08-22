@@ -16,7 +16,7 @@ export class Colony {
   }
 
   public collide(antPosition: p5.Vector) {
-    return circleCollision(antPosition, this.position, config.colony.size);
+    return circleCollision(antPosition, this.position, config.colonySize);
   }
 
   public incrementFoodCount() {
@@ -26,16 +26,16 @@ export class Colony {
   private renderFoodCount() {
     this.p.push();
     this.p.textAlign(this.p.CENTER, this.p.CENTER);
-    this.p.textSize(config.colony.textSize);
+    this.p.textSize(config.colonyTextSize);
     this.p.text(this.foodCount, this.position.x, this.position.y);
     this.p.pop();
   }
 
   public render() {
     this.p.push();
-    this.p.strokeWeight(config.colony.strokeWeight);
-    this.p.fill(config.colony.color);
-    this.p.circle(this.position.x, this.position.y, config.colony.size);
+    this.p.strokeWeight(config.colonyStrokeWeight);
+    this.p.fill(config.colonyColor);
+    this.p.circle(this.position.x, this.position.y, config.colonySize);
     this.p.pop();
     this.renderFoodCount();
   }
