@@ -3,6 +3,7 @@ import { SettingItem } from "./setting-item";
 import { Checkbox } from "./checkbox";
 import { Slider } from "./slider";
 import { IUpdateAcoConfig } from "../../aco/sketch.interface";
+import { config } from "../../aco/config";
 
 type IControlPanelContentProps = {
   hideControlPanel: () => void;
@@ -30,7 +31,7 @@ export const ControlPanelContent = (props: IControlPanelContentProps) => {
             min={0.1}
             max={5}
             step={0.1}
-            defaultValue={2.5}
+            defaultValue={config.antMaxSpeed}
             updateAcoConfig={updateAcoConfig}
           />
         }
@@ -43,7 +44,7 @@ export const ControlPanelContent = (props: IControlPanelContentProps) => {
             min={0.1}
             max={5}
             step={0.1}
-            defaultValue={1.0}
+            defaultValue={config.antWanderStrength}
             updateAcoConfig={updateAcoConfig}
           />
         }
@@ -56,7 +57,7 @@ export const ControlPanelContent = (props: IControlPanelContentProps) => {
             min={0.1}
             max={1.0}
             step={0.1}
-            defaultValue={0.4}
+            defaultValue={config.antSteeringLimit}
             updateAcoConfig={updateAcoConfig}
           />
         }
@@ -69,13 +70,14 @@ export const ControlPanelContent = (props: IControlPanelContentProps) => {
             min={10}
             max={100}
             step={1}
-            defaultValue={50}
+            defaultValue={config.antPerceptionRange}
             updateAcoConfig={updateAcoConfig}
           />
         }
         checkbox={
           <Checkbox
             configParam={"showAntPerceptionRange"}
+            isChecked={config.showAntPerceptionRange}
             updateAcoConfig={updateAcoConfig}
           />
         }
@@ -85,6 +87,7 @@ export const ControlPanelContent = (props: IControlPanelContentProps) => {
         checkbox={
           <Checkbox
             configParam={"showQuadtree"}
+            isChecked={config.showQuadtree}
             updateAcoConfig={updateAcoConfig}
           />
         }

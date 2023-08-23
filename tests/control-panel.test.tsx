@@ -179,6 +179,7 @@ describe("Checkbox", () => {
     render(
       <Checkbox
         configParam={"showQuadtree"}
+        isChecked={false}
         updateAcoConfig={updateAcoConfig}
       />
     );

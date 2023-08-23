@@ -12,6 +12,11 @@ export const ControlPanel = (props: IControlPanelProps) => {
   const { setCanvasInteraction, updateAcoConfig } = props;
   const [showControlPanel, setShowControlPanel] = React.useState(false);
 
+  const hideControlPanelCallback = () => {
+    setShowControlPanel(false);
+    setCanvasInteraction(true);
+  };
+
   return (
     <div
       id="control-panel-container"
@@ -21,7 +26,7 @@ export const ControlPanel = (props: IControlPanelProps) => {
     >
       {showControlPanel ? (
         <ControlPanelContent
-          hideControlPanel={() => setShowControlPanel(false)}
+          hideControlPanel={hideControlPanelCallback}
           updateAcoConfig={updateAcoConfig}
         />
       ) : (
