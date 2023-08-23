@@ -1,19 +1,23 @@
 // TODO: Move all exports index.ts
 import { World } from "./world";
 import { Quadtree, Rectangle } from "./quadtree";
-import { config, IConfig } from "./config";
+import { config } from "./config";
+import { IConfig } from "./sketch.interface";
 
 let world: World;
 let quadtree: Quadtree;
 let canvasInteractionEnabled = true;
 const numAnts: number = 100;
 
-export const updateConfig = <T extends keyof IConfig>(
+export const updateAcoConfig = <T extends keyof IConfig>(
   param: T,
   newValue: IConfig[T]
 ) => {
   config[param] = newValue;
 };
+
+export const setCanvasInteraction = (interactionEnabled: boolean) =>
+  (canvasInteractionEnabled = interactionEnabled);
 
 export const sketch = (p: p5) => {
   p.setup = () => {
@@ -38,14 +42,6 @@ export const sketch = (p: p5) => {
   p.draw = () => {
     world.render();
   };
-
-  // p.select("#control-panel-container")
-  //   .mouseOver(() => {
-  //     canvasInteractionEnabled = false;
-  //   })
-  //   .mouseOut(() => {
-  //     canvasInteractionEnabled = true;
-  //   });
 
   p.mouseClicked = () => {
     if (!canvasInteractionEnabled) {

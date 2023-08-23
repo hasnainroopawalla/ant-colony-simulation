@@ -41,5 +41,3 @@ export const config = {
   quadtreeHighlightedColor: "white", // TODO: Change to hex
   quadtreeHighlightedStrokeWeight: 2,
 };
-
-export type IConfig = typeof config;

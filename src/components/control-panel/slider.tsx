@@ -1,6 +1,5 @@
 import React from "react";
-import { updateConfig } from "../../aco/sketch";
-import { IConfig } from "../../aco/config";
+import { IConfig, IUpdateAcoConfig } from "../../aco/sketch.interface";
 
 type ISliderProps = {
   configParam: keyof IConfig;
@@ -8,10 +7,11 @@ type ISliderProps = {
   max: number;
   step: number;
   defaultValue: number;
+  updateAcoConfig: IUpdateAcoConfig;
 };
 
 export const Slider = (props: ISliderProps) => {
-  const { configParam, min, max, step, defaultValue } = props;
+  const { configParam, min, max, step, defaultValue, updateAcoConfig } = props;
 
   const [value, setValue] = React.useState(defaultValue);
 
@@ -22,7 +22,7 @@ export const Slider = (props: ISliderProps) => {
   const updateValue = (event: React.FormEvent<HTMLInputElement>) => {
     const element = event.target as HTMLInputElement;
     const newValue = Number(element.value);
-    updateConfig(configParam, newValue);
+    updateAcoConfig(configParam, newValue);
     setValue(newValue);
   };
 
@@ -30,7 +30,9 @@ export const Slider = (props: ISliderProps) => {
     <>
       <input
         type="range"
+        // TODO: define id and data-testid once as a const
         id={`${configParam}Slider`}
+        data-testid={`${configParam}Slider`}
         min={min}
         max={max}
         defaultValue={defaultValue}

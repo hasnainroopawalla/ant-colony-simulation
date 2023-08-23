@@ -2,19 +2,26 @@ import React from "react";
 import { SettingItem } from "./setting-item";
 import { Checkbox } from "./checkbox";
 import { Slider } from "./slider";
+import { IUpdateAcoConfig } from "../../aco/sketch.interface";
 
 type IControlPanelContentProps = {
   hideControlPanel: () => void;
+  updateAcoConfig: IUpdateAcoConfig;
 };
 
 export const ControlPanelContent = (props: IControlPanelContentProps) => {
-  const { hideControlPanel } = props;
+  const { hideControlPanel, updateAcoConfig } = props;
 
   return (
     <div className="control-panel-content">
-      <a className="close-button" onClick={hideControlPanel}>
+      <a
+        className="close-button"
+        data-testid="control-panel-close-button"
+        onClick={hideControlPanel}
+      >
         &times;
       </a>
+      {/* TODO: Pass list of SettingItem as a prop */}
       <SettingItem
         title={"maxSpeed"}
         slider={
@@ -24,6 +31,7 @@ export const ControlPanelContent = (props: IControlPanelContentProps) => {
             max={5}
             step={0.1}
             defaultValue={2.5}
+            updateAcoConfig={updateAcoConfig}
           />
         }
       />
@@ -36,6 +44,7 @@ export const ControlPanelContent = (props: IControlPanelContentProps) => {
             max={5}
             step={0.1}
             defaultValue={1.0}
+            updateAcoConfig={updateAcoConfig}
           />
         }
       />
@@ -48,6 +57,7 @@ export const ControlPanelContent = (props: IControlPanelContentProps) => {
             max={1.0}
             step={0.1}
             defaultValue={0.4}
+            updateAcoConfig={updateAcoConfig}
           />
         }
       />
@@ -60,13 +70,24 @@ export const ControlPanelContent = (props: IControlPanelContentProps) => {
             max={100}
             step={1}
             defaultValue={50}
+            updateAcoConfig={updateAcoConfig}
           />
         }
-        checkbox={<Checkbox configParam={"showAntPerceptionRange"} />}
+        checkbox={
+          <Checkbox
+            configParam={"showAntPerceptionRange"}
+            updateAcoConfig={updateAcoConfig}
+          />
+        }
       />
       <SettingItem
         title={"showQuadtree"}
-        checkbox={<Checkbox configParam={"showQuadtree"} />}
+        checkbox={
+          <Checkbox
+            configParam={"showQuadtree"}
+            updateAcoConfig={updateAcoConfig}
+          />
+        }
       />
     </div>
   );

@@ -49,7 +49,7 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 10px;
+  padding: 8px;
 }
 
 .control-panel-content .slider-title {
@@ -69,21 +69,3 @@ body {
   flex-direction: row;
   gap: 10px;
 }
-
-/* .control-panel-content .slider-checkbox-container {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-}
-
-.control-panel-content .slider-checkbox-component {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  padding: 15px 0px 10px 10px;
-  margin-left: 10px;
-}
-
-.control-panel-content .checkbox-label {
-  color: #fff;
-} */

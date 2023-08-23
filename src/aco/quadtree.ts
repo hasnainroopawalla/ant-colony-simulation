@@ -168,20 +168,20 @@ export class Quadtree {
 
     // TODO: Move to private render method
     // Highlight the quadtrees in the perception range of the ant
-    if (config.showQuadtree) {
-      this.p.push();
-      this.p.stroke(config.quadtreeHighlightedColor);
-      this.p.strokeWeight(config.quadtreeHighlightedStrokeWeight);
-      this.p.rectMode(this.p.CENTER);
-      this.p.noFill();
-      this.p.rect(
-        this.boundary.x,
-        this.boundary.y,
-        this.boundary.w * 2,
-        this.boundary.h * 2
-      );
-      this.p.pop();
-    }
+    // if (config.showQuadtree) {
+    //   this.p.push();
+    //   this.p.stroke(config.quadtreeHighlightedColor);
+    //   this.p.strokeWeight(config.quadtreeHighlightedStrokeWeight);
+    //   this.p.rectMode(this.p.CENTER);
+    //   this.p.noFill();
+    //   this.p.rect(
+    //     this.boundary.x,
+    //     this.boundary.y,
+    //     this.boundary.w * 2,
+    //     this.boundary.h * 2
+    //   );
+    //   this.p.pop();
+    // }
 
     this.foodItems.map((foodItem) => {
       if (range.contains(foodItem)) {

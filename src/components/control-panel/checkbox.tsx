@@ -1,20 +1,21 @@
 import React from "react";
-import { updateConfig } from "../../aco/sketch";
-import { IConfig } from "../../aco/config";
+import { IUpdateAcoConfig, IConfig } from "../../aco/sketch.interface";
 
 export type ICheckboxProps = {
   configParam: keyof IConfig;
+  updateAcoConfig: IUpdateAcoConfig;
 };
 
 export const Checkbox = (props: ICheckboxProps) => {
-  const { configParam } = props;
+  const { configParam, updateAcoConfig } = props;
 
   return (
     <input
       type="checkbox"
-      id={configParam}
+      id={`${configParam}Checkbox`}
+      data-testid={`${configParam}Checkbox`}
       onChange={(event) =>
-        updateConfig(configParam, (event.target as HTMLInputElement).checked)
+        updateAcoConfig(configParam, (event.target as HTMLInputElement).checked)
       }
     />
   );

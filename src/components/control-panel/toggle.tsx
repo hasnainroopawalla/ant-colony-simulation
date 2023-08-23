@@ -11,6 +11,7 @@ export const ControlPanelToggle = (props: IControlPanelToggleProps) => {
     <div className="control-panel-toggle-button-container">
       <a
         className="control-panel-toggle-button icon"
+        data-testid="control-panel-toggle-button"
         onClick={showControlPanel}
       >
         <i className="fa fa-cog fa-lg" />
