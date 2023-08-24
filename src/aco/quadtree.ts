@@ -1,8 +1,12 @@
 import { config } from "./config";
 import { FoodItem } from "./food-item";
+import { Pheromone } from "./pheromone";
 import { circleCollision } from "./utils";
+import p5 from "p5";
 
-export class Circle {
+type IQuadtree = FoodItem | Pheromone;
+
+export class Circle<T extends IQuadtree> {
   p: p5;
   x: number;
   y: number;
@@ -15,7 +19,7 @@ export class Circle {
     this.r = r;
   }
 
-  contains(point: FoodItem) {
+  contains(point: T) {
     return circleCollision(
       this.p.createVector(point.position.x, point.position.y),
       this.p.createVector(this.x, this.y),
@@ -24,7 +28,7 @@ export class Circle {
   }
 }
 
-export class Rectangle {
+export class Rectangle<T extends IQuadtree> {
   x: number;
   y: number;
   w: number;
@@ -37,7 +41,7 @@ export class Rectangle {
     this.h = h;
   }
 
-  public contains(point: FoodItem) {
+  public contains(point: T) {
     return (
       point.position.x >= this.x - this.w &&
       point.position.x <= this.x + this.w &&
@@ -46,7 +50,7 @@ export class Rectangle {
     );
   }
 
-  public intersectsRectangle(range: Rectangle): boolean {
+  public intersectsRectangle(range: Rectangle<T>): boolean {
     return !(
       range.x - range.w > this.x + this.w ||
       range.x + range.w < this.x - this.w ||
@@ -55,7 +59,7 @@ export class Rectangle {
     );
   }
 
-  public intersects(range: Circle): boolean {
+  public intersects(range: Circle<T>): boolean {
     return (
       range.x + range.r >= this.x - this.w &&
       range.x - range.r <= this.x + this.w &&
@@ -65,25 +69,25 @@ export class Rectangle {
   }
 }
 
-export class Quadtree {
+export class Quadtree<T extends FoodItem | Pheromone> {
   p: p5;
   capacity: number;
-  boundary: Rectangle;
+  boundary: Rectangle<T>;
 
-  foodItems: FoodItem[];
+  items: T[];
 
   divided: boolean;
-  topLeft?: Quadtree;
-  bottomLeft?: Quadtree;
-  bottomRight?: Quadtree;
-  topRight?: Quadtree;
+  topLeft?: Quadtree<T>;
+  bottomLeft?: Quadtree<T>;
+  bottomRight?: Quadtree<T>;
+  topRight?: Quadtree<T>;
 
-  constructor(p: p5, boundary: Rectangle) {
+  constructor(p: p5, boundary: Rectangle<T>) {
     this.p = p;
     this.capacity = 4;
     this.boundary = boundary;
     this.divided = false;
-    this.foodItems = [];
+    this.items = [];
   }
 
   private subdivide() {
@@ -148,16 +152,16 @@ export class Quadtree {
     }
 
     // TODO: Move to private render method
-    for (let i = 0; i < this.foodItems.length; i++) {
-      const foodItem = this.foodItems[i];
+    for (let i = 0; i < this.items.length; i++) {
+      const foodItem = this.items[i];
       if (foodItem.shouldBeDestroyed()) {
-        this.foodItems.splice(i, 1);
+        this.items.splice(i, 1);
       }
       foodItem.render();
     }
   }
 
-  public query(range: Circle, found?: FoodItem[]) {
+  public query(range: Circle<T>, found?: T[]) {
     if (!found) {
       found = [];
     }
@@ -183,9 +187,9 @@ export class Quadtree {
     //   this.p.pop();
     // }
 
-    this.foodItems.map((foodItem) => {
-      if (range.contains(foodItem)) {
-        found.push(foodItem);
+    this.items.map((item) => {
+      if (range.contains(item)) {
+        found.push(item);
       }
     });
 
@@ -198,13 +202,13 @@ export class Quadtree {
     return found;
   }
 
-  public insert(point: FoodItem): boolean {
+  public insert(point: T): boolean {
     if (!this.boundary.contains(point)) {
       return false;
     }
 
-    if (this.foodItems.length < this.capacity) {
-      this.foodItems.push(point);
+    if (this.items.length < this.capacity) {
+      this.items.push(point);
       return true;
     }
 

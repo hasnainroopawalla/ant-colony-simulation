@@ -1,5 +1,5 @@
 import React from "react";
-import { IConfig, IUpdateAcoConfig } from "../../aco/sketch.interface";
+import { IConfig, IUpdateAcoConfig } from "../../aco";
 
 type ISliderProps = {
   configParam: keyof IConfig;

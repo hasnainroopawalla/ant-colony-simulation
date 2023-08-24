@@ -1,4 +1,5 @@
 import { config } from "./config";
+import p5 from "p5";
 
 export enum IPheromoneType {
   Wander,

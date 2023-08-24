@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useRef } from "react";
-import { sketch } from "../aco/sketch";
+import { sketch } from "../aco";
 import p5 from "p5";
 
 export const Sketch = () => {

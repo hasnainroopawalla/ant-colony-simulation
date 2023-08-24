@@ -2,8 +2,7 @@ import React from "react";
 import { SettingItem } from "./setting-item";
 import { Checkbox } from "./checkbox";
 import { Slider } from "./slider";
-import { IUpdateAcoConfig } from "../../aco/sketch.interface";
-import { config } from "../../aco/config";
+import { IUpdateAcoConfig, config } from "../../aco";
 
 type IControlPanelContentProps = {
   hideControlPanel: () => void;

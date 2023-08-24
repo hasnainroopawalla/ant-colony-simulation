@@ -1,5 +1,6 @@
 import { config } from "./config";
 import { circleCollision } from "./utils";
+import p5 from "p5";
 
 export class Colony {
   p: p5;

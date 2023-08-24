@@ -1,11 +1,14 @@
-// TODO: Move all exports index.ts
+import p5 from "p5";
 import { World } from "./world";
 import { Quadtree, Rectangle } from "./quadtree";
 import { config } from "./config";
 import { IConfig } from "./sketch.interface";
+import { FoodItem } from "./food-item";
+import { Pheromone } from "./pheromone";
 
 let world: World;
-let quadtree: Quadtree;
+let foodItemQuadtree: Quadtree<FoodItem>;
+let pheromoneQuadtree: Quadtree<Pheromone>;
 let canvasInteractionEnabled = true;
 const numAnts: number = 100;
 
@@ -23,7 +26,7 @@ export const sketch = (p: p5) => {
   p.setup = () => {
     p.createCanvas(p.windowWidth, p.windowHeight);
 
-    quadtree = new Quadtree(
+    foodItemQuadtree = new Quadtree(
       p,
       new Rectangle(
         p.windowWidth / 2,
@@ -32,7 +35,7 @@ export const sketch = (p: p5) => {
         p.windowHeight / 2
       )
     );
-    world = new World(p, quadtree);
+    world = new World(p, foodItemQuadtree, pheromoneQuadtree);
 
     for (let i = 0; i < numAnts; i++) {
       world.createAnt();

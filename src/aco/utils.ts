@@ -1,3 +1,5 @@
+import p5 from "p5";
+
 export const distanceSquared = (
   position1: p5.Vector,
   position2: p5.Vector

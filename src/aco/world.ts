@@ -8,14 +8,20 @@ import { Circle, Quadtree } from "./quadtree";
 
 export class World {
   p: p5;
-  quadtree: Quadtree;
+  foodItemQuadtree: Quadtree<FoodItem>;
+  pheromoneQuadtree: Quadtree<Pheromone>;
   ants: Ant[];
   colonies: Colony[];
   pheromones: Pheromone[];
 
-  constructor(p: p5, quadtree: Quadtree) {
+  constructor(
+    p: p5,
+    foodItemQuadtree: Quadtree<FoodItem>,
+    pheromoneQuadtree: Quadtree<Pheromone>
+  ) {
     this.p = p;
-    this.quadtree = quadtree;
+    this.foodItemQuadtree = foodItemQuadtree;
+    this.pheromoneQuadtree = pheromoneQuadtree;
     this.ants = [];
     this.colonies = [new Colony(this.p)];
     this.pheromones = [];
@@ -34,7 +40,7 @@ export class World {
           i * config.foodClusterSpacing + spawnX,
           j * config.foodClusterSpacing + spawnY
         );
-        this.quadtree.insert(foodItem);
+        this.foodItemQuadtree.insert(foodItem);
       }
     }
   }
@@ -46,7 +52,7 @@ export class World {
   // TODO: this method should limit the perception to only in FRONT of the ant
   public getFoodItemInPerceptionRange(antPosition: p5.Vector): FoodItem | null {
     // TODO: avoid creating a new Circle at each call
-    const found = this.quadtree.query(
+    const found = this.foodItemQuadtree.query(
       new Circle(
         this.p,
         antPosition.x,
@@ -91,7 +97,7 @@ export class World {
 
   public render() {
     this.p.background(config.worldBackground);
-    this.quadtree.render();
+    this.foodItemQuadtree.render();
     this.renderAnts();
     this.renderColonies();
     this.renderPheromones();

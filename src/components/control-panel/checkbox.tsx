@@ -1,5 +1,5 @@
 import React from "react";
-import { IUpdateAcoConfig, IConfig } from "../../aco/sketch.interface";
+import { IUpdateAcoConfig, IConfig } from "../../aco";
 
 export type ICheckboxProps = {
   configParam: keyof IConfig;
