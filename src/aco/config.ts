@@ -30,14 +30,17 @@ export const config = {
   pheromoneStrokeWeight: 0,
   pheromoneDistanceBetween: 20,
   pheromoneEvaporationRate: 1,
-  showPheromoneWander: false,
-  pheromoneWanderColorRGB: [26, 166, 236],
-  showPheromoneFood: true,
+  showHomePheromones: false,
+  homePheromoneColorRGB: [26, 166, 236],
+  showFoodPheromones: true,
   pheromoneFoodColorRGB: [210, 31, 61],
   // quadtree
-  showQuadtree: false,
-  quadtreeDefaultColor: "red", // TODO: Change to hex
+  showFoodItemsQuadtree: false,
+  showHomePheromonesQuadtree: false,
+  showFoodPheromonesQuadtree: false,
+  quadtreeDefaultColor: "yellow", // TODO: Change to hex
   quadtreeDefaultStrokeWeight: 1,
-  quadtreeHighlightedColor: "white", // TODO: Change to hex
+  quadtreeHighlightedColor: "red", // TODO: Change to hex
   quadtreeHighlightedStrokeWeight: 2,
+  quadtreeMaxDepth: 7,
 };

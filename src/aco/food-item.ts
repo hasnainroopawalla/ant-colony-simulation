@@ -54,6 +54,8 @@ export class FoodItem {
     return circleCollision(antPosition, this.position, config.foodItemSize);
   }
 
+  public update() {}
+
   public render() {
     if (this.isPickedUp() || this.isDelivered()) {
       return;

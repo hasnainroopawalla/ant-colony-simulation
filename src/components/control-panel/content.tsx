@@ -82,11 +82,51 @@ export const ControlPanelContent = (props: IControlPanelContentProps) => {
         }
       />
       <SettingItem
-        title={"showQuadtree"}
+        title={"showFoodItemsQuadtree"}
         checkbox={
           <Checkbox
-            configParam={"showQuadtree"}
-            isChecked={config.showQuadtree}
+            configParam={"showFoodItemsQuadtree"}
+            isChecked={config.showFoodItemsQuadtree}
+            updateAcoConfig={updateAcoConfig}
+          />
+        }
+      />
+      <SettingItem
+        title={"showHomePheromones"}
+        checkbox={
+          <Checkbox
+            configParam={"showHomePheromones"}
+            isChecked={config.showHomePheromones}
+            updateAcoConfig={updateAcoConfig}
+          />
+        }
+      />
+      <SettingItem
+        title={"showHomePheromonesQuadtree"}
+        checkbox={
+          <Checkbox
+            configParam={"showHomePheromonesQuadtree"}
+            isChecked={config.showHomePheromonesQuadtree}
+            updateAcoConfig={updateAcoConfig}
+          />
+        }
+      />
+      <SettingItem
+        title={"showFoodPheromones"}
+        checkbox={
+          <Checkbox
+            configParam={"showFoodPheromones"}
+            isChecked={config.showFoodPheromones}
+            updateAcoConfig={updateAcoConfig}
+          />
+        }
+      />
+      <SettingItem
+        title={"showFoodPheromonesQuadtree"}
+        checkbox={
+          <Checkbox
+            configParam={"showFoodPheromonesQuadtree"}
+            isChecked={config.showFoodPheromonesQuadtree}
             updateAcoConfig={updateAcoConfig}
           />
         }

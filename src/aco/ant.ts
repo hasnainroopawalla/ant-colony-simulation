@@ -53,6 +53,30 @@ export class Ant {
     this.acceleration.add(force);
   }
 
+  // TODO: specify return type
+  private getAntennas() {
+    const leftAntenna = p5.Vector.add(
+      this.position,
+      p5.Vector.mult(p5.Vector.rotate(this.velocity, 150), 8)
+    );
+
+    const forwardAntenna = p5.Vector.add(
+      this.position,
+      p5.Vector.mult(this.velocity, 10)
+    );
+
+    const rightAntenna = p5.Vector.add(
+      this.position,
+      p5.Vector.mult(p5.Vector.rotate(this.velocity, -150), 8)
+    );
+
+    // this.p.circle(leftAntenna.x, leftAntenna.y, 15);
+    // this.p.circle(forwardAntenna.x, forwardAntenna.y, 15);
+    // this.p.circle(rightAntenna.x, rightAntenna.y, 15);
+
+    return { leftAntenna, forwardAntenna, rightAntenna };
+  }
+
   private handleEdgeCollision() {
     // left / right
     if (this.position.x > this.p.windowWidth - 10 || this.position.x < 10) {
@@ -86,32 +110,76 @@ export class Ant {
       );
     }
 
-    // noop if no food item is found within perception range
-    if (!this.targetFoodItem) {
-      return;
-    }
+    if (this.targetFoodItem) {
+      // check if reserved food item is picked up
+      if (this.targetFoodItem.collide(this.position)) {
+        // rotate 180 degrees
+        this.velocity.rotate(this.p.PI);
+        this.targetFoodItem.pickedUp();
+        this.returningHome();
+      }
+      const approachFood = this.approachTarget(this.targetFoodItem.position);
+      this.applyForce(approachFood);
+    } else {
+      // follow food pheromones if no food item is found within perception range
+      const antennas = this.getAntennas();
+      const [leftAntenna, frontAntenna, rightAntenna] =
+        this.world.antennaPheromoneValues(
+          [
+            antennas.leftAntenna,
+            antennas.forwardAntenna,
+            antennas.rightAntenna,
+          ],
+          IPheromoneType.Food
+        );
 
-    // check if reserved food item is picked up
-    if (this.targetFoodItem.collide(this.position)) {
-      this.targetFoodItem.pickedUp();
-      this.returningHome();
+      if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
+        // do nothing
+      } else if (leftAntenna > rightAntenna) {
+        this.applyForce(this.approachTarget(antennas.leftAntenna));
+      } else if (rightAntenna > leftAntenna) {
+        this.applyForce(this.approachTarget(antennas.rightAntenna));
+      }
     }
-
-    const approachFood = this.approachTarget(this.targetFoodItem.position);
-    this.applyForce(approachFood);
   }
 
   private handleReturningHome() {
-    // check if food item is delivered to colony
-    if (this.colony.collide(this.position)) {
-      this.targetFoodItem.delivered();
-      this.targetFoodItem = null;
-      this.colony.incrementFoodCount();
-      this.searchingForFood();
-    }
+    if (
+      this.world.colonyInPerceptionRange(this.position, this.colony.position)
+    ) {
+      const approachColony = this.approachTarget(this.colony.position);
+      this.applyForce(approachColony);
 
-    const approachColony = this.approachTarget(this.colony.position);
-    this.applyForce(approachColony);
+      // check if food item is delivered to colony
+      if (this.colony.collide(this.position)) {
+        // rotate 180 degrees
+        this.velocity.rotate(this.p.PI);
+        this.targetFoodItem.delivered();
+        this.targetFoodItem = null;
+        this.colony.incrementFoodCount();
+        this.searchingForFood();
+        return;
+      }
+    } else {
+      const antennas = this.getAntennas();
+      const [leftAntenna, frontAntenna, rightAntenna] =
+        this.world.antennaPheromoneValues(
+          [
+            antennas.leftAntenna,
+            antennas.forwardAntenna,
+            antennas.rightAntenna,
+          ],
+          IPheromoneType.Home
+        );
+
+      if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
+        // do nothing
+      } else if (leftAntenna > rightAntenna) {
+        this.applyForce(this.approachTarget(antennas.leftAntenna));
+      } else if (rightAntenna > leftAntenna) {
+        this.applyForce(this.approachTarget(antennas.rightAntenna));
+      }
+    }
   }
 
   private shouldPheromoneBeDeposited() {
@@ -132,7 +200,7 @@ export class Ant {
       this.p,
       this.position.copy(),
       // TODO: remove IPheromone dependency
-      this.isSearchingForFood() ? IPheromoneType.Wander : IPheromoneType.Food
+      this.isSearchingForFood() ? IPheromoneType.Home : IPheromoneType.Food
     );
     this.world.depositPheromone(this.lastDepositedPheromone);
   }
@@ -141,34 +209,11 @@ export class Ant {
     this.state = IAntState.SearchingForFood;
   }
 
-  public returningHome() {
-    this.state = IAntState.ReturningHome;
-  }
-
-  public isSearchingForFood() {
-    return this.state === IAntState.SearchingForFood;
-  }
-
-  public isReturningHome() {
-    return this.state === IAntState.ReturningHome;
-  }
-
   private updatePosition() {
     this.velocity.add(this.acceleration);
     this.velocity.limit(config.antMaxSpeed);
     this.position.add(this.velocity);
     this.acceleration.set(0);
-  }
-
-  public update() {
-    this.handleEdgeCollision();
-    this.handleWandering();
-    this.handlePheromoneDeposit();
-
-    this.isSearchingForFood() && this.handleSearchingForFood();
-    this.isReturningHome() && this.handleReturningHome();
-
-    this.updatePosition();
   }
 
   // TODO: Create a wrapper for render methods to handle push/pop logic
@@ -202,6 +247,29 @@ export class Ant {
       config.antPerceptionRange * 2
     );
     this.p.pop();
+  }
+
+  public returningHome() {
+    this.state = IAntState.ReturningHome;
+  }
+
+  public isSearchingForFood() {
+    return this.state === IAntState.SearchingForFood;
+  }
+
+  public isReturningHome() {
+    return this.state === IAntState.ReturningHome;
+  }
+
+  public update() {
+    this.handleEdgeCollision();
+    this.handlePheromoneDeposit();
+
+    this.isSearchingForFood() && this.handleSearchingForFood();
+    this.isReturningHome() && this.handleReturningHome();
+    this.handleWandering();
+
+    this.updatePosition();
   }
 
   public render() {

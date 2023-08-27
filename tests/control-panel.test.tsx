@@ -178,7 +178,7 @@ describe("Checkbox", () => {
   beforeEach(() => {
     render(
       <Checkbox
-        configParam={"showQuadtree"}
+        configParam={"showFoodItemsQuadtree"}
         isChecked={false}
         updateAcoConfig={updateAcoConfig}
       />

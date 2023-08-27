@@ -2,7 +2,7 @@ import { config } from "./config";
 import p5 from "p5";
 
 export enum IPheromoneType {
-  Wander,
+  Home,
   Food,
 }
 
@@ -16,10 +16,10 @@ export class Pheromone {
     this.p = p;
     this.position = position;
     this.type = type;
-    this.strength = 255;
+    this.strength = 500;
   }
 
-  public evaporate() {
+  private evaporate() {
     this.strength -= config.pheromoneEvaporationRate;
   }
 
@@ -27,17 +27,21 @@ export class Pheromone {
     return this.strength <= 0;
   }
 
+  public update() {
+    this.evaporate();
+  }
+
   public render() {
     if (
-      (this.type === IPheromoneType.Wander && !config.showPheromoneWander) ||
-      (this.type === IPheromoneType.Food && !config.showPheromoneFood)
+      (this.type === IPheromoneType.Home && !config.showHomePheromones) ||
+      (this.type === IPheromoneType.Food && !config.showFoodPheromones)
     ) {
       return;
     }
 
     const [colorR, colorG, colorB] =
-      this.type === IPheromoneType.Wander
-        ? config.pheromoneWanderColorRGB
+      this.type === IPheromoneType.Home
+        ? config.homePheromoneColorRGB
         : config.pheromoneFoodColorRGB;
 
     this.p.push();

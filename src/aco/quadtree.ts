@@ -1,10 +1,12 @@
 import { config } from "./config";
-import { FoodItem } from "./food-item";
-import { Pheromone } from "./pheromone";
 import { circleCollision } from "./utils";
-import p5 from "p5";
 
-type IQuadtree = FoodItem | Pheromone;
+type IQuadtree = {
+  position: { x: number; y: number };
+  shouldBeDestroyed: () => boolean;
+  update: () => void;
+  render: () => void;
+} & Record<string, any>;
 
 export class Circle<T extends IQuadtree> {
   p: p5;
@@ -69,25 +71,27 @@ export class Rectangle<T extends IQuadtree> {
   }
 }
 
-export class Quadtree<T extends FoodItem | Pheromone> {
+export class Quadtree<T extends IQuadtree> {
   p: p5;
   capacity: number;
   boundary: Rectangle<T>;
 
-  items: T[];
+  points: T[];
 
   divided: boolean;
+  currentDepth: number;
   topLeft?: Quadtree<T>;
   bottomLeft?: Quadtree<T>;
   bottomRight?: Quadtree<T>;
   topRight?: Quadtree<T>;
 
-  constructor(p: p5, boundary: Rectangle<T>) {
+  constructor(p: p5, boundary: Rectangle<T>, currentDepth: number = 0) {
     this.p = p;
     this.capacity = 4;
+    this.currentDepth = currentDepth;
     this.boundary = boundary;
     this.divided = false;
-    this.items = [];
+    this.points = [];
   }
 
   private subdivide() {
@@ -98,7 +102,8 @@ export class Quadtree<T extends FoodItem | Pheromone> {
         this.boundary.y - this.boundary.h / 2,
         this.boundary.w / 2,
         this.boundary.h / 2
-      )
+      ),
+      this.currentDepth + 1
     );
     this.bottomLeft = new Quadtree(
       this.p,
@@ -107,7 +112,8 @@ export class Quadtree<T extends FoodItem | Pheromone> {
         this.boundary.y + this.boundary.h / 2,
         this.boundary.w / 2,
         this.boundary.h / 2
-      )
+      ),
+      this.currentDepth + 1
     );
     this.bottomRight = new Quadtree(
       this.p,
@@ -116,7 +122,8 @@ export class Quadtree<T extends FoodItem | Pheromone> {
         this.boundary.y + this.boundary.h / 2,
         this.boundary.w / 2,
         this.boundary.h / 2
-      )
+      ),
+      this.currentDepth + 1
     );
     this.topRight = new Quadtree(
       this.p,
@@ -125,12 +132,24 @@ export class Quadtree<T extends FoodItem | Pheromone> {
         this.boundary.y - this.boundary.h / 2,
         this.boundary.w / 2,
         this.boundary.h / 2
-      )
+      ),
+      this.currentDepth + 1
     );
   }
 
-  public render() {
-    if (config.showQuadtree) {
+  private updateAndRenderPoints() {
+    for (let i = 0; i < this.points.length; i++) {
+      const point = this.points[i];
+      if (point.shouldBeDestroyed()) {
+        this.points.splice(i, 1);
+      }
+      point.update();
+      point.render();
+    }
+  }
+
+  public updateAndRender(showBoundary: boolean = false) {
+    if (showBoundary) {
       this.p.push();
       this.p.stroke(config.quadtreeDefaultColor);
       this.p.strokeWeight(config.quadtreeDefaultStrokeWeight);
@@ -145,20 +164,13 @@ export class Quadtree<T extends FoodItem | Pheromone> {
       this.p.pop();
     }
     if (this.divided) {
-      this.topLeft.render();
-      this.bottomLeft.render();
-      this.bottomRight.render();
-      this.topRight.render();
+      this.topLeft.updateAndRender(showBoundary);
+      this.bottomLeft.updateAndRender(showBoundary);
+      this.bottomRight.updateAndRender(showBoundary);
+      this.topRight.updateAndRender(showBoundary);
     }
 
-    // TODO: Move to private render method
-    for (let i = 0; i < this.items.length; i++) {
-      const foodItem = this.items[i];
-      if (foodItem.shouldBeDestroyed()) {
-        this.items.splice(i, 1);
-      }
-      foodItem.render();
-    }
+    this.updateAndRenderPoints();
   }
 
   public query(range: Circle<T>, found?: T[]) {
@@ -187,9 +199,9 @@ export class Quadtree<T extends FoodItem | Pheromone> {
     //   this.p.pop();
     // }
 
-    this.items.map((item) => {
-      if (range.contains(item)) {
-        found.push(item);
+    this.points.map((point) => {
+      if (range.contains(point)) {
+        found.push(point);
       }
     });
 
@@ -207,15 +219,28 @@ export class Quadtree<T extends FoodItem | Pheromone> {
       return false;
     }
 
-    if (this.items.length < this.capacity) {
-      this.items.push(point);
-      return true;
-    }
-
     if (!this.divided) {
+      if (
+        this.points.length < this.capacity ||
+        this.currentDepth === config.quadtreeMaxDepth
+      ) {
+        this.points.push(point);
+        return true;
+      }
+
       this.subdivide();
       this.divided = true;
     }
+
+    // if (this.points.length < this.capacity) {
+    //   this.points.push(point);
+    //   return true;
+    // }
+
+    // if (!this.divided) {
+    //   this.subdivide();
+    //   this.divided = true;
+    // }
 
     return (
       this.topLeft.insert(point) ||
