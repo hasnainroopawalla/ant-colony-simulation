@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     mode: "development",
-    entry: './src/sketch.ts',
+    entry: './src/index.tsx',
     module: {
         rules: [
             {
@@ -12,6 +12,10 @@ module.exports = {
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
+            }
         ],
     },
     resolve: {
@@ -29,7 +33,7 @@ module.exports = {
             VERSION: JSON.stringify(require("./package.json").version),
         }),
         new HtmlWebpackPlugin({
-            template: 'public/index.html',
-        })
+            template: 'src/index.html',
+        }),
     ],
 };
