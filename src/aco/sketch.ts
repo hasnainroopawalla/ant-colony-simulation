@@ -1,11 +1,10 @@
-import p5 from "p5";
 import { World } from "./world";
 import { config } from "./config";
 import { IConfig } from "./sketch.interface";
 
 let world: World;
 let canvasInteractionEnabled = true;
-const numAnts: number = 100;
+const numAnts: number = 200;
 
 export const updateAcoConfig = <T extends keyof IConfig>(
   param: T,
@@ -28,10 +27,10 @@ export const sketch = (p: p5) => {
     world.render();
   };
 
-  p.mouseClicked = () => {
+  p.mousePressed = () => {
     if (!canvasInteractionEnabled) {
       return;
     }
-    world.createFoodCluster(15);
+    world.createFoodCluster(5);
   };
 };

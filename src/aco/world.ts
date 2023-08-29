@@ -3,8 +3,8 @@ import { FoodItem } from "./food-item";
 import { Colony } from "./colony";
 import { config } from "./config";
 import { IPheromoneType, Pheromone } from "./pheromone";
-import { Circle, Quadtree, Rectangle } from "./quadtree";
-import { circleCollision } from "./utils";
+import { quadtreeCircle, Quadtree, Rectangle } from "./quadtree";
+import { Vector } from "./vector";
 
 export class World {
   p: p5;
@@ -74,16 +74,9 @@ export class World {
   }
 
   // TODO: this method should limit the perception to only in FRONT of the ant
-  public getFoodItemInPerceptionRange(antPosition: p5.Vector): FoodItem | null {
-    // TODO: avoid creating a new Circle at each call
-    const found = this.foodItemsQuadtree.query(
-      new Circle(
-        this.p,
-        antPosition.x,
-        antPosition.y,
-        config.antPerceptionRange
-      )
-    );
+  public getFoodItemInPerceptionRange(antPosition: Vector): FoodItem | null {
+    quadtreeCircle.set(antPosition.x, antPosition.y, config.antPerceptionRange);
+    const found = this.foodItemsQuadtree.query(quadtreeCircle);
     for (let i = 0; i < found.length; i++) {
       const foodItem = found[i];
       if (foodItem.isSpawned()) {
@@ -93,20 +86,8 @@ export class World {
     }
   }
 
-  public colonyInPerceptionRange(
-    antPosition: p5.Vector,
-    colonyPosition: p5.Vector
-  ): boolean {
-    return circleCollision(
-      this.p.createVector(antPosition.x, antPosition.y),
-      this.p.createVector(colonyPosition.x, colonyPosition.y),
-      config.antPerceptionRange * 2
-    );
-  }
-
-  // TODO: rename and optimize method
   public antennaPheromoneValues(
-    antennas: p5.Vector[],
+    antennas: Vector[],
     pheromoneType: IPheromoneType
   ): number[] {
     let antennaScores: number[] = [];
@@ -118,10 +99,8 @@ export class World {
     for (let i = 0; i < antennas.length; i++) {
       const antenna = antennas[i];
       let antennaScore = 0;
-      const pheromones = pheromoneQuadtree.query(
-        // TODO: Fix antenna perceptionRange
-        new Circle(this.p, antenna.x, antenna.y, 30)
-      );
+      quadtreeCircle.set(antenna.x, antenna.y, config.antAntennaRadius);
+      const pheromones = pheromoneQuadtree.query(quadtreeCircle);
       pheromones.map((pheromone) => {
         antennaScore += pheromone.strength;
       });
@@ -158,7 +137,6 @@ export class World {
 
   public render() {
     this.p.background(config.worldBackground);
-    console.log(this.foodItemsQuadtree);
     this.updateAndRenderQuadtrees();
     this.updateAndRenderAnts();
     this.renderColonies();

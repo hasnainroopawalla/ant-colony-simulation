@@ -4,7 +4,7 @@ export const config = {
   // world
   worldBackground: "#78624f",
   // food item
-  foodItemSize: 3, // diameter
+  foodItemSize: 2, // diameter
   foodItemColor: "#39FF14",
   foodItemStrokeWeight: 0,
   // food cluster
@@ -14,10 +14,10 @@ export const config = {
   colonyColor: "#ffffff",
   colonyStrokeWeight: 1,
   colonyTextSize: 20,
-  antWanderStrength: 1,
+  antWanderStrength: 1.5,
   antMaxSpeed: 2.5,
-  antSteeringLimit: 0.4,
-  antSize: 2,
+  antSteeringLimit: 0.3,
+  antSize: 1,
   antColor: "#000000",
   antStrokeWeight: 2,
   showAntPerceptionRange: false,
@@ -25,10 +25,12 @@ export const config = {
   antPerceptionColorGray: 255,
   antPerceptionColorAlpha: 30,
   antPerceptionStrokeWeight: 1,
+  showAntAntenna: false,
+  antAntennaRadius: 20,
   // pheromone
-  pheromoneSize: 3,
+  pheromoneSize: 2,
   pheromoneStrokeWeight: 0,
-  pheromoneDistanceBetween: 20,
+  pheromoneDistanceBetween: 400,
   pheromoneEvaporationRate: 1,
   showHomePheromones: false,
   homePheromoneColorRGB: [26, 166, 236],
@@ -38,9 +40,10 @@ export const config = {
   showFoodItemsQuadtree: false,
   showHomePheromonesQuadtree: false,
   showFoodPheromonesQuadtree: false,
-  quadtreeDefaultColor: "yellow", // TODO: Change to hex
+  showHighlightedQuadtree: false,
+  quadtreeDefaultColor: "#FFFF00",
   quadtreeDefaultStrokeWeight: 1,
-  quadtreeHighlightedColor: "red", // TODO: Change to hex
+  quadtreeHighlightedColor: "#FF0000",
   quadtreeHighlightedStrokeWeight: 2,
   quadtreeMaxDepth: 7,
 };

@@ -1,5 +1,6 @@
 import { config } from "./config";
-import { circleCollision } from "./utils";
+import { pointInCircle } from "./utils";
+import { Vector } from "./vector";
 
 type IQuadtree = {
   position: { x: number; y: number };
@@ -8,27 +9,33 @@ type IQuadtree = {
   render: () => void;
 } & Record<string, any>;
 
-export class Circle<T extends IQuadtree> {
-  p: p5;
+class Circle<T extends IQuadtree> {
   x: number;
   y: number;
   r: number;
 
-  constructor(p: p5, x: number, y: number, r: number) {
-    this.p = p;
+  constructor(x: number, y: number, r: number) {
     this.x = x;
     this.y = y;
     this.r = r;
   }
 
-  contains(point: T) {
-    return circleCollision(
-      this.p.createVector(point.position.x, point.position.y),
-      this.p.createVector(this.x, this.y),
+  public set(x: number, y: number, r: number): void {
+    this.x = x;
+    this.y = y;
+    this.r = r;
+  }
+
+  public contains(point: T): boolean {
+    return pointInCircle(
+      new Vector(point.position.x, point.position.y),
+      new Vector(this.x, this.y),
       this.r * 2
     );
   }
 }
+
+export const quadtreeCircle = new Circle(0, 0, 0);
 
 export class Rectangle<T extends IQuadtree> {
   x: number;
@@ -138,14 +145,25 @@ export class Quadtree<T extends IQuadtree> {
   }
 
   private updateAndRenderPoints() {
-    for (let i = 0; i < this.points.length; i++) {
-      const point = this.points[i];
-      if (point.shouldBeDestroyed()) {
-        this.points.splice(i, 1);
-      }
+    this.points.map((point) => {
       point.update();
       point.render();
-    }
+    });
+  }
+
+  private highlightQuadtree() {
+    this.p.push();
+    this.p.stroke(config.quadtreeHighlightedColor);
+    this.p.strokeWeight(config.quadtreeHighlightedStrokeWeight);
+    this.p.rectMode(this.p.CENTER);
+    this.p.noFill();
+    this.p.rect(
+      this.boundary.x,
+      this.boundary.y,
+      this.boundary.w * 2,
+      this.boundary.h * 2
+    );
+    this.p.pop();
   }
 
   public updateAndRender(showBoundary: boolean = false) {
@@ -179,25 +197,11 @@ export class Quadtree<T extends IQuadtree> {
     }
 
     if (!this.boundary.intersects(range)) {
-      return;
+      return [];
     }
 
-    // TODO: Move to private render method
     // Highlight the quadtrees in the perception range of the ant
-    // if (config.showQuadtree) {
-    //   this.p.push();
-    //   this.p.stroke(config.quadtreeHighlightedColor);
-    //   this.p.strokeWeight(config.quadtreeHighlightedStrokeWeight);
-    //   this.p.rectMode(this.p.CENTER);
-    //   this.p.noFill();
-    //   this.p.rect(
-    //     this.boundary.x,
-    //     this.boundary.y,
-    //     this.boundary.w * 2,
-    //     this.boundary.h * 2
-    //   );
-    //   this.p.pop();
-    // }
+    config.showHighlightedQuadtree && this.highlightQuadtree();
 
     this.points.map((point) => {
       if (range.contains(point)) {

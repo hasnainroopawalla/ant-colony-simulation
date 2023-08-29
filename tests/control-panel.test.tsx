@@ -173,7 +173,7 @@ describe("Slider", () => {
 });
 
 describe("Checkbox", () => {
-  const CHECKBOX = "showQuadtreeCheckbox";
+  const CHECKBOX = "showFoodItemsQuadtreeCheckbox";
 
   beforeEach(() => {
     render(
@@ -196,6 +196,6 @@ describe("Checkbox", () => {
   test("updates the ACO config when checkbox toggled", async () => {
     fireEvent.click(screen.getByTestId(CHECKBOX));
     expect(updateAcoConfig).toHaveBeenCalledTimes(1);
-    expect(updateAcoConfig).toHaveBeenCalledWith("showQuadtree", true);
+    expect(updateAcoConfig).toHaveBeenCalledWith("showFoodItemsQuadtree", true);
   });
 });

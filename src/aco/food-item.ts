@@ -1,6 +1,6 @@
-import p5 from "p5";
 import { config } from "./config";
-import { circleCollision } from "./utils";
+import { pointInCircle } from "./utils";
+import { Vector } from "./vector";
 
 export enum IFoodItemState {
   Spawned,
@@ -11,12 +11,12 @@ export enum IFoodItemState {
 
 export class FoodItem {
   p: p5;
-  position: p5.Vector;
+  position: Vector;
   state: IFoodItemState;
 
   constructor(p: p5, x: number, y: number) {
     this.p = p;
-    this.position = this.p.createVector(x, y);
+    this.position = new Vector(x, y);
     this.spawned();
   }
 
@@ -50,8 +50,8 @@ export class FoodItem {
     return this.isDelivered();
   }
 
-  public collide(antPosition: p5.Vector) {
-    return circleCollision(antPosition, this.position, config.foodItemSize);
+  public collide(antPosition: Vector) {
+    return pointInCircle(antPosition, this.position, config.foodItemSize);
   }
 
   public update() {}

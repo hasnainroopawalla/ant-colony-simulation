@@ -1,10 +1,10 @@
-import p5 from "p5";
 import { FoodItem } from "./food-item";
 import { World } from "./world";
 import { Colony } from "./colony";
 import { config } from "./config";
 import { IPheromoneType, Pheromone } from "./pheromone";
-import { distance } from "./utils";
+import { areCirclesOverlapping, distance, randomFloat } from "./utils";
+import { Vector, fromAngle } from "./vector";
 
 export enum IAntState {
   ReturningHome,
@@ -14,9 +14,9 @@ export enum IAntState {
 export class Ant {
   p: p5;
   world: World;
-  position: p5.Vector;
-  velocity: p5.Vector;
-  acceleration: p5.Vector;
+  position: Vector;
+  velocity: Vector;
+  acceleration: Vector;
   angle: number;
   wanderAngle: number;
   state: IAntState;
@@ -28,51 +28,42 @@ export class Ant {
     this.p = p;
     this.world = world;
     this.colony = colony;
-    this.position = this.p.createVector(
-      this.colony.position.x,
-      this.colony.position.y
-    );
+    this.position = new Vector(this.colony.position.x, this.colony.position.y);
     this.wanderAngle = 0;
-    this.angle = this.p.random(this.p.TWO_PI);
-    this.velocity = p5.Vector.fromAngle(this.angle);
-    this.acceleration = this.p.createVector();
+    this.angle = randomFloat(0, this.p.TWO_PI);
+    this.velocity = fromAngle(this.angle);
+    this.acceleration = new Vector();
     this.searchingForFood();
   }
 
-  private approachTarget(target: p5.Vector) {
-    // speed control
+  private approachTarget(target: Vector) {
     const speedControl = target
-      .copy()
       .sub(this.position)
-      .setMag(config.antMaxSpeed);
-    // steering control
+      .setMagnitude(config.antMaxSpeed);
     return speedControl.sub(this.velocity).limit(config.antSteeringLimit);
   }
 
-  private applyForce(force: p5.Vector) {
-    this.acceleration.add(force);
+  private applyForce(force: Vector) {
+    this.acceleration.add(force, true);
   }
 
-  // TODO: specify return type
-  private getAntennas() {
-    const leftAntenna = p5.Vector.add(
-      this.position,
-      p5.Vector.mult(p5.Vector.rotate(this.velocity, 150), 8)
-    );
+  private getAntennas(): {
+    leftAntenna: Vector;
+    forwardAntenna: Vector;
+    rightAntenna: Vector;
+  } {
+    const leftAntenna = this.position.add(this.velocity.rotate(150).mult(20));
+    const forwardAntenna = this.position.add(this.velocity.mult(20));
+    const rightAntenna = this.position.add(this.velocity.rotate(-150).mult(20));
 
-    const forwardAntenna = p5.Vector.add(
-      this.position,
-      p5.Vector.mult(this.velocity, 10)
-    );
-
-    const rightAntenna = p5.Vector.add(
-      this.position,
-      p5.Vector.mult(p5.Vector.rotate(this.velocity, -150), 8)
-    );
-
-    // this.p.circle(leftAntenna.x, leftAntenna.y, 15);
-    // this.p.circle(forwardAntenna.x, forwardAntenna.y, 15);
-    // this.p.circle(rightAntenna.x, rightAntenna.y, 15);
+    config.showAntAntenna &&
+      this.p.circle(leftAntenna.x, leftAntenna.y, config.antAntennaRadius) &&
+      this.p.circle(
+        forwardAntenna.x,
+        forwardAntenna.y,
+        config.antAntennaRadius
+      ) &&
+      this.p.circle(rightAntenna.x, rightAntenna.y, config.antAntennaRadius);
 
     return { leftAntenna, forwardAntenna, rightAntenna };
   }
@@ -90,16 +81,33 @@ export class Ant {
   }
 
   private handleWandering() {
-    this.wanderAngle += this.p.random(-0.5, 0.5);
-    const circlePos = this.velocity.copy();
-    circlePos.setMag(config.antPerceptionRange).add(this.position);
-    const circleOffset = p5.Vector.fromAngle(
+    this.wanderAngle += randomFloat(-0.5, 0.5);
+    const circlePos = this.velocity
+      .setMagnitude(config.antPerceptionRange)
+      .add(this.position);
+    const circleOffset = fromAngle(
       this.wanderAngle + this.velocity.heading()
-    );
-    circleOffset.mult(config.antWanderStrength);
+    ).mult(config.antWanderStrength);
     const target = circlePos.add(circleOffset);
     const wander = this.approachTarget(target);
     this.applyForce(wander);
+  }
+
+  private handleAntennaSteering(pheromoneType: IPheromoneType) {
+    const antennas = this.getAntennas();
+    const [leftAntenna, frontAntenna, rightAntenna] =
+      this.world.antennaPheromoneValues(
+        [antennas.leftAntenna, antennas.forwardAntenna, antennas.rightAntenna],
+        pheromoneType
+      );
+
+    if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
+      // do nothing
+    } else if (leftAntenna > rightAntenna) {
+      this.applyForce(this.approachTarget(antennas.leftAntenna));
+    } else if (rightAntenna > leftAntenna) {
+      this.applyForce(this.approachTarget(antennas.rightAntenna));
+    }
   }
 
   private handleSearchingForFood() {
@@ -114,7 +122,7 @@ export class Ant {
       // check if reserved food item is picked up
       if (this.targetFoodItem.collide(this.position)) {
         // rotate 180 degrees
-        this.velocity.rotate(this.p.PI);
+        this.velocity.rotate(this.p.PI, true);
         this.targetFoodItem.pickedUp();
         this.returningHome();
       }
@@ -122,38 +130,19 @@ export class Ant {
       this.applyForce(approachFood);
     } else {
       // follow food pheromones if no food item is found within perception range
-      const antennas = this.getAntennas();
-      const [leftAntenna, frontAntenna, rightAntenna] =
-        this.world.antennaPheromoneValues(
-          [
-            antennas.leftAntenna,
-            antennas.forwardAntenna,
-            antennas.rightAntenna,
-          ],
-          IPheromoneType.Food
-        );
-
-      if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
-        // do nothing
-      } else if (leftAntenna > rightAntenna) {
-        this.applyForce(this.approachTarget(antennas.leftAntenna));
-      } else if (rightAntenna > leftAntenna) {
-        this.applyForce(this.approachTarget(antennas.rightAntenna));
-      }
+      this.handleAntennaSteering(IPheromoneType.Food);
     }
   }
 
   private handleReturningHome() {
-    if (
-      this.world.colonyInPerceptionRange(this.position, this.colony.position)
-    ) {
+    if (this.colonyInPerceptionRange()) {
       const approachColony = this.approachTarget(this.colony.position);
       this.applyForce(approachColony);
 
       // check if food item is delivered to colony
       if (this.colony.collide(this.position)) {
         // rotate 180 degrees
-        this.velocity.rotate(this.p.PI);
+        this.velocity.rotate(this.p.PI, true);
         this.targetFoodItem.delivered();
         this.targetFoodItem = null;
         this.colony.incrementFoodCount();
@@ -161,25 +150,18 @@ export class Ant {
         return;
       }
     } else {
-      const antennas = this.getAntennas();
-      const [leftAntenna, frontAntenna, rightAntenna] =
-        this.world.antennaPheromoneValues(
-          [
-            antennas.leftAntenna,
-            antennas.forwardAntenna,
-            antennas.rightAntenna,
-          ],
-          IPheromoneType.Home
-        );
-
-      if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
-        // do nothing
-      } else if (leftAntenna > rightAntenna) {
-        this.applyForce(this.approachTarget(antennas.leftAntenna));
-      } else if (rightAntenna > leftAntenna) {
-        this.applyForce(this.approachTarget(antennas.rightAntenna));
-      }
+      // follow home pheromones to deliver food
+      this.handleAntennaSteering(IPheromoneType.Home);
     }
+  }
+
+  private colonyInPerceptionRange(): boolean {
+    return areCirclesOverlapping(
+      this.position,
+      config.antPerceptionRange * 2,
+      this.colony.position,
+      config.colonySize
+    );
   }
 
   private shouldPheromoneBeDeposited() {
@@ -187,7 +169,7 @@ export class Ant {
       return true;
     }
     return (
-      distance(this.position, this.lastDepositedPheromone.position, true) >
+      distance(this.position, this.lastDepositedPheromone.position) >
       config.pheromoneDistanceBetween
     );
   }
@@ -199,20 +181,14 @@ export class Ant {
     this.lastDepositedPheromone = new Pheromone(
       this.p,
       this.position.copy(),
-      // TODO: remove IPheromone dependency
       this.isSearchingForFood() ? IPheromoneType.Home : IPheromoneType.Food
     );
     this.world.depositPheromone(this.lastDepositedPheromone);
   }
 
-  public searchingForFood() {
-    this.state = IAntState.SearchingForFood;
-  }
-
   private updatePosition() {
-    this.velocity.add(this.acceleration);
-    this.velocity.limit(config.antMaxSpeed);
-    this.position.add(this.velocity);
+    this.velocity.add(this.acceleration, true);
+    this.position.add(this.velocity, true);
     this.acceleration.set(0);
   }
 
@@ -222,8 +198,7 @@ export class Ant {
     this.p.strokeWeight(config.antStrokeWeight);
     this.p.fill(config.antColor);
     this.p.translate(this.position.x, this.position.y);
-    this.angle = this.velocity.heading();
-    this.p.rotate(this.angle);
+    this.p.rotate(this.velocity.heading());
     this.p.ellipse(0, 0, config.antSize * 2, config.antSize / 1.5);
     this.isReturningHome() && this.renderAntWithFoodItem();
     this.p.pop();
@@ -251,6 +226,10 @@ export class Ant {
 
   public returningHome() {
     this.state = IAntState.ReturningHome;
+  }
+
+  public searchingForFood() {
+    this.state = IAntState.SearchingForFood;
   }
 
   public isSearchingForFood() {

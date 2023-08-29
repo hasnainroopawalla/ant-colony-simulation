@@ -1,5 +1,5 @@
 import { config } from "./config";
-import p5 from "p5";
+import { Vector } from "./vector";
 
 export enum IPheromoneType {
   Home,
@@ -8,11 +8,11 @@ export enum IPheromoneType {
 
 export class Pheromone {
   p: p5;
-  position: p5.Vector;
+  position: Vector;
   type: IPheromoneType;
   strength: number;
 
-  constructor(p: p5, position: p5.Vector, type: IPheromoneType) {
+  constructor(p: p5, position: Vector, type: IPheromoneType) {
     this.p = p;
     this.position = position;
     this.type = type;
@@ -33,12 +33,12 @@ export class Pheromone {
 
   public render() {
     if (
+      this.shouldBeDestroyed() ||
       (this.type === IPheromoneType.Home && !config.showHomePheromones) ||
       (this.type === IPheromoneType.Food && !config.showFoodPheromones)
     ) {
       return;
     }
-
     const [colorR, colorG, colorB] =
       this.type === IPheromoneType.Home
         ? config.homePheromoneColorRGB
