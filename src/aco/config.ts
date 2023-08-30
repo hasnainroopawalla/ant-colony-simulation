@@ -4,31 +4,32 @@ export const config = {
   // world
   worldBackground: "#78624f",
   // food item
-  foodItemSize: 2, // diameter
+  foodItemSize: 4, // diameter
   foodItemColor: "#39FF14",
   foodItemStrokeWeight: 0,
   // food cluster
-  foodClusterSpacing: 7,
+  foodClusterSpacing: 10,
   // colony
   colonySize: 70, // diameter
   colonyColor: "#ffffff",
   colonyStrokeWeight: 1,
   colonyTextSize: 20,
-  antWanderStrength: 1.5,
-  antMaxSpeed: 2.5,
+  antWanderStrength: 0.2,
+  antMaxSpeed: 2,
   antSteeringLimit: 0.3,
-  antSize: 1,
+  antSize: 4,
   antColor: "#000000",
   antStrokeWeight: 2,
   showAntPerceptionRange: false,
-  antPerceptionRange: 50, //radius
+  antPerceptionRange: 25, //radius
   antPerceptionColorGray: 255,
   antPerceptionColorAlpha: 30,
   antPerceptionStrokeWeight: 1,
   showAntAntenna: false,
   antAntennaRadius: 20,
+  antObstacleAngleRange: 0.7,
   // pheromone
-  pheromoneSize: 2,
+  pheromoneSize: 4,
   pheromoneStrokeWeight: 0,
   pheromoneDistanceBetween: 400,
   pheromoneEvaporationRate: 1,

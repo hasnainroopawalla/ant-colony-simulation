@@ -5,14 +5,17 @@ import { config } from "./config";
 import { IPheromoneType, Pheromone } from "./pheromone";
 import { quadtreeCircle, Quadtree, Rectangle } from "./quadtree";
 import { Vector } from "./vector";
+import { areLinesIntersecting } from "./utils";
 
 export class World {
   p: p5;
+  loop: boolean = true;
   foodItemsQuadtree: Quadtree<FoodItem>;
   homePheromoneQuadtree: Quadtree<Pheromone>;
   foodPheromoneQuadtree: Quadtree<Pheromone>;
   ants: Ant[];
   colonies: Colony[];
+  obstacles: any[];
 
   constructor(p: p5) {
     this.p = p;
@@ -45,6 +48,22 @@ export class World {
     );
     this.ants = [];
     this.colonies = [new Colony(this.p)];
+    this.obstacles = [
+      { x1: 0, y1: 0, x2: this.p.windowWidth, y2: 0 },
+      {
+        x1: 0,
+        y1: this.p.windowHeight,
+        x2: this.p.windowWidth,
+        y2: this.p.windowHeight,
+      },
+      { x1: 0, y1: 0, x2: 0, y2: this.p.windowHeight },
+      {
+        x1: this.p.windowWidth,
+        y1: 0,
+        x2: this.p.windowWidth,
+        y2: this.p.windowHeight,
+      },
+    ];
   }
 
   public createAnt() {
@@ -74,8 +93,11 @@ export class World {
   }
 
   // TODO: this method should limit the perception to only in FRONT of the ant
-  public getFoodItemInPerceptionRange(antPosition: Vector): FoodItem | null {
-    quadtreeCircle.set(antPosition.x, antPosition.y, config.antPerceptionRange);
+  public getFoodItemInAntPerceptionRange(
+    antPosition: Vector,
+    antPerceptionRange: number
+  ): FoodItem | null {
+    quadtreeCircle.set(antPosition.x, antPosition.y, antPerceptionRange);
     const found = this.foodItemsQuadtree.query(quadtreeCircle);
     for (let i = 0; i < found.length; i++) {
       const foodItem = found[i];
@@ -86,8 +108,10 @@ export class World {
     }
   }
 
-  public antennaPheromoneValues(
+  // TODO: optimize this method
+  public computeAntAntennasPheromoneValues(
     antennas: Vector[],
+    antAntennaRadius: number,
     pheromoneType: IPheromoneType
   ): number[] {
     let antennaScores: number[] = [];
@@ -99,15 +123,38 @@ export class World {
     for (let i = 0; i < antennas.length; i++) {
       const antenna = antennas[i];
       let antennaScore = 0;
-      quadtreeCircle.set(antenna.x, antenna.y, config.antAntennaRadius);
+      quadtreeCircle.set(antenna.x, antenna.y, antAntennaRadius);
       const pheromones = pheromoneQuadtree.query(quadtreeCircle);
-      pheromones.map((pheromone) => {
+      for (let j = 0; j < pheromones.length; j++) {
+        const pheromone = pheromones[j];
         antennaScore += pheromone.strength;
-      });
+      }
       antennaScores.push(antennaScore);
     }
-
     return antennaScores;
+  }
+
+  public isObstacleInAntPerceptionRange(
+    antPosition: Vector,
+    antPerception: Vector
+  ): boolean {
+    for (let i = 0; i < this.obstacles.length; i++) {
+      const obstacle = this.obstacles[i];
+      if (
+        areLinesIntersecting(
+          {
+            x1: antPosition.x,
+            y1: antPosition.y,
+            x2: antPerception.x,
+            y2: antPerception.y,
+          },
+          { x1: obstacle.x1, y1: obstacle.y1, x2: obstacle.x2, y2: obstacle.y2 }
+        )
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private updateAndRenderAnts() {
@@ -126,7 +173,8 @@ export class World {
   }
 
   private updateAndRenderQuadtrees() {
-    this.foodItemsQuadtree.updateAndRender(config.showFoodItemsQuadtree);
+    this.loop &&
+      this.foodItemsQuadtree.updateAndRender(config.showFoodItemsQuadtree);
     this.homePheromoneQuadtree.updateAndRender(
       config.showHomePheromonesQuadtree
     );

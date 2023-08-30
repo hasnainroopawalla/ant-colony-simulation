@@ -4,7 +4,7 @@ import { IConfig } from "./sketch.interface";
 
 let world: World;
 let canvasInteractionEnabled = true;
-const numAnts: number = 200;
+const numAnts: number = 100;
 
 export const updateAcoConfig = <T extends keyof IConfig>(
   param: T,
@@ -25,6 +25,10 @@ export const sketch = (p: p5) => {
 
   p.draw = () => {
     world.render();
+  };
+
+  p.keyPressed = () => {
+    world.loop = false;
   };
 
   p.mousePressed = () => {

@@ -69,6 +69,12 @@ export class Vector {
     return Math.atan2(this.y, this.x);
   }
 
+  public normalize(assign?: boolean): Vector {
+    const result = this.mult(1 / this.getMagnitude());
+    assign && this.assign(result);
+    return result;
+  }
+
   public copy(): Vector {
     return new Vector(this.x, this.y);
   }
