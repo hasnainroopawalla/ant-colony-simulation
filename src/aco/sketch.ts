@@ -5,6 +5,7 @@ import { IConfig } from "./sketch.interface";
 let world: World;
 let canvasInteractionEnabled = true;
 const numAnts: number = 100;
+const foodClusterSize: number = 5;
 
 export const updateAcoConfig = <T extends keyof IConfig>(
   param: T,
@@ -35,6 +36,6 @@ export const sketch = (p: p5) => {
     if (!canvasInteractionEnabled) {
       return;
     }
-    world.createFoodCluster(5);
+    world.createFoodCluster(foodClusterSize);
   };
 };

@@ -6,6 +6,7 @@ import { IPheromoneType, Pheromone } from "./pheromone";
 import { quadtreeCircle, Quadtree, Rectangle } from "./quadtree";
 import { Vector } from "./vector";
 import { areLinesIntersecting } from "./utils";
+import { Obstacle } from "./obstacle";
 
 export class World {
   p: p5;
@@ -15,7 +16,7 @@ export class World {
   foodPheromoneQuadtree: Quadtree<Pheromone>;
   ants: Ant[];
   colonies: Colony[];
-  obstacles: any[];
+  obstacles: Obstacle[];
 
   constructor(p: p5) {
     this.p = p;
@@ -114,7 +115,7 @@ export class World {
     antAntennaRadius: number,
     pheromoneType: IPheromoneType
   ): number[] {
-    let antennaScores: number[] = [];
+    const antennaScores: number[] = [];
     const pheromoneQuadtree =
       pheromoneType === IPheromoneType.Food
         ? this.foodPheromoneQuadtree

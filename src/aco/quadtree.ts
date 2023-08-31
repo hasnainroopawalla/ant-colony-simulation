@@ -7,7 +7,7 @@ type IQuadtree = {
   shouldBeDestroyed: () => boolean;
   update: () => void;
   render: () => void;
-} & Record<string, any>;
+};
 
 class Circle<T extends IQuadtree> {
   x: number;
