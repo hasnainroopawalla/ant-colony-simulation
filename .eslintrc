@@ -8,12 +8,19 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
+    "no-magic-numbers": "off",
     "no-console": "warn",
+    "no-warning-comments": [
+      "warn",
+      {
+        "terms": ["TODO"],
+        "location": "start"
+      }
+    ],
     "no-alert": "error",
     "no-duplicate-imports": "error",
     "no-unused-private-class-members": "error",
     "camelcase": "error",
-    "eqeqeq": "error",
-    "no-magic-numbers": "off"
+    "eqeqeq": "error"
   }
 }
