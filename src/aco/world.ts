@@ -128,7 +128,7 @@ export class World {
       const pheromones = pheromoneQuadtree.query(quadtreeCircle);
       for (let j = 0; j < pheromones.length; j++) {
         const pheromone = pheromones[j];
-        antennaScore += pheromone.strength;
+        antennaScore += pheromone.strength / 500;
       }
       antennaScores.push(antennaScore);
     }

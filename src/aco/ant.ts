@@ -11,6 +11,12 @@ export enum IAntState {
   SearchingForFood,
 }
 
+type IAntennas = {
+  leftAntenna: Vector;
+  frontAntenna: Vector;
+  rightAntenna: Vector;
+};
+
 export class Ant {
   p: p5;
   world: World;
@@ -47,25 +53,22 @@ export class Ant {
     this.desiredVelocity = bearing.normalize();
   }
 
-  private getAntennas(): {
-    leftAntenna: Vector;
-    forwardAntenna: Vector;
-    rightAntenna: Vector;
-  } {
-    const leftAntenna = this.position.add(this.velocity.rotate(150).mult(20));
-    const forwardAntenna = this.position.add(this.velocity.mult(20));
-    const rightAntenna = this.position.add(this.velocity.rotate(-150).mult(20));
+  private getAntennas(): IAntennas {
+    // TODO: remove magic numbers
+    const leftAntenna = this.position.add(
+      this.desiredVelocity.rotate(-2.35 / 2).mult(90)
+    );
+    const frontAntenna = this.position.add(this.desiredVelocity.mult(90));
+    const rightAntenna = this.position.add(
+      this.desiredVelocity.rotate(2.35 / 2).mult(90)
+    );
 
-    config.showAntAntenna &&
+    config.showAntAntennas &&
       this.p.circle(leftAntenna.x, leftAntenna.y, config.antAntennaRadius) &&
-      this.p.circle(
-        forwardAntenna.x,
-        forwardAntenna.y,
-        config.antAntennaRadius
-      ) &&
+      this.p.circle(frontAntenna.x, frontAntenna.y, config.antAntennaRadius) &&
       this.p.circle(rightAntenna.x, rightAntenna.y, config.antAntennaRadius);
 
-    return { leftAntenna, forwardAntenna, rightAntenna };
+    return { leftAntenna, frontAntenna, rightAntenna };
   }
 
   private getPerception(): Vector {
@@ -104,17 +107,17 @@ export class Ant {
     const antennas = this.getAntennas();
     const [leftAntenna, frontAntenna, rightAntenna] =
       this.world.computeAntAntennasPheromoneValues(
-        [antennas.leftAntenna, antennas.forwardAntenna, antennas.rightAntenna],
+        [antennas.leftAntenna, antennas.frontAntenna, antennas.rightAntenna],
         config.antAntennaRadius,
         pheromoneType
       );
-
+    // console.log(leftAntenna, frontAntenna, rightAntenna);
     if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
       // do nothing
     } else if (leftAntenna > rightAntenna) {
-      this.desiredVelocity.rotate(-2.35 / 2);
+      this.desiredVelocity.rotate(-2.35 / 2, true);
     } else if (rightAntenna > leftAntenna) {
-      this.desiredVelocity.rotate(2.35 / 2);
+      this.desiredVelocity.rotate(2.35 / 2, true);
     }
   }
 
@@ -152,7 +155,7 @@ export class Ant {
       // check if food item is delivered to colony
       if (this.colony.collide(this.position)) {
         // rotate 180 degrees
-        // this.velocity.rotate(Math.PI, true);
+        this.velocity.rotate(Math.PI, true);
         this.targetFoodItem.delivered();
         this.targetFoodItem = null;
         this.colony.incrementFoodCount();
