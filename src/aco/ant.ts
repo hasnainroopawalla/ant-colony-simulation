@@ -111,7 +111,7 @@ export class Ant {
         config.antAntennaRadius,
         pheromoneType
       );
-    // console.log(leftAntenna, frontAntenna, rightAntenna);
+
     if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
       // do nothing
     } else if (leftAntenna > rightAntenna) {

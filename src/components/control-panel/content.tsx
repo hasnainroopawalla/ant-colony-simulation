@@ -9,15 +9,40 @@ type IControlPanelContentProps = {
   updateAcoConfig: IUpdateAcoConfig;
 };
 
+const styles = {
+  controlPanelContent: {
+    width: "350px",
+    maxHeight: "60%",
+    position: "absolute",
+    margin: "20px 0 0 20px",
+    borderRadius: "0.6rem",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    overflow: "auto",
+    paddingTop: "60px",
+  },
+  closeButton: {
+    padding: "8px",
+    textDecoration: "none",
+    display: "block",
+    color: "#fff",
+    position: "absolute",
+    top: "0",
+    right: "10px",
+    fontSize: "30px",
+    cursor: "pointer",
+  },
+} as const;
+
 export const ControlPanelContent = (props: IControlPanelContentProps) => {
   const { hideControlPanel, updateAcoConfig } = props;
 
   return (
-    <div className="control-panel-content">
+    <div className="control-panel-content" style={styles.controlPanelContent}>
       <a
         className="close-button"
         data-testid="control-panel-close-button"
         onClick={hideControlPanel}
+        style={styles.closeButton}
       >
         &times;
       </a>
