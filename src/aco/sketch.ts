@@ -17,10 +17,14 @@ export const setCanvasInteraction = (interactionEnabled: boolean) =>
 export const sketch = (p: p5) => {
   p.setup = () => {
     p.createCanvas(p.windowWidth, p.windowHeight);
+    p.frameRate(config.frameRate);
     world = new World(p);
     for (let i = 0; i < numAnts; i++) {
       world.createAnt();
     }
+    world.createFoodCluster(250, 250, config.foodClusterSize);
+    world.createFoodCluster(1000, 150, config.foodClusterSize);
+    world.createFoodCluster(1020, 550, config.foodClusterSize);
   };
 
   p.draw = () => {
@@ -31,6 +35,6 @@ export const sketch = (p: p5) => {
     if (!canvasInteractionEnabled) {
       return;
     }
-    world.createFoodCluster(5);
+    world.createFoodCluster(p.mouseX, p.mouseY, config.foodClusterSize);
   };
 };

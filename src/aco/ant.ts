@@ -3,7 +3,7 @@ import { World } from "./world";
 import { Colony } from "./colony";
 import { config } from "./config";
 import { IPheromoneType, Pheromone } from "./pheromone";
-import { areCirclesOverlapping, distance, randomFloat } from "./utils";
+import { areCirclesIntersecting, distance, randomFloat } from "./utils";
 import { Vector, fromAngle } from "./vector";
 
 export enum IAntState {
@@ -11,11 +11,18 @@ export enum IAntState {
   SearchingForFood,
 }
 
+type IAntennas = {
+  leftAntenna: Vector;
+  frontAntenna: Vector;
+  rightAntenna: Vector;
+};
+
 export class Ant {
   p: p5;
   world: World;
   position: Vector;
   velocity: Vector;
+  desiredVelocity: Vector;
   acceleration: Vector;
   angle: number;
   wanderAngle: number;
@@ -32,122 +39,125 @@ export class Ant {
     this.wanderAngle = 0;
     this.angle = randomFloat(0, this.p.TWO_PI);
     this.velocity = fromAngle(this.angle);
+    this.desiredVelocity = this.velocity.copy();
     this.acceleration = new Vector();
     this.searchingForFood();
   }
 
-  private approachTarget(target: Vector) {
-    const speedControl = target
-      .sub(this.position)
-      .setMagnitude(config.antMaxSpeed);
-    return speedControl.sub(this.velocity).limit(config.antSteeringLimit);
+  private approachTarget(target: Vector): void {
+    this.desiredVelocity = target.sub(this.position).normalize();
   }
 
-  private applyForce(force: Vector) {
-    this.acceleration.add(force, true);
-  }
+  private getAntennas(): IAntennas {
+    const leftAntenna = this.position.add(
+      this.desiredVelocity
+        .rotate(-config.antAntennaRotation)
+        .mult(config.antAntennaRange)
+    );
+    const frontAntenna = this.position.add(
+      this.desiredVelocity.mult(config.antAntennaRange)
+    );
+    const rightAntenna = this.position.add(
+      this.desiredVelocity
+        .rotate(config.antAntennaRotation)
+        .mult(config.antAntennaRange)
+    );
 
-  private getAntennas(): {
-    leftAntenna: Vector;
-    forwardAntenna: Vector;
-    rightAntenna: Vector;
-  } {
-    const leftAntenna = this.position.add(this.velocity.rotate(150).mult(20));
-    const forwardAntenna = this.position.add(this.velocity.mult(20));
-    const rightAntenna = this.position.add(this.velocity.rotate(-150).mult(20));
-
-    config.showAntAntenna &&
+    config.showAntAntennas &&
       this.p.circle(leftAntenna.x, leftAntenna.y, config.antAntennaRadius) &&
-      this.p.circle(
-        forwardAntenna.x,
-        forwardAntenna.y,
-        config.antAntennaRadius
-      ) &&
+      this.p.circle(frontAntenna.x, frontAntenna.y, config.antAntennaRadius) &&
       this.p.circle(rightAntenna.x, rightAntenna.y, config.antAntennaRadius);
 
-    return { leftAntenna, forwardAntenna, rightAntenna };
+    return { leftAntenna, frontAntenna, rightAntenna };
   }
 
-  private handleEdgeCollision() {
-    // left / right
-    if (this.position.x > this.p.windowWidth - 10 || this.position.x < 10) {
-      this.velocity.x *= -1;
-    }
-    // top / bottom
-    if (this.position.y > this.p.windowHeight - 10 || this.position.y < 10) {
-      this.velocity.y *= -1;
-    }
-    // TODO: ants should not be rendered over colonies
+  private getPerception(): Vector {
+    return this.position.add(this.velocity.mult(config.antPerceptionRange));
+  }
+
+  private handleObstacles(): void {
+    let obstacleInRange: boolean;
+    do {
+      const perception = this.position.add(
+        this.desiredVelocity.mult(config.antPerceptionRange * 2)
+      );
+      obstacleInRange = this.world.isObstacleInAntPerceptionRange(
+        this.position,
+        perception
+      );
+      if (obstacleInRange) {
+        // randomly set positive or negative angleRange
+        // TODO: turn left/right based on the angle of collision
+        this.desiredVelocity.rotate(
+          Math.random() < 0.5
+            ? config.antObstacleAngleRange
+            : -config.antObstacleAngleRange,
+          true
+        );
+      }
+    } while (obstacleInRange);
   }
 
   private handleWandering() {
-    this.wanderAngle += randomFloat(-0.5, 0.5);
-    const circlePos = this.velocity
-      .setMagnitude(config.antPerceptionRange)
-      .add(this.position);
-    const circleOffset = fromAngle(
-      this.wanderAngle + this.velocity.heading()
-    ).mult(config.antWanderStrength);
-    const target = circlePos.add(circleOffset);
-    const wander = this.approachTarget(target);
-    this.applyForce(wander);
+    const angle = randomFloat(-1, 1);
+    this.desiredVelocity.rotate(angle * config.antWanderStrength, true);
   }
 
   private handleAntennaSteering(pheromoneType: IPheromoneType) {
     const antennas = this.getAntennas();
     const [leftAntenna, frontAntenna, rightAntenna] =
-      this.world.antennaPheromoneValues(
-        [antennas.leftAntenna, antennas.forwardAntenna, antennas.rightAntenna],
+      this.world.computeAntAntennasPheromoneValues(
+        [antennas.leftAntenna, antennas.frontAntenna, antennas.rightAntenna],
+        config.antAntennaRadius,
         pheromoneType
       );
 
     if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
       // do nothing
     } else if (leftAntenna > rightAntenna) {
-      this.applyForce(this.approachTarget(antennas.leftAntenna));
+      this.desiredVelocity.rotate(-config.antAntennaRotation, true);
     } else if (rightAntenna > leftAntenna) {
-      this.applyForce(this.approachTarget(antennas.rightAntenna));
+      this.desiredVelocity.rotate(config.antAntennaRotation, true);
     }
   }
 
   private handleSearchingForFood() {
     // check if food item exists within perception range
     if (!this.targetFoodItem) {
-      this.targetFoodItem = this.world.getFoodItemInPerceptionRange(
-        this.position
+      this.targetFoodItem = this.world.getFoodItemInAntPerceptionRange(
+        this.getPerception(),
+        config.antPerceptionRange
       );
     }
 
-    if (this.targetFoodItem) {
+    if (!this.targetFoodItem) {
+      // follow food pheromones if no food item is found within perception range
+      this.handleAntennaSteering(IPheromoneType.Food);
+    } else {
       // check if reserved food item is picked up
       if (this.targetFoodItem.collide(this.position)) {
         // rotate 180 degrees
-        this.velocity.rotate(this.p.PI, true);
+        this.desiredVelocity.rotate(Math.PI, true);
         this.targetFoodItem.pickedUp();
         this.returningHome();
+      } else {
+        this.approachTarget(this.targetFoodItem.position);
       }
-      const approachFood = this.approachTarget(this.targetFoodItem.position);
-      this.applyForce(approachFood);
-    } else {
-      // follow food pheromones if no food item is found within perception range
-      this.handleAntennaSteering(IPheromoneType.Food);
     }
   }
 
   private handleReturningHome() {
     if (this.colonyInPerceptionRange()) {
-      const approachColony = this.approachTarget(this.colony.position);
-      this.applyForce(approachColony);
+      this.approachTarget(this.colony.position);
 
       // check if food item is delivered to colony
       if (this.colony.collide(this.position)) {
         // rotate 180 degrees
-        this.velocity.rotate(this.p.PI, true);
+        this.velocity.rotate(Math.PI, true);
         this.targetFoodItem.delivered();
         this.targetFoodItem = null;
         this.colony.incrementFoodCount();
         this.searchingForFood();
-        return;
       }
     } else {
       // follow home pheromones to deliver food
@@ -156,7 +166,7 @@ export class Ant {
   }
 
   private colonyInPerceptionRange(): boolean {
-    return areCirclesOverlapping(
+    return areCirclesIntersecting(
       this.position,
       config.antPerceptionRange * 2,
       this.colony.position,
@@ -187,12 +197,14 @@ export class Ant {
   }
 
   private updatePosition() {
-    this.velocity.add(this.acceleration, true);
-    this.position.add(this.velocity, true);
-    this.acceleration.set(0);
+    const subtracted = this.desiredVelocity.sub(this.velocity);
+    const desiredSteer = subtracted.mult(config.antSteeringLimit);
+    const acceleration = desiredSteer.limit(config.antSteeringLimit);
+
+    this.velocity.add(acceleration, true).limit(config.antMaxSpeed);
+    this.position.add(this.velocity.mult(config.antMaxSpeed), true);
   }
 
-  // TODO: Create a wrapper for render methods to handle push/pop logic
   private renderAnt() {
     this.p.push();
     this.p.strokeWeight(config.antStrokeWeight);
@@ -216,11 +228,8 @@ export class Ant {
     this.p.push();
     this.p.strokeWeight(config.antPerceptionStrokeWeight);
     this.p.fill(config.antPerceptionColorGray, config.antPerceptionColorAlpha);
-    this.p.circle(
-      this.position.x,
-      this.position.y,
-      config.antPerceptionRange * 2
-    );
+    const perception = this.getPerception();
+    this.p.circle(perception.x, perception.y, config.antPerceptionRange * 2);
     this.p.pop();
   }
 
@@ -241,7 +250,7 @@ export class Ant {
   }
 
   public update() {
-    this.handleEdgeCollision();
+    this.handleObstacles();
     this.handlePheromoneDeposit();
 
     this.isSearchingForFood() && this.handleSearchingForFood();

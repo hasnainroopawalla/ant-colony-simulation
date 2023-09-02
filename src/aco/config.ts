@@ -3,35 +3,41 @@ export const config = {
   frameRate: 60,
   // world
   worldBackground: "#78624f",
+  foodClusterSize: 7,
   // food item
-  foodItemSize: 2, // diameter
+  foodItemSize: 4, // diameter
   foodItemColor: "#39FF14",
   foodItemStrokeWeight: 0,
   // food cluster
-  foodClusterSpacing: 7,
+  foodClusterSpacing: 10,
   // colony
   colonySize: 70, // diameter
   colonyColor: "#ffffff",
   colonyStrokeWeight: 1,
   colonyTextSize: 20,
-  antWanderStrength: 1.5,
+  // ant
+  antWanderStrength: 0.2,
   antMaxSpeed: 2.5,
-  antSteeringLimit: 0.3,
-  antSize: 1,
+  antSteeringLimit: 0.1,
+  antSize: 4,
   antColor: "#000000",
   antStrokeWeight: 2,
   showAntPerceptionRange: false,
-  antPerceptionRange: 50, //radius
+  antPerceptionRange: 35, //radius
   antPerceptionColorGray: 255,
   antPerceptionColorAlpha: 30,
   antPerceptionStrokeWeight: 1,
-  showAntAntenna: false,
-  antAntennaRadius: 20,
+  showAntAntennas: false,
+  antAntennaRadius: 70,
+  antAntennaRange: 90,
+  antAntennaRotation: 1.1,
+  antObstacleAngleRange: 0.7,
   // pheromone
-  pheromoneSize: 2,
+  pheromoneSize: 4,
   pheromoneStrokeWeight: 0,
-  pheromoneDistanceBetween: 400,
-  pheromoneEvaporationRate: 1,
+  pheromoneDistanceBetween: 200,
+  pheromoneEvaporationRate: 0.3,
+  pheromoneInitialStrength: 500,
   showHomePheromones: false,
   homePheromoneColorRGB: [26, 166, 236],
   showFoodPheromones: true,

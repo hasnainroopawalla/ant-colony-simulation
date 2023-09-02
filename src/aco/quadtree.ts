@@ -7,7 +7,7 @@ type IQuadtree = {
   shouldBeDestroyed: () => boolean;
   update: () => void;
   render: () => void;
-} & Record<string, any>;
+};
 
 class Circle<T extends IQuadtree> {
   x: number;
@@ -145,10 +145,11 @@ export class Quadtree<T extends IQuadtree> {
   }
 
   private updateAndRenderPoints() {
-    this.points.map((point) => {
+    for (let i = 0; i < this.points.length; i++) {
+      const point = this.points[i];
       point.update();
       point.render();
-    });
+    }
   }
 
   private highlightQuadtree() {
@@ -203,11 +204,12 @@ export class Quadtree<T extends IQuadtree> {
     // Highlight the quadtrees in the perception range of the ant
     config.showHighlightedQuadtree && this.highlightQuadtree();
 
-    this.points.map((point) => {
+    for (let i = 0; i < this.points.length; i++) {
+      const point = this.points[i];
       if (range.contains(point)) {
         found.push(point);
       }
-    });
+    }
 
     if (this.divided) {
       this.topLeft.query(range, found);

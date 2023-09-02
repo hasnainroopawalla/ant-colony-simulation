@@ -19,7 +19,6 @@ export const Checkbox = (props: ICheckboxProps) => {
     setValue(newValue);
   };
 
-  // TODO: Change checked color to blue
   return (
     <input
       type="checkbox"

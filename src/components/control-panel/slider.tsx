@@ -1,6 +1,16 @@
 import React from "react";
 import { IConfig, IUpdateAcoConfig } from "../../aco";
 
+const styles = {
+  sliderOutput: {
+    color: "#fff",
+    backgroundColor: "#3691ec",
+    borderRadius: "7px",
+    alignItems: "center",
+    padding: "4px 6px 4px 6px",
+  },
+} as const;
+
 type ISliderProps = {
   configParam: keyof IConfig;
   min: number;
@@ -30,8 +40,6 @@ export const Slider = (props: ISliderProps) => {
     <>
       <input
         type="range"
-        // TODO: define id and data-testid once as a const
-        id={`${configParam}Slider`}
         data-testid={`${configParam}Slider`}
         min={min}
         max={max}
@@ -39,7 +47,11 @@ export const Slider = (props: ISliderProps) => {
         step={step}
         onInput={(event) => updateValue(event)}
       />
-      <span id={`${configParam}Value`} className="slider-output">
+      <span
+        id={`${configParam}Value`}
+        className="slider-output"
+        style={styles.sliderOutput}
+      >
         {formatValue()}
       </span>
     </>

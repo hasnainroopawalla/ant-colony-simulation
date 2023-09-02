@@ -16,7 +16,7 @@ export class Pheromone {
     this.p = p;
     this.position = position;
     this.type = type;
-    this.strength = 500;
+    this.strength = config.pheromoneInitialStrength;
   }
 
   private evaporate() {

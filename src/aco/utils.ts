@@ -1,3 +1,4 @@
+import { Obstacle } from "./obstacle";
 import { Vector } from "./vector";
 
 export function distanceSquared(position1: Vector, position2: Vector): number {
@@ -26,7 +27,7 @@ export function pointInCircle(
   );
 }
 
-export function areCirclesOverlapping(
+export function areCirclesIntersecting(
   circle1Position: Vector,
   circle1Radius: number,
   circle2Position: Vector,
@@ -41,4 +42,22 @@ export function areCirclesOverlapping(
 // TODO: add unit tests
 export function randomFloat(min: number, max: number): number {
   return Math.random() * (max - min) + min;
+}
+
+// TODO: add unit tests
+export function areLinesIntersecting(
+  line1: Obstacle,
+  line2: Obstacle
+): boolean {
+  const uA =
+    ((line2.x2 - line2.x1) * (line1.y1 - line2.y1) -
+      (line2.y2 - line2.y1) * (line1.x1 - line2.x1)) /
+    ((line2.y2 - line2.y1) * (line1.x2 - line1.x1) -
+      (line2.x2 - line2.x1) * (line1.y2 - line1.y1));
+  const uB =
+    ((line1.x2 - line1.x1) * (line1.y1 - line2.y1) -
+      (line1.y2 - line1.y1) * (line1.x1 - line2.x1)) /
+    ((line2.y2 - line2.y1) * (line1.x2 - line1.x1) -
+      (line2.x2 - line2.x1) * (line1.y2 - line1.y1));
+  return uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1;
 }
