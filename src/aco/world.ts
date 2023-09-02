@@ -71,8 +71,11 @@ export class World {
     this.ants.push(new Ant(this.p, this.colonies[0], this));
   }
 
-  public createFoodCluster(clusterSize: number = 5) {
-    const [spawnX, spawnY] = [this.p.mouseX, this.p.mouseY];
+  public createFoodCluster(
+    spawnX: number,
+    spawnY: number,
+    clusterSize: number = 5
+  ) {
     for (let i = 0; i < clusterSize; i++) {
       for (let j = 0; j < clusterSize; j++) {
         const foodItem = new FoodItem(
@@ -93,7 +96,6 @@ export class World {
     pheromoneQuadtree.insert(pheromone);
   }
 
-  // TODO: this method should limit the perception to only in FRONT of the ant
   public getFoodItemInAntPerceptionRange(
     antPosition: Vector,
     antPerceptionRange: number

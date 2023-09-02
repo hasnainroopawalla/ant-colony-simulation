@@ -9,7 +9,6 @@ const styles = {
     color: "#fff",
     position: "absolute",
     margin: "20px 0 0 20px",
-    /* TODO: transitions */
     cursor: "pointer",
   },
 } as const;

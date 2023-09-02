@@ -4,8 +4,8 @@ import { IConfig } from "./sketch.interface";
 
 let world: World;
 let canvasInteractionEnabled = true;
-const numAnts: number = 100;
-const foodClusterSize: number = 10;
+const numAnts: number = 200;
+const foodClusterSize: number = 7;
 
 export const updateAcoConfig = <T extends keyof IConfig>(
   param: T,
@@ -18,10 +18,14 @@ export const setCanvasInteraction = (interactionEnabled: boolean) =>
 export const sketch = (p: p5) => {
   p.setup = () => {
     p.createCanvas(p.windowWidth, p.windowHeight);
+    p.frameRate(config.frameRate);
     world = new World(p);
     for (let i = 0; i < numAnts; i++) {
       world.createAnt();
     }
+    world.createFoodCluster(250, 250, foodClusterSize);
+    world.createFoodCluster(1000, 150, foodClusterSize);
+    world.createFoodCluster(1020, 550, foodClusterSize);
   };
 
   p.draw = () => {
@@ -32,6 +36,6 @@ export const sketch = (p: p5) => {
     if (!canvasInteractionEnabled) {
       return;
     }
-    world.createFoodCluster(foodClusterSize);
+    world.createFoodCluster(p.mouseX, p.mouseY, foodClusterSize);
   };
 };

@@ -40,8 +40,6 @@ export const Slider = (props: ISliderProps) => {
     <>
       <input
         type="range"
-        // TODO: define id and data-testid once as a const
-        id={`${configParam}Slider`}
         data-testid={`${configParam}Slider`}
         min={min}
         max={max}
