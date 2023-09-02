@@ -3,6 +3,7 @@ export const config = {
   frameRate: 60,
   // world
   worldBackground: "#78624f",
+  foodClusterSize: 7,
   // food item
   foodItemSize: 4, // diameter
   foodItemColor: "#39FF14",
@@ -14,6 +15,7 @@ export const config = {
   colonyColor: "#ffffff",
   colonyStrokeWeight: 1,
   colonyTextSize: 20,
+  // ant
   antWanderStrength: 0.2,
   antMaxSpeed: 2.5,
   antSteeringLimit: 0.1,
@@ -27,6 +29,8 @@ export const config = {
   antPerceptionStrokeWeight: 1,
   showAntAntennas: false,
   antAntennaRadius: 70,
+  antAntennaRange: 90,
+  antAntennaRotation: 1.1,
   antObstacleAngleRange: 0.7,
   // pheromone
   pheromoneSize: 4,

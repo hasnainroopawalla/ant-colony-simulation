@@ -11,7 +11,6 @@ export const App = () => {
         updateAcoConfig={updateAcoConfig}
       />
       <Sketch />
-      {/* Add footer for GitHub source */}
     </>
   );
 };

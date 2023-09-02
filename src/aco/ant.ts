@@ -45,22 +45,22 @@ export class Ant {
   }
 
   private approachTarget(target: Vector): void {
-    // TODO: modify
-    const bearing = new Vector(
-      target.x - this.position.x,
-      target.y - this.position.y
-    );
-    this.desiredVelocity = bearing.normalize();
+    this.desiredVelocity = target.sub(this.position).normalize();
   }
 
   private getAntennas(): IAntennas {
-    // TODO: remove magic numbers
     const leftAntenna = this.position.add(
-      this.desiredVelocity.rotate(-2.35 / 2).mult(90)
+      this.desiredVelocity
+        .rotate(-config.antAntennaRotation)
+        .mult(config.antAntennaRange)
     );
-    const frontAntenna = this.position.add(this.desiredVelocity.mult(90));
+    const frontAntenna = this.position.add(
+      this.desiredVelocity.mult(config.antAntennaRange)
+    );
     const rightAntenna = this.position.add(
-      this.desiredVelocity.rotate(2.35 / 2).mult(90)
+      this.desiredVelocity
+        .rotate(config.antAntennaRotation)
+        .mult(config.antAntennaRange)
     );
 
     config.showAntAntennas &&
@@ -130,7 +130,10 @@ export class Ant {
       );
     }
 
-    if (this.targetFoodItem) {
+    if (!this.targetFoodItem) {
+      // follow food pheromones if no food item is found within perception range
+      this.handleAntennaSteering(IPheromoneType.Food);
+    } else {
       // check if reserved food item is picked up
       if (this.targetFoodItem.collide(this.position)) {
         // rotate 180 degrees
@@ -138,12 +141,8 @@ export class Ant {
         this.targetFoodItem.pickedUp();
         this.returningHome();
       } else {
-        // TODO: improve if-else condition
         this.approachTarget(this.targetFoodItem.position);
       }
-    } else {
-      // follow food pheromones if no food item is found within perception range
-      this.handleAntennaSteering(IPheromoneType.Food);
     }
   }
 
@@ -208,7 +207,6 @@ export class Ant {
     this.position.add(this.velocity.mult(config.antMaxSpeed), true);
   }
 
-  // TODO: Create a wrapper for render methods to handle push/pop logic
   private renderAnt() {
     this.p.push();
     this.p.strokeWeight(config.antStrokeWeight);
