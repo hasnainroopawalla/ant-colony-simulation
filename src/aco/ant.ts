@@ -115,9 +115,9 @@ export class Ant {
     if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
       // do nothing
     } else if (leftAntenna > rightAntenna) {
-      this.desiredVelocity.rotate(-2.35 / 2, true);
+      this.desiredVelocity.rotate(-config.antAntennaRotation, true);
     } else if (rightAntenna > leftAntenna) {
-      this.desiredVelocity.rotate(2.35 / 2, true);
+      this.desiredVelocity.rotate(config.antAntennaRotation, true);
     }
   }
 
@@ -149,7 +149,6 @@ export class Ant {
   private handleReturningHome() {
     if (this.colonyInPerceptionRange()) {
       this.approachTarget(this.colony.position);
-      // this.applyForce(approachColony);
 
       // check if food item is delivered to colony
       if (this.colony.collide(this.position)) {
@@ -159,7 +158,6 @@ export class Ant {
         this.targetFoodItem = null;
         this.colony.incrementFoodCount();
         this.searchingForFood();
-        return;
       }
     } else {
       // follow home pheromones to deliver food
