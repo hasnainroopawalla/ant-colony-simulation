@@ -238,16 +238,6 @@ export class Quadtree<T extends IQuadtree> {
       this.divided = true;
     }
 
-    // if (this.points.length < this.capacity) {
-    //   this.points.push(point);
-    //   return true;
-    // }
-
-    // if (!this.divided) {
-    //   this.subdivide();
-    //   this.divided = true;
-    // }
-
     return (
       this.topLeft.insert(point) ||
       this.bottomLeft.insert(point) ||
