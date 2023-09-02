@@ -5,7 +5,7 @@
 A simulator for the ant colony optimization algorithm in p5.js using TypeScript and React ([inspiration](https://youtu.be/X-iSQQgOd1A?si=XYnjKHSCwMdGiX5T)).
 
 <p align="center">
-<img src="assets/simulation.gif" alt="simuation" width="500"/>
+<img src="assets/simulation.gif" alt="simuation"/>
 </p>
 
 A Python implementation of this optimization algorithm to find the shortest path in a graph can be found at [github.com/hasnainroopawalla/Ant-Colony-Optimization](https://github.com/hasnainroopawalla/Ant-Colony-Optimization).
