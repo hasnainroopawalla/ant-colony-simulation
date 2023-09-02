@@ -37,6 +37,7 @@ export const config = {
   pheromoneStrokeWeight: 0,
   pheromoneDistanceBetween: 200,
   pheromoneEvaporationRate: 0.3,
+  pheromoneInitialStrength: 500,
   showHomePheromones: false,
   homePheromoneColorRGB: [26, 166, 236],
   showFoodPheromones: true,

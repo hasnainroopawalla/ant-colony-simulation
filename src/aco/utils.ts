@@ -1,3 +1,4 @@
+import { Obstacle } from "./obstacle";
 import { Vector } from "./vector";
 
 export function distanceSquared(position1: Vector, position2: Vector): number {
@@ -43,10 +44,10 @@ export function randomFloat(min: number, max: number): number {
   return Math.random() * (max - min) + min;
 }
 
-// TODO: refactor
+// TODO: add unit tests
 export function areLinesIntersecting(
-  line1: { x1: number; y1: number; x2: number; y2: number },
-  line2: { x1: number; y1: number; x2: number; y2: number }
+  line1: Obstacle,
+  line2: Obstacle
 ): boolean {
   const uA =
     ((line2.x2 - line2.x1) * (line1.y1 - line2.y1) -

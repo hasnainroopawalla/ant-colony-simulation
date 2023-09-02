@@ -111,7 +111,6 @@ export class World {
     }
   }
 
-  // TODO: optimize this method
   public computeAntAntennasPheromoneValues(
     antennas: Vector[],
     antAntennaRadius: number,
@@ -129,8 +128,8 @@ export class World {
       quadtreeCircle.set(antenna.x, antenna.y, antAntennaRadius);
       const pheromones = pheromoneQuadtree.query(quadtreeCircle);
       for (let j = 0; j < pheromones.length; j++) {
-        const pheromone = pheromones[j];
-        antennaScore += pheromone.strength / 500;
+        antennaScore +=
+          pheromones[j].strength / config.pheromoneInitialStrength;
       }
       antennaScores.push(antennaScore);
     }
