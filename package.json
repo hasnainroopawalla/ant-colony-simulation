@@ -1,6 +1,6 @@
 {
   "name": "ant-colony-simulation",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Ant colony simulation with TypeScript and p5.js",
   "homepage": "https://hasnainroopawalla.github.io/ant-colony-simulation",
   "private": true,
