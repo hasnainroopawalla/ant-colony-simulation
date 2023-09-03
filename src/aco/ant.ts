@@ -9,6 +9,7 @@ import { Vector, fromAngle } from "./vector";
 export enum IAntState {
   ReturningHome,
   SearchingForFood,
+  ReturningHomeUsingPedometer,
 }
 
 type IAntennas = {
@@ -23,25 +24,27 @@ export class Ant {
   position: Vector;
   velocity: Vector;
   desiredVelocity: Vector;
-  acceleration: Vector;
   angle: number;
-  wanderAngle: number;
   state: IAntState;
   colony: Colony;
   targetFoodItem: FoodItem | null;
   lastDepositedPheromone?: Pheromone;
+  steps: number;
 
   constructor(p: p5, colony: Colony, world: World) {
     this.p = p;
     this.world = world;
     this.colony = colony;
     this.position = new Vector(this.colony.position.x, this.colony.position.y);
-    this.wanderAngle = 0;
+    this.setSpawnOrientation();
+    this.searchingForFood();
+  }
+
+  private setSpawnOrientation() {
+    this.steps = 0;
     this.angle = randomFloat(0, this.p.TWO_PI);
     this.velocity = fromAngle(this.angle);
     this.desiredVelocity = this.velocity.copy();
-    this.acceleration = new Vector();
-    this.searchingForFood();
   }
 
   private approachTarget(target: Vector): void {
@@ -122,6 +125,11 @@ export class Ant {
   }
 
   private handleSearchingForFood() {
+    // force ant to use its pedometer to go back to the colony if max steps reached
+    if (this.steps >= config.antMaxSteps) {
+      return this.returningHomeUsingPedometer();
+    }
+
     // check if food item exists within perception range
     if (!this.targetFoodItem) {
       this.targetFoodItem = this.world.getFoodItemInAntPerceptionRange(
@@ -149,11 +157,10 @@ export class Ant {
   private handleReturningHome() {
     if (this.colonyInPerceptionRange()) {
       this.approachTarget(this.colony.position);
-
       // check if food item is delivered to colony
       if (this.colony.collide(this.position)) {
         // rotate 180 degrees
-        this.velocity.rotate(Math.PI, true);
+        this.desiredVelocity.rotate(Math.PI, true);
         this.targetFoodItem.delivered();
         this.targetFoodItem = null;
         this.colony.incrementFoodCount();
@@ -162,6 +169,15 @@ export class Ant {
     } else {
       // follow home pheromones to deliver food
       this.handleAntennaSteering(IPheromoneType.Home);
+    }
+  }
+
+  private handleReturningHomeUsingPedometer() {
+    this.approachTarget(this.colony.position);
+    if (this.colony.collide(this.position)) {
+      // ant leaves the colony at a random angle
+      this.setSpawnOrientation();
+      this.searchingForFood();
     }
   }
 
@@ -175,6 +191,9 @@ export class Ant {
   }
 
   private shouldPheromoneBeDeposited() {
+    if (this.state === IAntState.ReturningHomeUsingPedometer) {
+      return false;
+    }
     if (!this.lastDepositedPheromone) {
       return true;
     }
@@ -191,7 +210,7 @@ export class Ant {
     this.lastDepositedPheromone = new Pheromone(
       this.p,
       this.position.copy(),
-      this.isSearchingForFood() ? IPheromoneType.Home : IPheromoneType.Food
+      this.isReturningHome() ? IPheromoneType.Food : IPheromoneType.Home
     );
     this.world.depositPheromone(this.lastDepositedPheromone);
   }
@@ -241,6 +260,10 @@ export class Ant {
     this.state = IAntState.SearchingForFood;
   }
 
+  public returningHomeUsingPedometer() {
+    this.state = IAntState.ReturningHomeUsingPedometer;
+  }
+
   public isSearchingForFood() {
     return this.state === IAntState.SearchingForFood;
   }
@@ -249,15 +272,22 @@ export class Ant {
     return this.state === IAntState.ReturningHome;
   }
 
+  public isReturningHomeUsingPedometer() {
+    return this.state === IAntState.ReturningHomeUsingPedometer;
+  }
+
   public update() {
     this.handleObstacles();
     this.handlePheromoneDeposit();
 
     this.isSearchingForFood() && this.handleSearchingForFood();
     this.isReturningHome() && this.handleReturningHome();
+    this.isReturningHomeUsingPedometer() &&
+      this.handleReturningHomeUsingPedometer();
     this.handleWandering();
 
     this.updatePosition();
+    this.steps += 1;
   }
 
   public render() {

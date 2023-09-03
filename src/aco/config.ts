@@ -17,7 +17,7 @@ export const config = {
   colonyTextSize: 20,
   // ant
   antWanderStrength: 0.2,
-  antMaxSpeed: 2.5,
+  antMaxSpeed: 3,
   antSteeringLimit: 0.1,
   antSize: 4,
   antColor: "#000000",
@@ -32,6 +32,7 @@ export const config = {
   antAntennaRange: 90,
   antAntennaRotation: 1.1,
   antObstacleAngleRange: 0.7,
+  antMaxSteps: 1000,
   // pheromone
   pheromoneSize: 4,
   pheromoneStrokeWeight: 0,
