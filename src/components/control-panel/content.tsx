@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { SettingItem } from "./setting-item";
 import { Checkbox } from "./checkbox";
 import { Slider } from "./slider";
@@ -9,44 +9,20 @@ type IControlPanelContentProps = {
   updateAcoConfig: IUpdateAcoConfig;
 };
 
-const styles = {
-  controlPanelContent: {
-    width: "350px",
-    maxHeight: "60%",
-    position: "absolute",
-    margin: "20px 0 0 20px",
-    borderRadius: "0.6rem",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    overflow: "auto",
-  },
-  controlPanelHeader: {
-    padding: "20px 10px",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    fontSize: "25px",
-    color: "#fff",
-  },
-  closeButton: {
-    cursor: "pointer",
-  },
-} as const;
-
 export const ControlPanelContent = (props: IControlPanelContentProps) => {
   const { hideControlPanel, updateAcoConfig } = props;
 
   return (
-    <div className="control-panel-content" style={styles.controlPanelContent}>
-      <div className="control-panel-header" style={styles.controlPanelHeader}>
+    <div className="control-panel-content absolute mt-5 ml-5 w-[350px] max-h-[60%] overflow-auto rounded-[0.6rem] bg-black/70">
+      <div className="control-panel-header flex flex-row justify-between px-2.5 py-5 text-[25px] text-white">
         <div>
           <span>Ant Colony Simulation</span>
         </div>
         <div>
           <a
-            className="close-button"
+            className="close-button cursor-pointer"
             data-testid="control-panel-close-button"
             onClick={hideControlPanel}
-            style={styles.closeButton}
           >
             &times;
           </a>

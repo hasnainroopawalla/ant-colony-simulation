@@ -1,15 +1,5 @@
-import React from "react";
+import * as React from "react";
 import { IConfig, IUpdateAcoConfig } from "../../aco";
-
-const styles = {
-  sliderOutput: {
-    color: "#fff",
-    backgroundColor: "#3691ec",
-    borderRadius: "7px",
-    alignItems: "center",
-    padding: "4px 6px 4px 6px",
-  },
-} as const;
 
 type ISliderProps = {
   configParam: keyof IConfig;
@@ -49,8 +39,7 @@ export const Slider = (props: ISliderProps) => {
       />
       <span
         id={`${configParam}Value`}
-        className="slider-output"
-        style={styles.sliderOutput}
+        className="slider-output flex items-center rounded-[7px] bg-[#3691ec] px-1.5 py-1 text-white"
       >
         {formatValue()}
       </span>

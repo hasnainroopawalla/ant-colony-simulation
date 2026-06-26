@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { ControlPanelToggle } from "./toggle";
 import { ControlPanelContent } from "./content";
 import { IUpdateAcoConfig } from "../../aco";

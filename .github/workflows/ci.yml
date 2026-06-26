@@ -14,21 +14,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "18.x"
+          node-version: "22.x"
+          cache: "yarn"
       - name: Install dependencies
-        run: npm install
+        run: yarn install --frozen-lockfile
       - name: Build package
-        run: npm run build
+        run: yarn build
       - name: Run tests
-        run: npm test
-      - name: Automated version bump
-        uses: "phips28/gh-action-bump-version@master"
-        env:
-          GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-        with:
-          major-wording: "major,Major"
-          minor-wording: "minor,Minor"
-          patch-wording: "patch,bug,Patch,Bug"
-          commit-message: "CI: bump version to {{version}}"
+        run: yarn test

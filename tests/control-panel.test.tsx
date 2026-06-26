@@ -1,5 +1,4 @@
 import * as React from "react";
-import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { ControlPanel } from "../src/components/control-panel/control-panel";
 import { ControlPanelToggle } from "../src/components/control-panel/toggle";
@@ -12,10 +11,10 @@ const CONTROL_PANEL_CONTAINER = "control-panel-container";
 const CONTROL_PANEL_CLOSE_BUTTON = "control-panel-close-button";
 const CONTROL_PANEL_TOGGLE_BUTTON = "control-panel-toggle-button";
 
-const updateAcoConfig = jest.fn();
+const updateAcoConfig = vi.fn();
 
 describe("ControlPanel", () => {
-  const setCanvasInteraction = jest.fn();
+  const setCanvasInteraction = vi.fn();
 
   beforeEach(() => {
     render(
@@ -27,7 +26,7 @@ describe("ControlPanel", () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test("renders ControlPanelToggle by default", async () => {
@@ -46,13 +45,13 @@ describe("ControlPanel", () => {
 });
 
 describe("ControlPanelToggle", () => {
-  const showControlPanel = jest.fn();
+  const showControlPanel = vi.fn();
 
   beforeEach(() => {
     render(<ControlPanelToggle showControlPanel={showControlPanel} />);
   });
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test("renders the toggle button", async () => {
@@ -66,7 +65,7 @@ describe("ControlPanelToggle", () => {
 });
 
 describe("ControlPanelContent", () => {
-  const hideControlPanel = jest.fn();
+  const hideControlPanel = vi.fn();
 
   beforeEach(() => {
     render(
@@ -78,7 +77,7 @@ describe("ControlPanelContent", () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test("control panel close button is visible", async () => {
@@ -93,7 +92,7 @@ describe("ControlPanelContent", () => {
 
 describe("SettingItem", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test("title is visible", async () => {
@@ -154,7 +153,7 @@ describe("Slider", () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test("renders the input slider", async () => {
@@ -186,7 +185,7 @@ describe("Checkbox", () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test("renders the checkbox", async () => {

@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  font-family: Tahoma, sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}

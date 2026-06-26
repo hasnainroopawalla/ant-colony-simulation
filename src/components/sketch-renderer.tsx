@@ -1,14 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import * as React from "react";
 import { sketch } from "../aco";
 import p5 from "p5";
 
-export const Sketch = () => {
-  const p5ContainerRef = useRef();
+export function Sketch() {
+  const p5ContainerRef = React.useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const p5Instance = new p5(sketch, p5ContainerRef.current);
+  React.useEffect(() => {
+    const p5Instance = new p5(sketch, p5ContainerRef.current ?? undefined);
+
     return () => p5Instance.remove();
   }, []);
 
   return <div className="sketch-container" ref={p5ContainerRef} />;
-};
+}
