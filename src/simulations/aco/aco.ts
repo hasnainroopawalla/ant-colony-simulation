@@ -3,6 +3,7 @@ import { Simulation } from "../simulation";
 import { Ant } from "./ant";
 import { Pheromone } from "./pheromone";
 import { World } from "../../world";
+import { MathUtils } from "../../math";
 
 export class AntColonySimulation extends Simulation {
   private homePheromoneQuadtree: Quadtree<Pheromone>;
@@ -26,7 +27,7 @@ export class AntColonySimulation extends Simulation {
       h: world.dims.h / 2,
     });
 
-    this.ants = this.spawnAnts(100);
+    this.ants = this.spawnAnts(1000);
   }
 
   public getView(): { ants: Ant[] } {
@@ -87,10 +88,16 @@ export class AntColonySimulation extends Simulation {
   }
 
   private spawnAnts(count: number): Ant[] {
-    return Array.from(
-      { length: count },
+    return Array.from({ length: count }, () => {
       // TODO: better colony assignment
-      () => new Ant(this.world.colonies[0], this.world),
-    );
+      const colony = this.world.colonies[0];
+      // Uniform disk sampling: sqrt(rand) prevents clustering at the center.
+      const r = Math.sqrt(Math.random()) * colony.radius;
+      const spawnPos = colony.position
+        .copy()
+        .add(MathUtils.fromAngle(MathUtils.randomFloat(0, Math.PI * 2)).mult(r));
+
+      return new Ant(colony, this.world, spawnPos);
+    });
   }
 }

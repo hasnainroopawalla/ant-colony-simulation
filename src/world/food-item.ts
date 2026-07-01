@@ -1,5 +1,4 @@
-import { MathUtils } from "../math";
-import { Vector } from "../math/vector";
+import { MathUtils, Vector } from "../math";
 import EngineConfig from "./engine.config";
 
 export enum IFoodItemState {

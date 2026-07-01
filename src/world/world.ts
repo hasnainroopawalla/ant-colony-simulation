@@ -3,8 +3,7 @@ import { FoodItem } from "./food-item";
 import { Obstacle } from "./obstacle";
 import { Quadtree } from "../math/quadtree";
 import type { Dimensions } from "../math/types";
-import { MathUtils } from "../math";
-import { Vector } from "../math/vector";
+import { MathUtils, Vector } from "../math";
 
 export class World {
   public colonies: Colony[];

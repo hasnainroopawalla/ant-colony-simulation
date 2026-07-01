@@ -87,7 +87,3 @@ export class Vector {
 
   public translate() {}
 }
-
-export function fromAngle(angle: number) {
-  return new Vector(Math.cos(angle), Math.sin(angle));
-}

@@ -79,10 +79,15 @@ function areLinesIntersecting(
   return uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1;
 }
 
+function fromAngle(angle: number): Vector {
+  return new Vector(Math.cos(angle), Math.sin(angle));
+}
+
 export const MathUtils = {
   distance,
   randomFloat,
   isPointInCircle,
   areCirclesIntersecting,
   isLineIntersectingRect,
+  fromAngle,
 };

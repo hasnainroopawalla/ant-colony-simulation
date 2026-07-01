@@ -37,7 +37,8 @@ export class P5Renderer extends Renderer {
   private renderAnts(scene: Scene): void {
     scene.simulation.ants.forEach((ant) => {
       this.p.push();
-      this.p.strokeWeight(RenderConfig.antStrokeWeight);
+      // this.p.strokeWeight(RenderConfig.antStrokeWeight);
+      this.p.stroke(RenderConfig.antColor);
       this.p.fill(RenderConfig.antColor);
       this.p.translate(ant.position.x, ant.position.y);
       this.p.rotate(ant.velocity.heading());
@@ -59,7 +60,7 @@ export class P5Renderer extends Renderer {
       this.p.circle(
         colony.position.x,
         colony.position.y,
-        RenderConfig.colonySize,
+        colony.radius * 2,
       );
       this.p.pop();
 

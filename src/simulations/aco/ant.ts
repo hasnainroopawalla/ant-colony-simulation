@@ -1,8 +1,7 @@
 import { FoodItem } from "../../world/food-item";
 import { Colony } from "../../world/colony";
 import AcoConfig from "./aco.config";
-import { MathUtils } from "../../math";
-import { Vector, fromAngle } from "../../math/vector";
+import { Vector, MathUtils } from "../../math";
 import type { World } from "../../world";
 
 enum AntState {
@@ -30,7 +29,7 @@ export class Ant {
   private lastDepositedPheromone?: Pheromone;
   private steps: number;
 
-  constructor(colony: Colony, world: World) {
+  constructor(colony: Colony, world: World, spawnPosition: Vector) {
     this.world = world;
     this.colony = colony;
 
@@ -38,30 +37,11 @@ export class Ant {
 
     this.state = AntState.Wandering;
 
-    this.position = new Vector(this.colony.position.x, this.colony.position.y);
+    this.position = spawnPosition;
     this.angle = MathUtils.randomFloat(0, Math.PI * 2);
-    this.velocity = fromAngle(this.angle);
+    this.velocity = MathUtils.fromAngle(this.angle);
     this.desiredVelocity = this.velocity.copy();
   }
-
-  // private renderAnt() {
-  //   this.p.push();
-  //   this.p.strokeWeight(AcoConfig.antStrokeWeight);
-  //   this.p.fill(AcoConfig.antColor);
-  //   this.p.translate(this.position.x, this.position.y);
-  //   this.p.rotate(this.velocity.heading());
-  //   this.p.ellipse(0, 0, AcoConfig.antSize * 2, AcoConfig.antSize / 1.5);
-  //   this.isReturningHome() && this.renderAntWithFoodItem();
-  //   this.p.pop();
-  // }
-
-  // private renderAntWithFoodItem() {
-  //   this.p.push();
-  //   this.p.fill(AcoConfig.foodItemColor);
-  //   this.p.strokeWeight(AcoConfig.foodItemStrokeWeight);
-  //   this.p.circle(AcoConfig.antSize / 2, 0, AcoConfig.foodItemSize);
-  //   this.p.pop();
-  // }
 
   // private renderPerceptionRange() {
   //   this.p.push();
@@ -309,7 +289,7 @@ export class Ant {
       this.position,
       AcoConfig.antPerceptionRange * 2,
       this.colony.position,
-      AcoConfig.colonySize,
+      this.colony.radius * 2,
     );
   }
 

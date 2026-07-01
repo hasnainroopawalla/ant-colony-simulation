@@ -7,6 +7,7 @@ const WorldConfig = {
   // food cluster
   foodClusterSpacing: 10,
   // colony
+  colonySize: 70, // diameter
   pheromoneFoodColorRGB: [210, 31, 61],
   // quadtree
   showFoodItemsQuadtree: false,

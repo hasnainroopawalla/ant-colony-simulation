@@ -1,5 +1,5 @@
 import AcoConfig from "./aco.config";
-import { Vector } from "../../math/vector";
+import { Vector } from "../../math";
 
 export enum IPheromoneType {
   Home,

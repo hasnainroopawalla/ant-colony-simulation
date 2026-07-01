@@ -1,5 +1,4 @@
-import { MathUtils } from "../src/math";
-import { Vector } from "../src/math/vector";
+import { MathUtils, Vector } from "../src/math";
 
 const { distance, isPointInCircle, randomFloat } = MathUtils;
 
