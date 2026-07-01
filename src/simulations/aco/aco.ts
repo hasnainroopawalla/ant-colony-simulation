@@ -82,34 +82,6 @@ export class AntColonySimulation extends Simulation {
   //   return antennaScores;
   // }
 
-  // public isObstacleInAntPerceptionRange(
-  //   antPosition: Vector,
-  //   antPerception: Vector,
-  // ): boolean {
-  //   for (let i = 0; i < this.obstacles.length; i++) {
-  //     const obstacle = this.obstacles[i];
-  //     if (
-  //       areLinesIntersecting(
-  //         {
-  //           x1: antPosition.x,
-  //           y1: antPosition.y,
-  //           x2: antPerception.x,
-  //           y2: antPerception.y,
-  //         },
-  //         {
-  //           x1: obstacle.x1,
-  //           y1: obstacle.y1,
-  //           x2: obstacle.x2,
-  //           y2: obstacle.y2,
-  //         },
-  //       )
-  //     ) {
-  //       return true;
-  //     }
-  //   }
-  //   return false;
-  // }
-
   public update(): void {
     this.ants.forEach((ant) => ant.update());
   }

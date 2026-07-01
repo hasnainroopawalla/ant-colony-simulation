@@ -1,14 +1,14 @@
-import { Obstacle } from "../world/obstacle";
+import type { Position, RectangleDims } from "./types";
 import { Vector } from "./vector";
 
-export function distanceSquared(position1: Vector, position2: Vector): number {
+function distanceSquared(position1: Vector, position2: Vector): number {
   return (
     Math.pow(position1.x - position2.x, 2) +
     Math.pow(position1.y - position2.y, 2)
   );
 }
 
-export function distance(
+function distance(
   position1: Vector,
   position2: Vector,
   euclidean?: boolean,
@@ -17,7 +17,7 @@ export function distance(
   return euclidean ? Math.sqrt(distance) : distance;
 }
 
-export function pointInCircle(
+function isPointInCircle(
   pointPosition: Vector,
   circlePosition: Vector,
   circleDiameter: number,
@@ -27,7 +27,7 @@ export function pointInCircle(
   );
 }
 
-export function areCirclesIntersecting(
+function areCirclesIntersecting(
   circle1Position: Vector,
   circle1Radius: number,
   circle2Position: Vector,
@@ -39,23 +39,50 @@ export function areCirclesIntersecting(
   );
 }
 
-export function randomFloat(min: number, max: number): number {
+function randomFloat(min: number, max: number): number {
   return Math.random() * (max - min) + min;
 }
 
-export function areLinesIntersecting(
-  line1: Obstacle,
-  line2: Obstacle,
+function isLineIntersectingRect(
+  p1: Position,
+  p2: Position,
+  rect: RectangleDims,
 ): boolean {
+  const { x, y, w, h } = rect;
+  const topLeft: Position = { x, y };
+  const topRight: Position = { x: x + w, y };
+  const bottomLeft: Position = { x, y: y + h };
+  const bottomRight: Position = { x: x + w, y: y + h };
+
+  return (
+    areLinesIntersecting(p1, p2, topLeft, topRight) ||
+    areLinesIntersecting(p1, p2, topRight, bottomRight) ||
+    areLinesIntersecting(p1, p2, bottomRight, bottomLeft) ||
+    areLinesIntersecting(p1, p2, bottomLeft, topLeft)
+  );
+}
+
+function areLinesIntersecting(
+  a1: Position,
+  a2: Position,
+  b1: Position,
+  b2: Position,
+): boolean {
+  const denominator =
+    (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
   const uA =
-    ((line2.x2 - line2.x1) * (line1.y1 - line2.y1) -
-      (line2.y2 - line2.y1) * (line1.x1 - line2.x1)) /
-    ((line2.y2 - line2.y1) * (line1.x2 - line1.x1) -
-      (line2.x2 - line2.x1) * (line1.y2 - line1.y1));
+    ((b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x)) /
+    denominator;
   const uB =
-    ((line1.x2 - line1.x1) * (line1.y1 - line2.y1) -
-      (line1.y2 - line1.y1) * (line1.x1 - line2.x1)) /
-    ((line2.y2 - line2.y1) * (line1.x2 - line1.x1) -
-      (line2.x2 - line2.x1) * (line1.y2 - line1.y1));
+    ((a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x)) /
+    denominator;
   return uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1;
 }
+
+export const MathUtils = {
+  distance,
+  randomFloat,
+  isPointInCircle,
+  areCirclesIntersecting,
+  isLineIntersectingRect,
+};

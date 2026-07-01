@@ -1,6 +1,6 @@
 import WorldConfig from "../world/world.config";
 import type { Position, RectangleDims } from "./types";
-import { pointInCircle } from "./utils";
+import { MathUtils } from "./utils";
 import { Vector } from "./vector";
 
 type QuadtreeItem = {
@@ -25,7 +25,7 @@ class Circle<T extends QuadtreeItem> {
   }
 
   public contains(item: T): boolean {
-    return pointInCircle(
+    return MathUtils.isPointInCircle(
       new Vector(item.position.x, item.position.y),
       new Vector(this.x, this.y),
       this.r * 2,

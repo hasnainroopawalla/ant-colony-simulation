@@ -3,7 +3,7 @@ import { FoodItem } from "./food-item";
 import { Obstacle } from "./obstacle";
 import { Quadtree } from "../math/quadtree";
 import type { Dimensions } from "../math/types";
-import { areLinesIntersecting } from "../math/utils";
+import { MathUtils } from "../math";
 import { Vector } from "../math/vector";
 
 export class World {
@@ -23,12 +23,12 @@ export class World {
 
     // initialize the world boundaries as obstacles
     this.obstacles = [
-      new Obstacle(0, 0, this.dims.w, 0),
-      new Obstacle(0, 0, 0, this.dims.h),
-      new Obstacle(this.dims.w, 0, this.dims.w, this.dims.h),
-      new Obstacle(0, this.dims.h, this.dims.w, this.dims.h),
+      new Obstacle({ x: 0, y: 0, w: this.dims.w, h: 0 }),
+      new Obstacle({ x: 0, y: 0, w: 0, h: this.dims.h }),
+      new Obstacle({ x: this.dims.w, y: 0, w: 0, h: this.dims.h }),
+      new Obstacle({ x: 0, y: this.dims.h, w: this.dims.w, h: 0 }),
 
-      new Obstacle(300, 400, 80, 200),
+      new Obstacle({ x: 300, y: 400, w: 80, h: 200 }),
     ];
 
     this.foodQuadtree = new Quadtree({
@@ -66,19 +66,10 @@ export class World {
     for (let i = 0; i < this.obstacles.length; i++) {
       const obstacle = this.obstacles[i];
       if (
-        areLinesIntersecting(
-          {
-            x1: antPosition.x,
-            y1: antPosition.y,
-            x2: antPerception.x,
-            y2: antPerception.y,
-          },
-          {
-            x1: obstacle.x1,
-            y1: obstacle.y1,
-            x2: obstacle.x2,
-            y2: obstacle.y2,
-          },
+        MathUtils.isLineIntersectingRect(
+          antPosition,
+          antPerception,
+          obstacle.dims,
         )
       ) {
         return true;

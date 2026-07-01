@@ -2,13 +2,11 @@ import * as React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { ControlPanel } from "../src/components/control-panel/control-panel";
 import { ControlPanelToggle } from "../src/components/control-panel/toggle";
-import { ControlPanelContent } from "../src/components/control-panel/content";
 import { SettingItem } from "../src/components/control-panel/setting-item";
 import { Slider } from "../src/components/control-panel/slider";
 import { Checkbox } from "../src/components/control-panel/checkbox";
 
 const CONTROL_PANEL_CONTAINER = "control-panel-container";
-const CONTROL_PANEL_CLOSE_BUTTON = "control-panel-close-button";
 const CONTROL_PANEL_TOGGLE_BUTTON = "control-panel-toggle-button";
 
 const updateAcoConfig = vi.fn();
@@ -21,7 +19,7 @@ describe("ControlPanel", () => {
       <ControlPanel
         setCanvasInteraction={setCanvasInteraction}
         updateAcoConfig={updateAcoConfig}
-      />
+      />,
     );
   });
 
@@ -64,32 +62,6 @@ describe("ControlPanelToggle", () => {
   });
 });
 
-describe("ControlPanelContent", () => {
-  const hideControlPanel = vi.fn();
-
-  beforeEach(() => {
-    render(
-      <ControlPanelContent
-        hideControlPanel={hideControlPanel}
-        updateAcoConfig={updateAcoConfig}
-      />
-    );
-  });
-
-  afterEach(() => {
-    vi.resetAllMocks();
-  });
-
-  test("control panel close button is visible", async () => {
-    expect(screen.getByTestId(CONTROL_PANEL_CLOSE_BUTTON)).toBeVisible();
-  });
-
-  test("hide control panel content on close button click", async () => {
-    fireEvent.click(screen.getByTestId(CONTROL_PANEL_CLOSE_BUTTON));
-    expect(hideControlPanel).toHaveBeenCalledTimes(1);
-  });
-});
-
 describe("SettingItem", () => {
   afterEach(() => {
     vi.resetAllMocks();
@@ -105,7 +77,7 @@ describe("SettingItem", () => {
       <SettingItem
         title="customTitle"
         slider={<div data-testid="customSlider" />}
-      />
+      />,
     );
     expect(screen.getByText("customTitle")).toBeInTheDocument();
     expect(screen.getByTestId("customSlider")).toBeVisible();
@@ -116,7 +88,7 @@ describe("SettingItem", () => {
       <SettingItem
         title="customTitle"
         checkbox={<div data-testid="customCheckbox" />}
-      />
+      />,
     );
     expect(screen.getByText("customTitle")).toBeInTheDocument();
     expect(screen.getByTestId("customCheckbox")).toBeVisible();
@@ -128,7 +100,7 @@ describe("SettingItem", () => {
         title="customTitle"
         checkbox={<div data-testid="customCheckbox" />}
         slider={<div data-testid="customSlider" />}
-      />
+      />,
     );
     expect(screen.getByText("customTitle")).toBeInTheDocument();
     expect(screen.getByTestId("customCheckbox")).toBeVisible();
@@ -148,7 +120,7 @@ describe("Slider", () => {
         step={1.0}
         defaultValue={4.0}
         updateAcoConfig={updateAcoConfig}
-      />
+      />,
     );
   });
 
@@ -180,7 +152,7 @@ describe("Checkbox", () => {
         configParam={"showFoodItemsQuadtree"}
         isChecked={false}
         updateAcoConfig={updateAcoConfig}
-      />
+      />,
     );
   });
 

@@ -1,4 +1,4 @@
-import { pointInCircle } from "../math/utils";
+import { MathUtils } from "../math";
 import { Vector } from "../math/vector";
 import EngineConfig from "./engine.config";
 
@@ -53,7 +53,11 @@ export class FoodItem {
   }
 
   public collide(antPosition: Vector) {
-    return pointInCircle(antPosition, this.position, EngineConfig.foodItemSize);
+    return MathUtils.isPointInCircle(
+      antPosition,
+      this.position,
+      EngineConfig.foodItemSize,
+    );
   }
 
   public update() {}

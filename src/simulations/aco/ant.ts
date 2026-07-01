@@ -1,11 +1,7 @@
 import { FoodItem } from "../../world/food-item";
 import { Colony } from "../../world/colony";
 import AcoConfig from "./aco.config";
-import {
-  areCirclesIntersecting,
-  distance,
-  randomFloat,
-} from "../../math/utils";
+import { MathUtils } from "../../math";
 import { Vector, fromAngle } from "../../math/vector";
 import type { World } from "../../world";
 
@@ -43,7 +39,7 @@ export class Ant {
     this.state = AntState.Wandering;
 
     this.position = new Vector(this.colony.position.x, this.colony.position.y);
-    this.angle = randomFloat(0, Math.PI * 2);
+    this.angle = MathUtils.randomFloat(0, Math.PI * 2);
     this.velocity = fromAngle(this.angle);
     this.desiredVelocity = this.velocity.copy();
   }
@@ -167,8 +163,18 @@ export class Ant {
 
   private handleObstacles(): void {
     const maxAttempts = 8;
+    const originalDesired = this.desiredVelocity.copy();
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      // Sweep outward from the original heading: 0, +Δ, -Δ, +2Δ, -2Δ, ...
+      // This finds the closest clear direction instead of drifting randomly,
+      // which prevents sudden large swings when a rotation finally clears.
+      const step = Math.ceil(attempt / 2);
+      const sign = attempt % 2 === 0 ? 1 : -1;
+      const angle = sign * step * AcoConfig.antObstacleAngleRange;
+
+      this.desiredVelocity = originalDesired.copy().rotate(angle, true);
+
       // Look along the direction we intend to move next, not the stale
       // velocity — otherwise rotating desiredVelocity below has no effect on
       // what we're testing on the next iteration.
@@ -194,13 +200,6 @@ export class Ant {
         }
         return;
       }
-
-      this.desiredVelocity.rotate(
-        Math.random() < 0.5
-          ? AcoConfig.antObstacleAngleRange
-          : -AcoConfig.antObstacleAngleRange,
-        true,
-      );
     }
 
     // Couldn't find a clear direction — turn around outright.
@@ -231,7 +230,7 @@ export class Ant {
   }
 
   private handleWandering(): void {
-    const angle = randomFloat(-1, 1);
+    const angle = MathUtils.randomFloat(-1, 1);
     this.desiredVelocity.rotate(angle * AcoConfig.antWanderStrength, true);
   }
 
@@ -306,7 +305,7 @@ export class Ant {
   }
 
   private colonyInPerceptionRange(): boolean {
-    return areCirclesIntersecting(
+    return MathUtils.areCirclesIntersecting(
       this.position,
       AcoConfig.antPerceptionRange * 2,
       this.colony.position,
@@ -322,7 +321,7 @@ export class Ant {
       return true;
     }
     return (
-      distance(this.position, this.lastDepositedPheromone.position) >
+      MathUtils.distance(this.position, this.lastDepositedPheromone.position) >
       AcoConfig.pheromoneDistanceBetween
     );
   }

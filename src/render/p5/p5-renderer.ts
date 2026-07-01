@@ -77,7 +77,13 @@ export class P5Renderer extends Renderer {
       this.p.push();
       this.p.strokeWeight(RenderConfig.colonyStrokeWeight);
       this.p.stroke(RenderConfig.colonyColor);
-      this.p.line(obstacle.x1, obstacle.y1, obstacle.x2, obstacle.y2);
+      this.p.noFill();
+      this.p.rect(
+        obstacle.dims.x,
+        obstacle.dims.y,
+        obstacle.dims.w,
+        obstacle.dims.h,
+      );
       this.p.pop();
     });
   }

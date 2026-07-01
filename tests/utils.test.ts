@@ -1,5 +1,7 @@
-import { distance, pointInCircle, Vector } from "../src/simulations/aco";
-import { randomFloat } from "../src/math/utils";
+import { MathUtils } from "../src/math";
+import { Vector } from "../src/math/vector";
+
+const { distance, isPointInCircle, randomFloat } = MathUtils;
 
 let circlePosition: Vector;
 let circleDiameter: number;
@@ -30,24 +32,24 @@ describe("euclideanDistance", () => {
   });
 });
 
-describe("pointInCircle", () => {
+describe("isPointInCircle", () => {
   beforeEach(() => {
     circlePosition = new Vector(10, 10);
     circleDiameter = 10;
   });
   test("should return true if candidate is inside the circle", () => {
     expect(
-      pointInCircle(new Vector(13, 10), circlePosition, circleDiameter),
+      isPointInCircle(new Vector(13, 10), circlePosition, circleDiameter),
     ).toBe(true);
   });
   test("should return true if candidate has collided with the circle boundary", () => {
     expect(
-      pointInCircle(new Vector(15, 10), circlePosition, circleDiameter),
+      isPointInCircle(new Vector(15, 10), circlePosition, circleDiameter),
     ).toBe(true);
   });
   test("should return false if candidate is outside the circle", () => {
     expect(
-      pointInCircle(new Vector(20, 20), circlePosition, circleDiameter),
+      isPointInCircle(new Vector(20, 20), circlePosition, circleDiameter),
     ).toBe(false);
   });
 });

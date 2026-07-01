@@ -1,4 +1,4 @@
-import { pointInCircle } from "../math/utils";
+import { MathUtils } from "../math";
 import { Vector } from "../math/vector";
 import WorldConfig from "./world.config";
 
@@ -14,7 +14,11 @@ export class Colony {
   }
 
   public contains(point: Vector): boolean {
-    return pointInCircle(point, this.position, WorldConfig.colonySize);
+    return MathUtils.isPointInCircle(
+      point,
+      this.position,
+      WorldConfig.colonySize,
+    );
   }
 
   public incrementFoodCount() {
