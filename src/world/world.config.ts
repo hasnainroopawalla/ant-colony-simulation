@@ -1,23 +1,11 @@
 const WorldConfig = {
+  // food
+  foodItemRadius: 2,
   foodClusterSize: 7,
-  // food item
-  foodItemSize: 4, // diameter
-  foodItemColor: "#39FF14",
-  foodItemStrokeWeight: 0,
-  // food cluster
   foodClusterSpacing: 10,
   // colony
-  colonySize: 70, // diameter
-  pheromoneFoodColorRGB: [210, 31, 61],
+  colonyRadius: 35,
   // quadtree
-  showFoodItemsQuadtree: false,
-  showHomePheromonesQuadtree: false,
-  showFoodPheromonesQuadtree: false,
-  showHighlightedQuadtree: false,
-  quadtreeDefaultColor: "#FFFF00",
-  quadtreeDefaultStrokeWeight: 1,
-  quadtreeHighlightedColor: "#FF0000",
-  quadtreeHighlightedStrokeWeight: 2,
   quadtreeMaxDepth: 7,
 };
 

@@ -95,7 +95,9 @@ export class AntColonySimulation extends Simulation {
       const r = Math.sqrt(Math.random()) * colony.radius;
       const spawnPos = colony.position
         .copy()
-        .add(MathUtils.fromAngle(MathUtils.randomFloat(0, Math.PI * 2)).mult(r));
+        .add(
+          MathUtils.fromAngle(MathUtils.randomFloat(0, Math.PI * 2)).mult(r),
+        );
 
       return new Ant(colony, this.world, spawnPos);
     });

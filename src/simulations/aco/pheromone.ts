@@ -1,4 +1,5 @@
 import AcoConfig from "./aco.config";
+import RenderConfig from "../../render/render.config";
 import { Vector } from "../../math";
 
 export enum IPheromoneType {
@@ -34,20 +35,20 @@ export class Pheromone {
   public render() {
     if (
       this.shouldBeDestroyed() ||
-      (this.type === IPheromoneType.Home && !AcoConfig.showHomePheromones) ||
-      (this.type === IPheromoneType.Food && !AcoConfig.showFoodPheromones)
+      (this.type === IPheromoneType.Home && !RenderConfig.showHomePheromones) ||
+      (this.type === IPheromoneType.Food && !RenderConfig.showFoodPheromones)
     ) {
       return;
     }
     const [colorR, colorG, colorB] =
       this.type === IPheromoneType.Home
-        ? AcoConfig.homePheromoneColorRGB
-        : AcoConfig.pheromoneFoodColorRGB;
+        ? RenderConfig.homePheromoneColorRGB
+        : RenderConfig.foodPheromoneColorRGB;
 
     this.p.push();
     this.p.fill(colorR, colorG, colorB, this.strength);
-    this.p.strokeWeight(AcoConfig.pheromoneStrokeWeight);
-    this.p.circle(this.position.x, this.position.y, AcoConfig.pheromoneSize);
+    this.p.strokeWeight(RenderConfig.pheromoneStrokeWeight);
+    this.p.circle(this.position.x, this.position.y, RenderConfig.pheromoneSize);
     this.p.pop();
   }
 }

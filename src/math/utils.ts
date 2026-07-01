@@ -20,10 +20,10 @@ function distance(
 function isPointInCircle(
   pointPosition: Vector,
   circlePosition: Vector,
-  circleDiameter: number,
+  circleRadius: number,
 ): boolean {
   return (
-    distance(pointPosition, circlePosition) <= Math.pow(circleDiameter / 2, 2)
+    distance(pointPosition, circlePosition) <= Math.pow(circleRadius, 2)
   );
 }
 

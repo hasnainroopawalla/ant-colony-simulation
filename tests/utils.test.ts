@@ -3,7 +3,7 @@ import { MathUtils, Vector } from "../src/math";
 const { distance, isPointInCircle, randomFloat } = MathUtils;
 
 let circlePosition: Vector;
-let circleDiameter: number;
+let circleRadius: number;
 
 describe("Squared distance", () => {
   test("should return the squared distance between 2 points in a 2D space", () => {
@@ -34,21 +34,21 @@ describe("euclideanDistance", () => {
 describe("isPointInCircle", () => {
   beforeEach(() => {
     circlePosition = new Vector(10, 10);
-    circleDiameter = 10;
+    circleRadius = 5;
   });
   test("should return true if candidate is inside the circle", () => {
     expect(
-      isPointInCircle(new Vector(13, 10), circlePosition, circleDiameter),
+      isPointInCircle(new Vector(13, 10), circlePosition, circleRadius),
     ).toBe(true);
   });
   test("should return true if candidate has collided with the circle boundary", () => {
     expect(
-      isPointInCircle(new Vector(15, 10), circlePosition, circleDiameter),
+      isPointInCircle(new Vector(15, 10), circlePosition, circleRadius),
     ).toBe(true);
   });
   test("should return false if candidate is outside the circle", () => {
     expect(
-      isPointInCircle(new Vector(20, 20), circlePosition, circleDiameter),
+      isPointInCircle(new Vector(20, 20), circlePosition, circleRadius),
     ).toBe(false);
   });
 });

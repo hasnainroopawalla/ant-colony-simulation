@@ -32,6 +32,7 @@ export class P5Renderer extends Renderer {
 
     this.renderAnts(scene);
     this.renderColonies(scene);
+    this.renderFoodItems(scene);
   }
 
   private renderAnts(scene: Scene): void {
@@ -57,11 +58,7 @@ export class P5Renderer extends Renderer {
       this.p.push();
       this.p.strokeWeight(RenderConfig.colonyStrokeWeight);
       this.p.fill(RenderConfig.colonyColor);
-      this.p.circle(
-        colony.position.x,
-        colony.position.y,
-        colony.radius * 2,
-      );
+      this.p.circle(colony.position.x, colony.position.y, colony.radius * 2);
       this.p.pop();
 
       // food count
@@ -69,6 +66,16 @@ export class P5Renderer extends Renderer {
       this.p.textAlign(this.p.CENTER, this.p.CENTER);
       this.p.textSize(RenderConfig.colonyTextSize);
       this.p.text(colony.foodCount, colony.position.x, colony.position.y);
+      this.p.pop();
+    });
+  }
+
+  private renderFoodItems(scene: Scene): void {
+    scene.foodItems.forEach((foodItem) => {
+      this.p.push();
+      this.p.strokeWeight(RenderConfig.foodItemStrokeWeight);
+      this.p.fill(RenderConfig.foodItemColor);
+      this.p.circle(foodItem.position.x, foodItem.position.y, foodItem.radius * 2);
       this.p.pop();
     });
   }

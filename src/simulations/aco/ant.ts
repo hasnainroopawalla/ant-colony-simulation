@@ -275,21 +275,12 @@ export class Ant {
     }
   }
 
-  private handleReturningHomeUsingPedometer() {
-    this.approachTarget(this.colony.position);
-    if (this.colony.collide(this.position)) {
-      // ant leaves the colony at a random angle
-      this.setSpawnOrientation();
-      this.searchingForFood();
-    }
-  }
-
   private colonyInPerceptionRange(): boolean {
     return MathUtils.areCirclesIntersecting(
       this.position,
-      AcoConfig.antPerceptionRange * 2,
+      AcoConfig.antPerceptionRange,
       this.colony.position,
-      this.colony.radius * 2,
+      this.colony.radius,
     );
   }
 

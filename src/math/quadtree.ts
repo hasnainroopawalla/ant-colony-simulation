@@ -28,7 +28,7 @@ class Circle<T extends QuadtreeItem> {
     return MathUtils.isPointInCircle(
       new Vector(item.position.x, item.position.y),
       new Vector(this.x, this.y),
-      this.r * 2,
+      this.r,
     );
   }
 }

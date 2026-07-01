@@ -7,7 +7,7 @@ export type FrameCallback = () => void;
 
 // TODO: make this generic
 export type Scene = {
-  food: FoodItem[];
+  foodItems: FoodItem[];
   obstacles: Obstacle[];
   colonies: Colony[];
   simulation: { ants: Ant[] };
