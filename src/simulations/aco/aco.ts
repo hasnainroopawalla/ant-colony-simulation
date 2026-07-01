@@ -92,7 +92,7 @@ export class AntColonySimulation extends Simulation {
       // TODO: better colony assignment
       const colony = this.world.colonies[0];
       // Uniform disk sampling: sqrt(rand) prevents clustering at the center.
-      const r = Math.sqrt(Math.random()) * colony.radius;
+      const r = Math.sqrt(MathUtils.randomFloat()) * colony.radius;
       const spawnPos = colony.position
         .copy()
         .add(

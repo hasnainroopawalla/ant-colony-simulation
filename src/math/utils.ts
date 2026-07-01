@@ -22,9 +22,7 @@ function isPointInCircle(
   circlePosition: Vector,
   circleRadius: number,
 ): boolean {
-  return (
-    distance(pointPosition, circlePosition) <= Math.pow(circleRadius, 2)
-  );
+  return distance(pointPosition, circlePosition) <= Math.pow(circleRadius, 2);
 }
 
 function areCirclesIntersecting(
@@ -39,7 +37,7 @@ function areCirclesIntersecting(
   );
 }
 
-function randomFloat(min: number, max: number): number {
+function randomFloat(min: number = 0, max: number = 1): number {
   return Math.random() * (max - min) + min;
 }
 

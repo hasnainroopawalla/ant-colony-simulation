@@ -44,16 +44,15 @@ export class World {
   public createFoodCluster(position: Position, clusterSize: number = 10) {
     for (let i = 0; i < clusterSize; i++) {
       for (let j = 0; j < clusterSize; j++) {
-        // TODO: Make it less boxy
         const foodItemPosition = new Vector(
           position.x +
             i * WorldConfig.foodClusterSpacing +
-            Math.random() * 10 -
-            5,
+            MathUtils.randomFloat() * 10 -
+            WorldConfig.foodClusterSpacing,
           position.y +
             j * WorldConfig.foodClusterSpacing +
-            Math.random() * 10 -
-            5,
+            MathUtils.randomFloat() * 10 -
+            WorldConfig.foodClusterSpacing,
         );
 
         const foodItem = new FoodItem(foodItemPosition);
