@@ -3,6 +3,8 @@ import { FoodItem } from "./food-item";
 import { Obstacle } from "./obstacle";
 import { Quadtree } from "../math/quadtree";
 import type { Dimensions } from "../math/types";
+import { areLinesIntersecting } from "../math/utils";
+import { Vector } from "../math/vector";
 
 export class World {
   public colonies: Colony[];
@@ -19,22 +21,13 @@ export class World {
     this.foodItems = [];
     this.obstacles = [];
 
-    // this.obstacles = [
-    //   { x1: 0, y1: 0, x2: this.p.windowWidth, y2: 0 },
-    //   {
-    //     x1: 0,
-    //     y1: this.p.windowHeight,
-    //     x2: this.p.windowWidth,
-    //     y2: this.p.windowHeight,
-    //   },
-    //   { x1: 0, y1: 0, x2: 0, y2: this.p.windowHeight },
-    //   {
-    //     x1: this.p.windowWidth,
-    //     y1: 0,
-    //     x2: this.p.windowWidth,
-    //     y2: this.p.windowHeight,
-    //   },
-    // ];
+    // initialize the world boundaries as obstacles
+    this.obstacles = [
+      new Obstacle(0, 0, this.dims.w, 0),
+      new Obstacle(0, 0, 0, this.dims.h),
+      new Obstacle(this.dims.w, 0, this.dims.w, this.dims.h),
+      new Obstacle(0, this.dims.h, this.dims.w, this.dims.h),
+    ];
 
     this.foodQuadtree = new Quadtree({
       x: this.dims.w / 2,
@@ -64,31 +57,31 @@ export class World {
   //   }
   // }
 
-  // public isObstacleInAntPerceptionRange(
-  //   antPosition: Vector,
-  //   antPerception: Vector,
-  // ): boolean {
-  //   for (let i = 0; i < this.obstacles.length; i++) {
-  //     const obstacle = this.obstacles[i];
-  //     if (
-  //       areLinesIntersecting(
-  //         {
-  //           x1: antPosition.x,
-  //           y1: antPosition.y,
-  //           x2: antPerception.x,
-  //           y2: antPerception.y,
-  //         },
-  //         {
-  //           x1: obstacle.x1,
-  //           y1: obstacle.y1,
-  //           x2: obstacle.x2,
-  //           y2: obstacle.y2,
-  //         },
-  //       )
-  //     ) {
-  //       return true;
-  //     }
-  //   }
-  //   return false;
-  // }
+  public isObstacleInAntPerceptionRange(
+    antPosition: Vector,
+    antPerception: Vector,
+  ): boolean {
+    for (let i = 0; i < this.obstacles.length; i++) {
+      const obstacle = this.obstacles[i];
+      if (
+        areLinesIntersecting(
+          {
+            x1: antPosition.x,
+            y1: antPosition.y,
+            x2: antPerception.x,
+            y2: antPerception.y,
+          },
+          {
+            x1: obstacle.x1,
+            y1: obstacle.y1,
+            x2: obstacle.x2,
+            y2: obstacle.y2,
+          },
+        )
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

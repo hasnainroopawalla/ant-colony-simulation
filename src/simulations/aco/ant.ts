@@ -9,10 +9,9 @@ import {
 import { Vector, fromAngle } from "../../math/vector";
 import type { World } from "../../world";
 
-export enum IAntState {
+enum AntState {
+  Wandering,
   ReturningHome,
-  SearchingForFood,
-  ReturningHomeUsingPedometer,
 }
 
 type IAntennas = {
@@ -25,10 +24,11 @@ export class Ant {
   public position: Vector;
   public velocity: Vector;
 
+  private state: AntState;
+
   private world: World;
   private desiredVelocity: Vector;
   private angle: number;
-  private state: IAntState;
   private colony: Colony;
   private targetFoodItem: FoodItem | null;
   private lastDepositedPheromone?: Pheromone;
@@ -38,17 +38,72 @@ export class Ant {
     this.world = world;
     this.colony = colony;
 
-    this.position = new Vector(this.colony.position.x, this.colony.position.y);
-    this.setSpawnOrientation();
-    this.searchingForFood();
-  }
-
-  private setSpawnOrientation() {
     this.steps = 0;
+
+    this.state = AntState.Wandering;
+
+    this.position = new Vector(this.colony.position.x, this.colony.position.y);
     this.angle = randomFloat(0, Math.PI * 2);
     this.velocity = fromAngle(this.angle);
     this.desiredVelocity = this.velocity.copy();
   }
+
+  // private renderAnt() {
+  //   this.p.push();
+  //   this.p.strokeWeight(AcoConfig.antStrokeWeight);
+  //   this.p.fill(AcoConfig.antColor);
+  //   this.p.translate(this.position.x, this.position.y);
+  //   this.p.rotate(this.velocity.heading());
+  //   this.p.ellipse(0, 0, AcoConfig.antSize * 2, AcoConfig.antSize / 1.5);
+  //   this.isReturningHome() && this.renderAntWithFoodItem();
+  //   this.p.pop();
+  // }
+
+  // private renderAntWithFoodItem() {
+  //   this.p.push();
+  //   this.p.fill(AcoConfig.foodItemColor);
+  //   this.p.strokeWeight(AcoConfig.foodItemStrokeWeight);
+  //   this.p.circle(AcoConfig.antSize / 2, 0, AcoConfig.foodItemSize);
+  //   this.p.pop();
+  // }
+
+  // private renderPerceptionRange() {
+  //   this.p.push();
+  //   this.p.strokeWeight(AcoConfig.antPerceptionStrokeWeight);
+  //   this.p.fill(
+  //     AcoConfig.antPerceptionColorGray,
+  //     AcoConfig.antPerceptionColorAlpha,
+  //   );
+  //   const perception = this.getPerception();
+  //   this.p.circle(perception.x, perception.y, AcoConfig.antPerceptionRange * 2);
+  //   this.p.pop();
+  // }
+
+  public update() {
+    this.decide();
+    // this.handleBoundaries();
+    this.handleObstacles();
+    // this.handlePheromoneDeposit();
+
+    // this.isReturningHome() && this.handleReturningHome();
+    // this.isReturningHomeUsingPedometer() &&
+    //   this.handleReturningHomeUsingPedometer();
+    // this.handleWandering();
+    this.move();
+    this.clampToBounds();
+    // this.steps += 1;
+  }
+
+  private decide(): void {
+    switch (this.state) {
+      case AntState.Wandering:
+        this.handleWandering();
+        break;
+    }
+  }
+
+  // Randomly set the ant's initial orientation and velocity
+  private setSpawnOrientation(): void {}
 
   private approachTarget(target: Vector): void {
     this.desiredVelocity = target.sub(this.position).normalize();
@@ -82,33 +137,100 @@ export class Ant {
   }
 
   private getPerception(): Vector {
-    return this.position.add(this.velocity.mult(AcoConfig.antPerceptionRange));
+    return this.position
+      .copy()
+      .add(this.velocity.copy().normalize().mult(AcoConfig.antPerceptionRange));
   }
 
+  // private handleObstacles(): void {
+  //   let obstacleInRange: boolean;
+  //   do {
+  //     const perception = this.position.add(
+  //       this.desiredVelocity.mult(AcoConfig.antPerceptionRange * 2),
+  //     );
+  //     obstacleInRange = this.world.isObstacleInAntPerceptionRange(
+  //       this.position,
+  //       perception,
+  //     );
+  //     if (obstacleInRange) {
+  //       // randomly set positive or negative angleRange
+  //       // TODO: turn left/right based on the angle of collision
+  //       this.desiredVelocity.rotate(
+  //         Math.random() < 0.5
+  //           ? AcoConfig.antObstacleAngleRange
+  //           : -AcoConfig.antObstacleAngleRange,
+  //         true,
+  //       );
+  //     }
+  //   } while (obstacleInRange);
+  // }
+
   private handleObstacles(): void {
-    let obstacleInRange: boolean;
-    do {
+    const maxAttempts = 8;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      // Look along the direction we intend to move next, not the stale
+      // velocity — otherwise rotating desiredVelocity below has no effect on
+      // what we're testing on the next iteration.
       const perception = this.position.add(
-        this.desiredVelocity.mult(AcoConfig.antPerceptionRange * 2),
+        this.desiredVelocity
+          .copy()
+          .normalize()
+          .mult(AcoConfig.antPerceptionRange),
       );
-      obstacleInRange = this.world.isObstacleInAntPerceptionRange(
+
+      const obstacleInRange = this.world.isObstacleInAntPerceptionRange(
         this.position,
         perception,
       );
-      if (obstacleInRange) {
-        // randomly set positive or negative angleRange
-        // TODO: turn left/right based on the angle of collision
-        this.desiredVelocity.rotate(
-          Math.random() < 0.5
-            ? AcoConfig.antObstacleAngleRange
-            : -AcoConfig.antObstacleAngleRange,
-          true,
-        );
+
+      if (!obstacleInRange) {
+        if (attempt > 0) {
+          // Snap the velocity value, so it immediately follows the new desired direction,
+          // rather than slowly turning toward it.
+          this.velocity = this.desiredVelocity
+            .copy()
+            .setMagnitude(this.velocity.getMagnitude());
+        }
+        return;
       }
-    } while (obstacleInRange);
+
+      this.desiredVelocity.rotate(
+        Math.random() < 0.5
+          ? AcoConfig.antObstacleAngleRange
+          : -AcoConfig.antObstacleAngleRange,
+        true,
+      );
+    }
+
+    // Couldn't find a clear direction — turn around outright.
+    this.desiredVelocity.rotate(Math.PI, true);
+    this.velocity.rotate(Math.PI, true);
   }
 
-  private handleWandering() {
+  private clampToBounds(): void {
+    const { w, h } = this.world.dims;
+    if (this.position.x < 0) {
+      this.position.x = 0;
+      this.velocity.x = Math.abs(this.velocity.x);
+      this.desiredVelocity.x = Math.abs(this.desiredVelocity.x);
+    } else if (this.position.x > w) {
+      this.position.x = w;
+      this.velocity.x = -Math.abs(this.velocity.x);
+      this.desiredVelocity.x = -Math.abs(this.desiredVelocity.x);
+    }
+    if (this.position.y < 0) {
+      this.position.y = 0;
+      this.velocity.y = Math.abs(this.velocity.y);
+      this.desiredVelocity.y = Math.abs(this.desiredVelocity.y);
+    } else if (this.position.y > h) {
+      this.position.y = h;
+      this.velocity.y = -Math.abs(this.velocity.y);
+      this.desiredVelocity.y = -Math.abs(this.desiredVelocity.y);
+    }
+  }
+
+  private handleWandering(): void {
     const angle = randomFloat(-1, 1);
     this.desiredVelocity.rotate(angle * AcoConfig.antWanderStrength, true);
   }
@@ -131,12 +253,7 @@ export class Ant {
     }
   }
 
-  private handleSearchingForFood() {
-    // force ant to use its pedometer to go back to the colony if max steps reached
-    if (this.steps >= AcoConfig.antMaxSteps) {
-      return this.returningHomeUsingPedometer();
-    }
-
+  private handleWandering1() {
     // check if food item exists within perception range
     if (!this.targetFoodItem) {
       this.targetFoodItem = this.world.getFoodItemInAntPerceptionRange(
@@ -198,7 +315,7 @@ export class Ant {
   }
 
   private shouldPheromoneBeDeposited() {
-    if (this.state === IAntState.ReturningHomeUsingPedometer) {
+    if (this.state === AntState.ReturningHomeUsingPedometer) {
       return false;
     }
     if (!this.lastDepositedPheromone) {
@@ -222,79 +339,12 @@ export class Ant {
     this.world.depositPheromone(this.lastDepositedPheromone);
   }
 
-  private updatePosition() {
+  private move(): void {
     const subtracted = this.desiredVelocity.sub(this.velocity);
     const desiredSteer = subtracted.mult(AcoConfig.antSteeringLimit);
     const acceleration = desiredSteer.limit(AcoConfig.antSteeringLimit);
 
     this.velocity.add(acceleration, true).limit(AcoConfig.antMaxSpeed);
     this.position.add(this.velocity.mult(AcoConfig.antMaxSpeed), true);
-  }
-
-  // private renderAnt() {
-  //   this.p.push();
-  //   this.p.strokeWeight(AcoConfig.antStrokeWeight);
-  //   this.p.fill(AcoConfig.antColor);
-  //   this.p.translate(this.position.x, this.position.y);
-  //   this.p.rotate(this.velocity.heading());
-  //   this.p.ellipse(0, 0, AcoConfig.antSize * 2, AcoConfig.antSize / 1.5);
-  //   this.isReturningHome() && this.renderAntWithFoodItem();
-  //   this.p.pop();
-  // }
-
-  // private renderAntWithFoodItem() {
-  //   this.p.push();
-  //   this.p.fill(AcoConfig.foodItemColor);
-  //   this.p.strokeWeight(AcoConfig.foodItemStrokeWeight);
-  //   this.p.circle(AcoConfig.antSize / 2, 0, AcoConfig.foodItemSize);
-  //   this.p.pop();
-  // }
-
-  // private renderPerceptionRange() {
-  //   this.p.push();
-  //   this.p.strokeWeight(AcoConfig.antPerceptionStrokeWeight);
-  //   this.p.fill(
-  //     AcoConfig.antPerceptionColorGray,
-  //     AcoConfig.antPerceptionColorAlpha,
-  //   );
-  //   const perception = this.getPerception();
-  //   this.p.circle(perception.x, perception.y, AcoConfig.antPerceptionRange * 2);
-  //   this.p.pop();
-  // }
-
-  public returningHome() {
-    this.state = IAntState.ReturningHome;
-  }
-
-  public searchingForFood() {
-    this.state = IAntState.SearchingForFood;
-  }
-
-  public returningHomeUsingPedometer() {
-    this.state = IAntState.ReturningHomeUsingPedometer;
-  }
-
-  public isSearchingForFood() {
-    return this.state === IAntState.SearchingForFood;
-  }
-
-  public isReturningHome() {
-    return this.state === IAntState.ReturningHome;
-  }
-
-  public isReturningHomeUsingPedometer() {
-    return this.state === IAntState.ReturningHomeUsingPedometer;
-  }
-
-  public update() {
-    // this.handleObstacles();
-    // this.handlePheromoneDeposit();
-    // this.isSearchingForFood() && this.handleSearchingForFood();
-    // this.isReturningHome() && this.handleReturningHome();
-    // this.isReturningHomeUsingPedometer() &&
-    //   this.handleReturningHomeUsingPedometer();
-    // this.handleWandering();
-    // this.updatePosition();
-    // this.steps += 1;
   }
 }
