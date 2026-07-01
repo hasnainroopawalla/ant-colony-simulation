@@ -27,6 +27,8 @@ export class World {
       new Obstacle(0, 0, 0, this.dims.h),
       new Obstacle(this.dims.w, 0, this.dims.w, this.dims.h),
       new Obstacle(0, this.dims.h, this.dims.w, this.dims.h),
+
+      new Obstacle(300, 400, 80, 200),
     ];
 
     this.foodQuadtree = new Quadtree({

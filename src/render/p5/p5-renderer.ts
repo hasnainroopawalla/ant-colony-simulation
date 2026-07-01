@@ -28,6 +28,8 @@ export class P5Renderer extends Renderer {
   public render(scene: Scene): void {
     this.p.background(RenderConfig.worldBackground);
 
+    this.renderObstacles(scene);
+
     this.renderAnts(scene);
     this.renderColonies(scene);
   }
@@ -66,6 +68,16 @@ export class P5Renderer extends Renderer {
       this.p.textAlign(this.p.CENTER, this.p.CENTER);
       this.p.textSize(RenderConfig.colonyTextSize);
       this.p.text(colony.foodCount, colony.position.x, colony.position.y);
+      this.p.pop();
+    });
+  }
+
+  private renderObstacles(scene: Scene): void {
+    scene.obstacles.forEach((obstacle) => {
+      this.p.push();
+      this.p.strokeWeight(RenderConfig.colonyStrokeWeight);
+      this.p.stroke(RenderConfig.colonyColor);
+      this.p.line(obstacle.x1, obstacle.y1, obstacle.x2, obstacle.y2);
       this.p.pop();
     });
   }

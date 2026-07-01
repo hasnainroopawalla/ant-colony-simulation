@@ -1,12 +1,14 @@
 import { Ant } from "../simulations/aco/ant";
 import type { Colony } from "../world/colony";
 import type { FoodItem } from "../world/food-item";
+import { Obstacle } from "../world/obstacle";
 
 export type FrameCallback = () => void;
 
 // TODO: make this generic
 export type Scene = {
   food: FoodItem[];
+  obstacles: Obstacle[];
   colonies: Colony[];
   simulation: { ants: Ant[] };
 };

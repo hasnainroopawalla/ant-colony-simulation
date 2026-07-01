@@ -44,6 +44,7 @@ export class Simulator {
   private getScene(): Scene {
     return {
       food: this.world.foodItems,
+      obstacles: this.world.obstacles,
       colonies: this.world.colonies,
       simulation: this.simulation.getView(),
     };
