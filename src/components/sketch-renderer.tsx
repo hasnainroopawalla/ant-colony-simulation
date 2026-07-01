@@ -1,15 +1,38 @@
 import * as React from "react";
-import { sketch } from "../aco";
-import p5 from "p5";
+import { Simulator } from "../simulator";
+import { P5Renderer } from "../render";
+import { AntColonySimulation } from "../simulations";
+import { World } from "../world";
 
-export function Sketch() {
-  const p5ContainerRef = React.useRef<HTMLDivElement>(null);
+function P5Sketch() {
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    const p5Instance = new p5(sketch, p5ContainerRef.current ?? undefined);
+    if (!containerRef.current) {
+      return;
+    }
 
-    return () => p5Instance.remove();
+    const renderer = new P5Renderer(containerRef.current);
+
+    const dims = {
+      w: containerRef.current.clientWidth,
+      h: containerRef.current.clientHeight,
+    };
+
+    const world = new World(dims);
+    const simulation = new AntColonySimulation(world);
+
+    const sim = new Simulator(world, simulation, renderer);
+    sim.start();
+
+    return () => {
+      sim.stop();
+      // TODO
+      // p5Instance.remove();
+    };
   }, []);
 
-  return <div className="sketch-container" ref={p5ContainerRef} />;
+  return <div className="sketch-container" ref={containerRef} />;
 }
+
+export { P5Sketch as Sketch };

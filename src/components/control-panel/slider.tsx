@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IConfig, IUpdateAcoConfig } from "../../aco";
+import { IConfig, IUpdateAcoConfig } from "../../simulations/aco";
 
 type ISliderProps = {
   configParam: keyof IConfig;

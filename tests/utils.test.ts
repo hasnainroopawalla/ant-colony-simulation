@@ -1,5 +1,5 @@
-import { distance, pointInCircle, Vector } from "../src/aco";
-import { randomFloat } from "../src/aco/utils";
+import { distance, pointInCircle, Vector } from "../src/simulations/aco";
+import { randomFloat } from "../src/math/utils";
 
 let circlePosition: Vector;
 let circleDiameter: number;
@@ -25,7 +25,7 @@ describe("euclideanDistance", () => {
   });
   test("should return the Euclidean distance between 2 points in a 2D space float", () => {
     expect(distance(new Vector(3, 5), new Vector(-2, 4), true)).toBeCloseTo(
-      5.099
+      5.099,
     );
   });
 });
@@ -37,17 +37,17 @@ describe("pointInCircle", () => {
   });
   test("should return true if candidate is inside the circle", () => {
     expect(
-      pointInCircle(new Vector(13, 10), circlePosition, circleDiameter)
+      pointInCircle(new Vector(13, 10), circlePosition, circleDiameter),
     ).toBe(true);
   });
   test("should return true if candidate has collided with the circle boundary", () => {
     expect(
-      pointInCircle(new Vector(15, 10), circlePosition, circleDiameter)
+      pointInCircle(new Vector(15, 10), circlePosition, circleDiameter),
     ).toBe(true);
   });
   test("should return false if candidate is outside the circle", () => {
     expect(
-      pointInCircle(new Vector(20, 20), circlePosition, circleDiameter)
+      pointInCircle(new Vector(20, 20), circlePosition, circleDiameter),
     ).toBe(false);
   });
 });

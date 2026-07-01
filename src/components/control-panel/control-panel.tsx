@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ControlPanelToggle } from "./toggle";
 import { ControlPanelContent } from "./content";
-import { IUpdateAcoConfig } from "../../aco";
+import { IUpdateAcoConfig } from "../../simulations/aco";
 
 type IControlPanelProps = {
   setCanvasInteraction: (_: boolean) => void;

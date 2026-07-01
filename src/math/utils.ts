@@ -1,4 +1,4 @@
-import { Obstacle } from "./obstacle";
+import { Obstacle } from "../world/obstacle";
 import { Vector } from "./vector";
 
 export function distanceSquared(position1: Vector, position2: Vector): number {
@@ -11,7 +11,7 @@ export function distanceSquared(position1: Vector, position2: Vector): number {
 export function distance(
   position1: Vector,
   position2: Vector,
-  euclidean?: boolean
+  euclidean?: boolean,
 ): number {
   const distance = distanceSquared(position1, position2);
   return euclidean ? Math.sqrt(distance) : distance;
@@ -20,7 +20,7 @@ export function distance(
 export function pointInCircle(
   pointPosition: Vector,
   circlePosition: Vector,
-  circleDiameter: number
+  circleDiameter: number,
 ): boolean {
   return (
     distance(pointPosition, circlePosition) <= Math.pow(circleDiameter / 2, 2)
@@ -31,7 +31,7 @@ export function areCirclesIntersecting(
   circle1Position: Vector,
   circle1Radius: number,
   circle2Position: Vector,
-  circle2Radius: number
+  circle2Radius: number,
 ): boolean {
   return (
     distance(circle1Position, circle2Position) <=
@@ -39,15 +39,13 @@ export function areCirclesIntersecting(
   );
 }
 
-// TODO: add unit tests
 export function randomFloat(min: number, max: number): number {
   return Math.random() * (max - min) + min;
 }
 
-// TODO: add unit tests
 export function areLinesIntersecting(
   line1: Obstacle,
-  line2: Obstacle
+  line2: Obstacle,
 ): boolean {
   const uA =
     ((line2.x2 - line2.x1) * (line1.y1 - line2.y1) -

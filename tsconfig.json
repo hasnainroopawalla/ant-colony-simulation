@@ -7,8 +7,7 @@
     "jsx": "react-jsx",
     "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"],
     "allowJs": true,
-    "strict": false,
-    "noImplicitAny": true,
+    "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
@@ -16,5 +15,11 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src", "tests", "vite.config.ts", "vitest.setup.ts", "eslint.config.js"]
+  "include": [
+    "src",
+    "tests",
+    "vite.config.ts",
+    "vitest.setup.ts",
+    "eslint.config.js"
+  ]
 }

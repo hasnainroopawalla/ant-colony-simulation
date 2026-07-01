@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IUpdateAcoConfig, IConfig } from "../../aco";
+import { IUpdateAcoConfig, IConfig } from "../../simulations/aco";
 
 export type ICheckboxProps = {
   configParam: keyof IConfig;

@@ -1,10 +1,13 @@
-import { FoodItem } from "./food-item";
-import { World } from "./world";
-import { Colony } from "./colony";
-import { config } from "./config";
-import { IPheromoneType, Pheromone } from "./pheromone";
-import { areCirclesIntersecting, distance, randomFloat } from "./utils";
-import { Vector, fromAngle } from "./vector";
+import { FoodItem } from "../../world/food-item";
+import { Colony } from "../../world/colony";
+import AcoConfig from "./aco.config";
+import {
+  areCirclesIntersecting,
+  distance,
+  randomFloat,
+} from "../../math/utils";
+import { Vector, fromAngle } from "../../math/vector";
+import type { World } from "../../world";
 
 export enum IAntState {
   ReturningHome,
@@ -19,22 +22,22 @@ type IAntennas = {
 };
 
 export class Ant {
-  p: p5;
-  world: World;
-  position: Vector;
-  velocity: Vector;
-  desiredVelocity: Vector;
-  angle: number;
-  state: IAntState;
-  colony: Colony;
-  targetFoodItem: FoodItem | null;
-  lastDepositedPheromone?: Pheromone;
-  steps: number;
+  public position: Vector;
+  public velocity: Vector;
 
-  constructor(p: p5, colony: Colony, world: World) {
-    this.p = p;
+  private world: World;
+  private desiredVelocity: Vector;
+  private angle: number;
+  private state: IAntState;
+  private colony: Colony;
+  private targetFoodItem: FoodItem | null;
+  private lastDepositedPheromone?: Pheromone;
+  private steps: number;
+
+  constructor(colony: Colony, world: World) {
     this.world = world;
     this.colony = colony;
+
     this.position = new Vector(this.colony.position.x, this.colony.position.y);
     this.setSpawnOrientation();
     this.searchingForFood();
@@ -42,7 +45,7 @@ export class Ant {
 
   private setSpawnOrientation() {
     this.steps = 0;
-    this.angle = randomFloat(0, this.p.TWO_PI);
+    this.angle = randomFloat(0, Math.PI * 2);
     this.velocity = fromAngle(this.angle);
     this.desiredVelocity = this.velocity.copy();
   }
@@ -54,48 +57,52 @@ export class Ant {
   private getAntennas(): IAntennas {
     const leftAntenna = this.position.add(
       this.desiredVelocity
-        .rotate(-config.antAntennaRotation)
-        .mult(config.antAntennaRange)
+        .rotate(-AcoConfig.antAntennaRotation)
+        .mult(AcoConfig.antAntennaRange),
     );
     const frontAntenna = this.position.add(
-      this.desiredVelocity.mult(config.antAntennaRange)
+      this.desiredVelocity.mult(AcoConfig.antAntennaRange),
     );
     const rightAntenna = this.position.add(
       this.desiredVelocity
-        .rotate(config.antAntennaRotation)
-        .mult(config.antAntennaRange)
+        .rotate(AcoConfig.antAntennaRotation)
+        .mult(AcoConfig.antAntennaRange),
     );
 
-    config.showAntAntennas &&
-      this.p.circle(leftAntenna.x, leftAntenna.y, config.antAntennaRadius) &&
-      this.p.circle(frontAntenna.x, frontAntenna.y, config.antAntennaRadius) &&
-      this.p.circle(rightAntenna.x, rightAntenna.y, config.antAntennaRadius);
+    // AcoConfig.showAntAntennas &&
+    //   this.p.circle(leftAntenna.x, leftAntenna.y, AcoConfig.antAntennaRadius) &&
+    //   this.p.circle(
+    //     frontAntenna.x,
+    //     frontAntenna.y,
+    //     AcoConfig.antAntennaRadius,
+    //   ) &&
+    //   this.p.circle(rightAntenna.x, rightAntenna.y, AcoConfig.antAntennaRadius);
 
     return { leftAntenna, frontAntenna, rightAntenna };
   }
 
   private getPerception(): Vector {
-    return this.position.add(this.velocity.mult(config.antPerceptionRange));
+    return this.position.add(this.velocity.mult(AcoConfig.antPerceptionRange));
   }
 
   private handleObstacles(): void {
     let obstacleInRange: boolean;
     do {
       const perception = this.position.add(
-        this.desiredVelocity.mult(config.antPerceptionRange * 2)
+        this.desiredVelocity.mult(AcoConfig.antPerceptionRange * 2),
       );
       obstacleInRange = this.world.isObstacleInAntPerceptionRange(
         this.position,
-        perception
+        perception,
       );
       if (obstacleInRange) {
         // randomly set positive or negative angleRange
         // TODO: turn left/right based on the angle of collision
         this.desiredVelocity.rotate(
           Math.random() < 0.5
-            ? config.antObstacleAngleRange
-            : -config.antObstacleAngleRange,
-          true
+            ? AcoConfig.antObstacleAngleRange
+            : -AcoConfig.antObstacleAngleRange,
+          true,
         );
       }
     } while (obstacleInRange);
@@ -103,7 +110,7 @@ export class Ant {
 
   private handleWandering() {
     const angle = randomFloat(-1, 1);
-    this.desiredVelocity.rotate(angle * config.antWanderStrength, true);
+    this.desiredVelocity.rotate(angle * AcoConfig.antWanderStrength, true);
   }
 
   private handleAntennaSteering(pheromoneType: IPheromoneType) {
@@ -111,22 +118,22 @@ export class Ant {
     const [leftAntenna, frontAntenna, rightAntenna] =
       this.world.computeAntAntennasPheromoneValues(
         [antennas.leftAntenna, antennas.frontAntenna, antennas.rightAntenna],
-        config.antAntennaRadius,
-        pheromoneType
+        AcoConfig.antAntennaRadius,
+        pheromoneType,
       );
 
     if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
       // do nothing
     } else if (leftAntenna > rightAntenna) {
-      this.desiredVelocity.rotate(-config.antAntennaRotation, true);
+      this.desiredVelocity.rotate(-AcoConfig.antAntennaRotation, true);
     } else if (rightAntenna > leftAntenna) {
-      this.desiredVelocity.rotate(config.antAntennaRotation, true);
+      this.desiredVelocity.rotate(AcoConfig.antAntennaRotation, true);
     }
   }
 
   private handleSearchingForFood() {
     // force ant to use its pedometer to go back to the colony if max steps reached
-    if (this.steps >= config.antMaxSteps) {
+    if (this.steps >= AcoConfig.antMaxSteps) {
       return this.returningHomeUsingPedometer();
     }
 
@@ -134,7 +141,7 @@ export class Ant {
     if (!this.targetFoodItem) {
       this.targetFoodItem = this.world.getFoodItemInAntPerceptionRange(
         this.getPerception(),
-        config.antPerceptionRange
+        AcoConfig.antPerceptionRange,
       );
     }
 
@@ -184,9 +191,9 @@ export class Ant {
   private colonyInPerceptionRange(): boolean {
     return areCirclesIntersecting(
       this.position,
-      config.antPerceptionRange * 2,
+      AcoConfig.antPerceptionRange * 2,
       this.colony.position,
-      config.colonySize
+      AcoConfig.colonySize,
     );
   }
 
@@ -199,7 +206,7 @@ export class Ant {
     }
     return (
       distance(this.position, this.lastDepositedPheromone.position) >
-      config.pheromoneDistanceBetween
+      AcoConfig.pheromoneDistanceBetween
     );
   }
 
@@ -210,47 +217,50 @@ export class Ant {
     this.lastDepositedPheromone = new Pheromone(
       this.p,
       this.position.copy(),
-      this.isReturningHome() ? IPheromoneType.Food : IPheromoneType.Home
+      this.isReturningHome() ? IPheromoneType.Food : IPheromoneType.Home,
     );
     this.world.depositPheromone(this.lastDepositedPheromone);
   }
 
   private updatePosition() {
     const subtracted = this.desiredVelocity.sub(this.velocity);
-    const desiredSteer = subtracted.mult(config.antSteeringLimit);
-    const acceleration = desiredSteer.limit(config.antSteeringLimit);
+    const desiredSteer = subtracted.mult(AcoConfig.antSteeringLimit);
+    const acceleration = desiredSteer.limit(AcoConfig.antSteeringLimit);
 
-    this.velocity.add(acceleration, true).limit(config.antMaxSpeed);
-    this.position.add(this.velocity.mult(config.antMaxSpeed), true);
+    this.velocity.add(acceleration, true).limit(AcoConfig.antMaxSpeed);
+    this.position.add(this.velocity.mult(AcoConfig.antMaxSpeed), true);
   }
 
-  private renderAnt() {
-    this.p.push();
-    this.p.strokeWeight(config.antStrokeWeight);
-    this.p.fill(config.antColor);
-    this.p.translate(this.position.x, this.position.y);
-    this.p.rotate(this.velocity.heading());
-    this.p.ellipse(0, 0, config.antSize * 2, config.antSize / 1.5);
-    this.isReturningHome() && this.renderAntWithFoodItem();
-    this.p.pop();
-  }
+  // private renderAnt() {
+  //   this.p.push();
+  //   this.p.strokeWeight(AcoConfig.antStrokeWeight);
+  //   this.p.fill(AcoConfig.antColor);
+  //   this.p.translate(this.position.x, this.position.y);
+  //   this.p.rotate(this.velocity.heading());
+  //   this.p.ellipse(0, 0, AcoConfig.antSize * 2, AcoConfig.antSize / 1.5);
+  //   this.isReturningHome() && this.renderAntWithFoodItem();
+  //   this.p.pop();
+  // }
 
-  private renderAntWithFoodItem() {
-    this.p.push();
-    this.p.fill(config.foodItemColor);
-    this.p.strokeWeight(config.foodItemStrokeWeight);
-    this.p.circle(config.antSize / 2, 0, config.foodItemSize);
-    this.p.pop();
-  }
+  // private renderAntWithFoodItem() {
+  //   this.p.push();
+  //   this.p.fill(AcoConfig.foodItemColor);
+  //   this.p.strokeWeight(AcoConfig.foodItemStrokeWeight);
+  //   this.p.circle(AcoConfig.antSize / 2, 0, AcoConfig.foodItemSize);
+  //   this.p.pop();
+  // }
 
-  private renderPerceptionRange() {
-    this.p.push();
-    this.p.strokeWeight(config.antPerceptionStrokeWeight);
-    this.p.fill(config.antPerceptionColorGray, config.antPerceptionColorAlpha);
-    const perception = this.getPerception();
-    this.p.circle(perception.x, perception.y, config.antPerceptionRange * 2);
-    this.p.pop();
-  }
+  // private renderPerceptionRange() {
+  //   this.p.push();
+  //   this.p.strokeWeight(AcoConfig.antPerceptionStrokeWeight);
+  //   this.p.fill(
+  //     AcoConfig.antPerceptionColorGray,
+  //     AcoConfig.antPerceptionColorAlpha,
+  //   );
+  //   const perception = this.getPerception();
+  //   this.p.circle(perception.x, perception.y, AcoConfig.antPerceptionRange * 2);
+  //   this.p.pop();
+  // }
 
   public returningHome() {
     this.state = IAntState.ReturningHome;
@@ -277,21 +287,14 @@ export class Ant {
   }
 
   public update() {
-    this.handleObstacles();
-    this.handlePheromoneDeposit();
-
-    this.isSearchingForFood() && this.handleSearchingForFood();
-    this.isReturningHome() && this.handleReturningHome();
-    this.isReturningHomeUsingPedometer() &&
-      this.handleReturningHomeUsingPedometer();
-    this.handleWandering();
-
-    this.updatePosition();
-    this.steps += 1;
-  }
-
-  public render() {
-    this.renderAnt();
-    config.showAntPerceptionRange && this.renderPerceptionRange();
+    // this.handleObstacles();
+    // this.handlePheromoneDeposit();
+    // this.isSearchingForFood() && this.handleSearchingForFood();
+    // this.isReturningHome() && this.handleReturningHome();
+    // this.isReturningHomeUsingPedometer() &&
+    //   this.handleReturningHomeUsingPedometer();
+    // this.handleWandering();
+    // this.updatePosition();
+    // this.steps += 1;
   }
 }

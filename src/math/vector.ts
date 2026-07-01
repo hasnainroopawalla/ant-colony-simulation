@@ -1,3 +1,4 @@
+// TODO: consider using p5.Vector instead of this custom Vector class
 export class Vector {
   x: number;
   y: number;
@@ -33,7 +34,7 @@ export class Vector {
   public rotate(angle: number, assign?: boolean): Vector {
     const result = new Vector(
       this.x * Math.cos(angle) - this.y * Math.sin(angle),
-      this.x * Math.sin(angle) + this.y * Math.cos(angle)
+      this.x * Math.sin(angle) + this.y * Math.cos(angle),
     );
     assign && this.assign(result);
     return result;
@@ -47,7 +48,7 @@ export class Vector {
     const direction = this.direction();
     const result = new Vector(
       Math.cos(direction) * magnitude,
-      Math.sin(direction) * magnitude
+      Math.sin(direction) * magnitude,
     );
     assign && this.assign(result);
     return result;
