@@ -12,7 +12,7 @@ const StatRow = ({
   accentClassName = "text-white",
 }: StatRowProps) => (
   <div className="flex items-center justify-between gap-4">
-    <span className="text-[9px] tracking-wider text-white/60 uppercase">
+    <span className="font-mono text-[9px] tracking-wider text-white/60 uppercase">
       {label}
     </span>
     <span className={`font-mono text-[11px] tabular-nums ${accentClassName}`}>
