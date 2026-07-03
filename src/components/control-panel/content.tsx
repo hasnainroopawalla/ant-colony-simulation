@@ -6,7 +6,7 @@ type IControlPanelContentProps = {
 };
 
 const SectionHeader = ({ title }: { title: string }) => (
-  <div className="mt-4 mb-2 px-4 text-[11px] font-semibold tracking-wider text-white/50 uppercase">
+  <div className="mt-4 mb-2 px-4 text-[10px] font-semibold tracking-wider text-white/50 uppercase">
     {title}
   </div>
 );
@@ -23,9 +23,9 @@ const MockSlider = ({
   max?: number;
 }) => (
   <div className="px-4 py-2">
-    <div className="mb-1 flex items-center justify-between text-xs">
-      <span className="text-white/80">{label}</span>
-      <span className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-white/90">
+    <div className="mb-1 flex items-center justify-between">
+      <span className="text-[11px] text-white/80">{label}</span>
+      <span className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-xs text-white/90">
         {value}
       </span>
     </div>
@@ -46,7 +46,7 @@ const MockToggle = ({
   label: string;
   defaultChecked?: boolean;
 }) => (
-  <label className="flex cursor-pointer items-center justify-between px-4 py-2 text-xs text-white/80 hover:bg-white/5">
+  <label className="flex cursor-pointer items-center justify-between px-4 py-2 text-[11px] text-white/80 hover:bg-white/5">
     <span>{label}</span>
     <input
       type="checkbox"

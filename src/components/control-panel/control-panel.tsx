@@ -22,7 +22,7 @@ export const ControlPanel = (props: IControlPanelProps) => {
       className="relative flex h-screen w-75 shrink-0 flex-col border-r border-black/50 bg-neutral-800 text-white"
     >
       <div className="flex items-center border-b border-white/5 bg-white/2 px-4 py-3">
-        <span className="text-base font-semibold tracking-wide">
+        <span className="text-sm font-semibold tracking-wide">
           Ant Colony Simulation
         </span>
       </div>
