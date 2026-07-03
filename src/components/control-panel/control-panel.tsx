@@ -21,7 +21,7 @@ export const ControlPanel = (props: IControlPanelProps) => {
       data-testid="control-panel-container"
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
-      className="relative flex h-screen w-75 shrink-0 flex-col border-r border-black/50 bg-neutral-800 text-white"
+      className="relative flex h-screen w-75 shrink-0 flex-col border-r border-black/50 bg-[#121212] text-white"
     >
       <div className="flex items-center justify-between gap-3 border-b border-white/5 bg-white/2 px-4 py-2.5">
         <span className="font-mono text-sm font-semibold tracking-wide">
