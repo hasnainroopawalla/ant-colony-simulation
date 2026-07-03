@@ -27,8 +27,8 @@ describe("ControlPanel", () => {
     vi.resetAllMocks();
   });
 
-  test("renders ControlPanelToggle by default", async () => {
-    expect(screen.getByTestId("control-panel-toggle-button")).toBeVisible();
+  test("renders the control panel open by default", async () => {
+    expect(screen.getByTestId(CONTROL_PANEL_CONTAINER)).toBeVisible();
   });
 
   test("disable canvas interaction when mouse over", async () => {

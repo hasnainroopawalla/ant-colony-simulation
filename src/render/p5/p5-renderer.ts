@@ -9,7 +9,7 @@ export class P5Renderer extends Renderer {
   constructor(canvas: HTMLDivElement) {
     super();
 
-    const sketch = createSketch(() => this.frameCallback());
+    const sketch = createSketch(canvas, () => this.frameCallback());
     this.p = new p5(sketch, canvas);
   }
 
@@ -33,7 +33,7 @@ export class P5Renderer extends Renderer {
     this.renderAnts(scene);
     this.renderColonies(scene);
     this.renderFoodItems(scene);
-    this.renderPheromones(scene);
+    // this.renderPheromones(scene);
   }
 
   private renderAnts(scene: Scene): void {

@@ -1,39 +1,35 @@
-import * as React from "react";
-import { ControlPanelToggle } from "./toggle";
 import { ControlPanelContent } from "./content";
-import { IUpdateAcoConfig } from "../../simulations/aco";
 
 type IControlPanelProps = {
-  setCanvasInteraction: (_: boolean) => void;
-  updateAcoConfig: IUpdateAcoConfig;
+  setCanvasInteraction?: (_: boolean) => void;
+  // TODO
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updateAcoConfig?: (...args: any[]) => void;
 };
 
 export const ControlPanel = (props: IControlPanelProps) => {
   const { setCanvasInteraction, updateAcoConfig } = props;
-  const [showControlPanel, setShowControlPanel] = React.useState(false);
 
-  const hideControlPanelCallback = () => {
-    setShowControlPanel(false);
-    setCanvasInteraction(true);
-  };
+  const handleMouseOver = () => setCanvasInteraction?.(false);
+  const handleMouseOut = () => setCanvasInteraction?.(true);
 
   return (
-    <div
+    <aside
       id="control-panel-container"
       data-testid="control-panel-container"
-      onMouseOver={() => setCanvasInteraction(false)}
-      onMouseOut={() => setCanvasInteraction(true)}
+      onMouseOver={handleMouseOver}
+      onMouseOut={handleMouseOut}
+      className="relative flex h-screen w-75 shrink-0 flex-col border-r border-black/50 bg-neutral-800 text-white"
     >
-      {showControlPanel ? (
-        <ControlPanelContent
-          hideControlPanel={hideControlPanelCallback}
-          updateAcoConfig={updateAcoConfig}
-        />
-      ) : (
-        <ControlPanelToggle
-          showControlPanel={() => setShowControlPanel(true)}
-        />
-      )}
-    </div>
+      <div className="flex items-center border-b border-white/5 bg-white/2 px-4 py-3">
+        <span className="text-base font-semibold tracking-wide">
+          Ant Colony Simulation
+        </span>
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        <ControlPanelContent updateAcoConfig={updateAcoConfig} />
+      </div>
+    </aside>
   );
 };

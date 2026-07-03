@@ -13,7 +13,12 @@ export function P5SimulatorCanvas({
     if (canvasRef.current) {
       onCanvasReady(canvasRef.current);
     }
-  }, [canvasRef.current, onCanvasReady]);
+  }, [canvasRef, onCanvasReady]);
 
-  return <div className="sketch-container" ref={canvasRef} />;
+  return (
+    <div
+      className="sketch-container h-screen flex-1 overflow-hidden"
+      ref={canvasRef}
+    />
+  );
 }
