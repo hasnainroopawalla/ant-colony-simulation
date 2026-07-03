@@ -1,7 +1,7 @@
 const AcoConfig = {
   // ant behavior
   antWanderStrength: 6,
-  antMaxSpeed: 120,
+  antSpeed: 120,
   antSteeringLimit: 720,
   antPerceptionRange: 35, // radius
   antAntennaRadius: 70,

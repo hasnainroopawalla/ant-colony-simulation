@@ -27,7 +27,7 @@ export abstract class Renderer {
 
   public abstract start(): void;
 
-  public abstract stop(): void;
+  public abstract pause(): void;
 
   public abstract isRunning(): boolean;
 

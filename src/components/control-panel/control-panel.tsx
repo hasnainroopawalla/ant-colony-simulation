@@ -56,7 +56,7 @@ export const ControlPanel = (props: IControlPanelProps) => {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <ControlPanelContent updateAcoConfig={updateAcoConfig} />
+        <ControlPanelContent />
       </div>
 
       <div className="flex items-center justify-between border-t border-white/5 bg-white/2 px-4 py-2 font-mono text-[10px] text-white/40">

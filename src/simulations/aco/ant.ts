@@ -52,7 +52,7 @@ export class Ant {
 
     this.position = spawnPosition;
     this.angle = MathUtils.randomFloat(0, Math.PI * 2);
-    this.velocity = MathUtils.fromAngle(this.angle).mult(AcoConfig.antMaxSpeed);
+    this.velocity = MathUtils.fromAngle(this.angle).mult(AcoConfig.antSpeed);
     this.desiredVelocity = MathUtils.fromAngle(this.angle);
   }
 
@@ -277,11 +277,11 @@ export class Ant {
   private move(dt: number): void {
     const desired = this.desiredVelocity
       .copy()
-      .setMagnitude(AcoConfig.antMaxSpeed);
+      .setMagnitude(AcoConfig.antSpeed);
     const steering = desired.sub(this.velocity);
     const acceleration = steering.limit(AcoConfig.antSteeringLimit);
 
-    this.velocity.add(acceleration.mult(dt), true).limit(AcoConfig.antMaxSpeed);
+    this.velocity.add(acceleration.mult(dt), true).limit(AcoConfig.antSpeed);
     this.position.add(this.velocity.mult(dt), true);
   }
 }

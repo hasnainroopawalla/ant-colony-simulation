@@ -109,12 +109,12 @@ describe("SettingItem", () => {
 });
 
 describe("Slider", () => {
-  const SLIDER = "antMaxSpeedSlider";
+  const SLIDER = "antSpeedSlider";
 
   beforeEach(() => {
     render(
       <Slider
-        configParam="antMaxSpeed"
+        configParam="antSpeed"
         min={1.0}
         max={10}
         step={1.0}

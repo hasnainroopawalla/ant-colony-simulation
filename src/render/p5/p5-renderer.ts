@@ -25,7 +25,7 @@ export class P5Renderer extends Renderer {
     this.p.loop();
   }
 
-  public stop(): void {
+  public pause(): void {
     this.p.noLoop();
   }
 

@@ -51,13 +51,13 @@ export class Simulator {
     this.renderer.start();
   }
 
-  public stop(): void {
+  public pause(): void {
     if (!this.renderer.isRunning()) {
       console.warn("Simulation is not running.");
       return;
     }
 
-    this.renderer.stop();
+    this.renderer.pause();
   }
 
   private update(): void {
