@@ -94,8 +94,8 @@ export class AntColonySimulation extends Simulation {
   //   return antennaScores;
   // }
 
-  public update(): void {
-    this.ants.forEach((ant) => ant.update());
+  public update(dt: number): void {
+    this.ants.forEach((ant) => ant.update(dt));
   }
 
   private spawnAnts(count: number): Ant[] {

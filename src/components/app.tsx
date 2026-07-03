@@ -17,11 +17,13 @@ function App() {
   return (
     <>
       <div className="flex h-screen w-screen overflow-hidden">
-        {simulator && (
+        {simulator ? (
           <SimulatorProvider simulator={simulator}>
             <ControlPanel />
             <StatsPanel />
           </SimulatorProvider>
+        ) : (
+          <aside className="h-screen w-75 shrink-0 bg-[#121212]" />
         )}
         <P5SimulatorCanvas onCanvasReady={setCanvas} canvasRef={canvasRef} />
       </div>

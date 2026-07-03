@@ -11,6 +11,9 @@ export class Simulator {
   private renderer: Renderer;
   private simulation: Simulation;
 
+  private lastFrameTime: number | null = null;
+  private static readonly MAX_DT = 0.1;
+
   constructor(world: World, simulation: Simulation, renderer: Renderer) {
     this.world = world;
     this.simulation = simulation;
@@ -48,10 +51,21 @@ export class Simulator {
     }
 
     this.renderer.stop();
+    this.lastFrameTime = null;
   }
 
   private update(): void {
-    this.simulation.update();
+    const now = performance.now();
+    const dt =
+      this.lastFrameTime === null
+        ? 1 / 60
+        : Math.min(
+            (now - this.lastFrameTime) / 1000,
+            Simulator.MAX_DT,
+          );
+    this.lastFrameTime = now;
+
+    this.simulation.update(dt);
 
     this.renderer.render(this.getScene());
 

@@ -48,8 +48,8 @@ export class Ant {
 
     this.position = spawnPosition;
     this.angle = MathUtils.randomFloat(0, Math.PI * 2);
-    this.velocity = MathUtils.fromAngle(this.angle);
-    this.desiredVelocity = this.velocity.copy();
+    this.velocity = MathUtils.fromAngle(this.angle).mult(AcoConfig.antMaxSpeed);
+    this.desiredVelocity = MathUtils.fromAngle(this.angle);
   }
 
   // private renderPerceptionRange() {
@@ -64,25 +64,25 @@ export class Ant {
   //   this.p.pop();
   // }
 
-  public update(): void {
+  public update(dt: number): void {
     this.depositPheromone();
 
-    this.decide();
-    this.handleObstacles();
+    this.decide(dt);
+    this.handleObstacles(dt);
 
     // this.isReturningHome() && this.handleReturningHome();
     // this.isReturningHomeUsingPedometer() &&
     //   this.handleReturningHomeUsingPedometer();
     // this.handleWandering();
-    this.move();
+    this.move(dt);
     this.clampToBounds();
     // this.steps += 1;
   }
 
-  private decide(): void {
+  private decide(dt: number): void {
     switch (this.state) {
       case AntState.Wandering:
-        this.handleWandering();
+        this.handleWandering(dt);
         break;
     }
   }
@@ -124,9 +124,18 @@ export class Ant {
       .add(this.velocity.copy().normalize().mult(AcoConfig.antPerceptionRange));
   }
 
-  private handleObstacles(): void {
+  private handleObstacles(dt: number): void {
     const maxAttempts = 8;
     const originalDesired = this.desiredVelocity.copy();
+    const currentSpeed = this.velocity.getMagnitude();
+
+    // Lookahead must always exceed the actual move step for this frame so
+    // large dt spikes cannot tunnel through an obstacle.
+    const stepDistance = currentSpeed * dt;
+    const lookahead = Math.max(
+      AcoConfig.antPerceptionRange,
+      stepDistance * 2,
+    );
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       // Sweep outward from the original heading: 0, +Δ, -Δ, +2Δ, -2Δ, ...
@@ -142,10 +151,7 @@ export class Ant {
       // velocity — otherwise rotating desiredVelocity below has no effect on
       // what we're testing on the next iteration.
       const perception = this.position.add(
-        this.desiredVelocity
-          .copy()
-          .normalize()
-          .mult(AcoConfig.antPerceptionRange),
+        this.desiredVelocity.copy().normalize().mult(lookahead),
       );
 
       const obstacleInRange = this.world.isObstacleInAntPerceptionRange(
@@ -154,13 +160,12 @@ export class Ant {
       );
 
       if (!obstacleInRange) {
-        if (attempt > 0) {
-          // Snap the velocity value, so it immediately follows the new desired direction,
-          // rather than slowly turning toward it.
-          this.velocity = this.desiredVelocity
-            .copy()
-            .setMagnitude(this.velocity.getMagnitude());
-        }
+        // Always snap velocity to the safe direction (including attempt 0)
+        // so move() can't drift into an obstacle because velocity was still
+        // lagging behind the previously-desired heading.
+        this.velocity = this.desiredVelocity
+          .copy()
+          .setMagnitude(currentSpeed);
         return;
       }
     }
@@ -196,9 +201,9 @@ export class Ant {
     }
   }
 
-  private handleWandering(): void {
+  private handleWandering(dt: number): void {
     const angle = MathUtils.randomFloat(-1, 1);
-    this.desiredVelocity.rotate(angle * AcoConfig.antWanderStrength, true);
+    this.desiredVelocity.rotate(angle * AcoConfig.antWanderStrength * dt, true);
   }
 
   private handleAntennaSteering(pheromoneType: IPheromoneType) {
@@ -284,12 +289,14 @@ export class Ant {
   //   );
   // }
 
-  private move(): void {
-    const subtracted = this.desiredVelocity.sub(this.velocity);
-    const desiredSteer = subtracted.mult(AcoConfig.antSteeringLimit);
-    const acceleration = desiredSteer.limit(AcoConfig.antSteeringLimit);
+  private move(dt: number): void {
+    const desired = this.desiredVelocity
+      .copy()
+      .setMagnitude(AcoConfig.antMaxSpeed);
+    const steering = desired.sub(this.velocity);
+    const acceleration = steering.limit(AcoConfig.antSteeringLimit);
 
-    this.velocity.add(acceleration, true).limit(AcoConfig.antMaxSpeed);
-    this.position.add(this.velocity.mult(AcoConfig.antMaxSpeed), true);
+    this.velocity.add(acceleration.mult(dt), true).limit(AcoConfig.antMaxSpeed);
+    this.position.add(this.velocity.mult(dt), true);
   }
 }

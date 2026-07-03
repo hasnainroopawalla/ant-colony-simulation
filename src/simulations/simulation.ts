@@ -9,7 +9,7 @@ export abstract class Simulation {
     this.world = world;
   }
 
-  public abstract update(): void;
+  public abstract update(dt: number): void;
 
   // TODO: this should be generic, not ACO-specific
   public abstract getView(): { ants: Ant[]; pheromones: Pheromone[] };
