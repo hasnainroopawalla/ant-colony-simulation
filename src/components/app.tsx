@@ -5,6 +5,7 @@ import { StartSimulatorAction } from "./start-simulator-action";
 import { useStateRef } from "./utils";
 import { ControlPanel } from "./control-panel";
 import { StatsPanel } from "./stats-panel";
+import { SimulatorProvider } from "./contexts/simulator-context";
 
 function App() {
   const [simulator, setSimulator] = React.useState<Simulator | null>(null);
@@ -16,9 +17,13 @@ function App() {
   return (
     <>
       <div className="flex h-screen w-screen overflow-hidden">
-        <ControlPanel />
+        {simulator && (
+          <SimulatorProvider simulator={simulator}>
+            <ControlPanel />
+            <StatsPanel />
+          </SimulatorProvider>
+        )}
         <P5SimulatorCanvas onCanvasReady={setCanvas} canvasRef={canvasRef} />
-        <StatsPanel />
       </div>
 
       {canvas && !simulator && (

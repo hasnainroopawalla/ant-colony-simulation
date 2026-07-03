@@ -32,4 +32,6 @@ export abstract class Renderer {
   public abstract isRunning(): boolean;
 
   public abstract render(scene: Scene): void;
+
+  public abstract getFps(): number;
 }

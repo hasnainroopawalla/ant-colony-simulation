@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useSimulator } from "./contexts/simulator-context";
 
 type StatRowProps = {
   label: string;
@@ -24,8 +25,7 @@ const StatRow = ({
 export const StatsPanel = () => {
   const [isOpen, setIsOpen] = React.useState(true);
 
-  // Mock values — real data will be wired later.
-  const fps = 60;
+  const { fps } = useStats();
   const antCount = 100;
   const pheromoneCount = 1284;
 
@@ -63,4 +63,22 @@ export const StatsPanel = () => {
       </div>
     </button>
   );
+};
+
+const useStats = () => {
+  const sim = useSimulator();
+
+  const [fps, setFps] = React.useState(0);
+
+  React.useEffect(() => {
+    const unsubscribe = sim.on("stats.update", (data) => {
+      setFps(data.fps);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [sim]);
+
+  return { fps };
 };

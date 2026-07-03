@@ -17,15 +17,15 @@ export class Pheromone {
     this.strength = AcoConfig.pheromoneInitialStrength;
   }
 
-  private evaporate(): void {
-    this.strength -= AcoConfig.pheromoneEvaporationRate;
+  private evaporate(dt: number): void {
+    this.strength -= AcoConfig.pheromoneEvaporationRate * dt;
   }
 
   public shouldBeDestroyed(): boolean {
     return this.strength <= 0;
   }
 
-  public update(): void {
-    this.evaporate();
+  public update(dt: number): void {
+    this.evaporate(dt);
   }
 }

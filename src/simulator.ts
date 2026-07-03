@@ -1,10 +1,12 @@
-import type { Renderer } from "./render";
-import type { Scene } from "./render/renderer";
+import { EventBus, IEvents, Unsubscribe } from "./events";
+import type { Renderer, Scene } from "./render";
 import { Simulation } from "./simulations";
 import { World } from "./world";
 
 export class Simulator {
   public world: World;
+
+  private eventBus: EventBus;
 
   private renderer: Renderer;
   private simulation: Simulation;
@@ -14,7 +16,20 @@ export class Simulator {
     this.simulation = simulation;
     this.renderer = renderer;
 
+    this.eventBus = new EventBus();
+
     this.renderer.setFrameCallback(() => this.update());
+  }
+
+  public on<K extends keyof IEvents>(
+    event: K,
+    handler: (data: IEvents[K]) => void,
+  ): Unsubscribe {
+    return this.eventBus.subscribe(event, handler);
+  }
+
+  public emit<K extends keyof IEvents>(event: K, data: IEvents[K]): void {
+    this.eventBus.emit(event, data);
   }
 
   public start(): void {
@@ -39,6 +54,12 @@ export class Simulator {
     this.simulation.update();
 
     this.renderer.render(this.getScene());
+
+    this.emit("stats.update", {
+      antCount: this.simulation.getView().ants.length,
+      fps: this.renderer.getFps(),
+      pheromoneCount: this.simulation.getView().pheromones.length,
+    });
   }
 
   private getScene(): Scene {

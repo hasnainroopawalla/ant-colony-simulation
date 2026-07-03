@@ -13,6 +13,10 @@ export class P5Renderer extends Renderer {
     this.p = new p5(sketch, canvas);
   }
 
+  public getFps(): number {
+    return this.p.frameRate();
+  }
+
   public start(): void {
     this.p.loop();
   }
@@ -33,13 +37,12 @@ export class P5Renderer extends Renderer {
     this.renderAnts(scene);
     this.renderColonies(scene);
     this.renderFoodItems(scene);
-    // this.renderPheromones(scene);
+    this.renderPheromones(scene);
   }
 
   private renderAnts(scene: Scene): void {
     scene.simulation.ants.forEach((ant) => {
       this.p.push();
-      // this.p.strokeWeight(RenderConfig.antStrokeWeight);
       this.p.stroke(RenderConfig.antColor);
       this.p.fill(RenderConfig.antColor);
       this.p.translate(ant.position.x, ant.position.y);
