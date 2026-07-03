@@ -32,6 +32,10 @@ export class Ant {
   private lastDepositedPheromone?: Pheromone;
   private steps: number;
 
+  // Sweep outward from the current heading: center first, then alternating
+  // sides at increasing magnitudes. Finds the closest clear direction.
+  private static readonly OBSTACLE_SWEEP_OFFSETS = [0, 1, -1, 2, -2, 3, -3, 4];
+
   constructor(
     colony: Colony,
     world: World,
@@ -125,49 +129,35 @@ export class Ant {
   }
 
   private handleObstacles(dt: number): void {
-    const maxAttempts = 8;
     const originalDesired = this.desiredVelocity.copy();
-    const currentSpeed = this.velocity.getMagnitude();
+    const speed = this.velocity.getMagnitude();
+    const lookahead = Math.max(AcoConfig.antPerceptionRange, speed * dt * 2);
 
-    // Lookahead must always exceed the actual move step for this frame so
-    // large dt spikes cannot tunnel through an obstacle.
-    const stepDistance = currentSpeed * dt;
-    const lookahead = Math.max(AcoConfig.antPerceptionRange, stepDistance * 2);
+    for (const step of Ant.OBSTACLE_SWEEP_OFFSETS) {
+      const angle = step * AcoConfig.antObstacleAngleRange;
+      const candidate = originalDesired.copy().rotate(angle, true);
 
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      // Sweep outward from the original heading: 0, +Δ, -Δ, +2Δ, -2Δ, ...
-      // This finds the closest clear direction instead of drifting randomly,
-      // which prevents sudden large swings when a rotation finally clears.
-      const step = Math.ceil(attempt / 2);
-      const sign = attempt % 2 === 0 ? 1 : -1;
-      const angle = sign * step * AcoConfig.antObstacleAngleRange;
-
-      this.desiredVelocity = originalDesired.copy().rotate(angle, true);
-
-      // Look along the direction we intend to move next, not the stale
-      // velocity — otherwise rotating desiredVelocity below has no effect on
-      // what we're testing on the next iteration.
-      const perception = this.position.add(
-        this.desiredVelocity.copy().normalize().mult(lookahead),
-      );
-
-      const obstacleInRange = this.world.isObstacleInAntPerceptionRange(
-        this.position,
-        perception,
-      );
-
-      if (!obstacleInRange) {
-        // Always snap velocity to the safe direction (including attempt 0)
-        // so move() can't drift into an obstacle because velocity was still
-        // lagging behind the previously-desired heading.
-        this.velocity = this.desiredVelocity.copy().setMagnitude(currentSpeed);
+      if (this.isDirectionClear(candidate, lookahead)) {
+        this.desiredVelocity = candidate;
+        this.velocity = candidate.copy().setMagnitude(speed);
         return;
       }
     }
 
-    // Couldn't find a clear direction — turn around outright.
+    // No clear direction — reverse.
     this.desiredVelocity.rotate(Math.PI, true);
     this.velocity.rotate(Math.PI, true);
+  }
+
+  private isDirectionClear(direction: Vector, lookahead: number): boolean {
+    const perception = this.position.add(
+      direction.copy().normalize().mult(lookahead),
+    );
+
+    return !this.world.isObstacleInAntPerceptionRange(
+      this.position,
+      perception,
+    );
   }
 
   private depositPheromone(): void {

@@ -8,22 +8,24 @@ type StatRowProps = {
   accentClassName?: string;
 };
 
-const StatRow = ({
+function StatRow({
   label,
   value,
   accentClassName = "text-white",
-}: StatRowProps) => (
-  <div className="flex items-center justify-between gap-4">
-    <span className="font-mono text-[9px] tracking-wider text-white/60 uppercase">
-      {label}
-    </span>
-    <span className={`font-mono text-[11px] tabular-nums ${accentClassName}`}>
-      {value}
-    </span>
-  </div>
-);
+}: StatRowProps) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <span className="font-mono text-[9px] tracking-wider text-white/60 uppercase">
+        {label}
+      </span>
+      <span className={`font-mono text-[11px] tabular-nums ${accentClassName}`}>
+        {value}
+      </span>
+    </div>
+  );
+}
 
-export const StatsPanel = () => {
+export function StatsPanel() {
   const [isOpen, setIsOpen] = React.useState(true);
 
   const { fps, antCount, pheromoneCount } = useStats();
@@ -62,7 +64,7 @@ export const StatsPanel = () => {
       </div>
     </button>
   );
-};
+}
 
 const useStats = () => {
   const sim = useSimulator();
