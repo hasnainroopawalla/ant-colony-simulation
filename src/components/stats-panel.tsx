@@ -11,28 +11,48 @@ const StatRow = ({
   value,
   accentClassName = "text-white",
 }: StatRowProps) => (
-  <div className="flex items-center justify-between gap-6">
-    <span className="text-[11px] tracking-wider text-white/60 uppercase">
+  <div className="flex items-center justify-between gap-4">
+    <span className="text-[9px] tracking-wider text-white/60 uppercase">
       {label}
     </span>
-    <span className={`font-mono text-sm tabular-nums ${accentClassName}`}>
+    <span className={`font-mono text-[11px] tabular-nums ${accentClassName}`}>
       {value}
     </span>
   </div>
 );
 
 export const StatsPanel = () => {
+  const [isOpen, setIsOpen] = React.useState(true);
+
   // Mock values — real data will be wired later.
   const fps = 60;
   const antCount = 100;
   const pheromoneCount = 1284;
 
+  if (!isOpen) {
+    return (
+      <button
+        type="button"
+        data-testid="stats-panel-toggle-button"
+        onClick={() => setIsOpen(true)}
+        aria-label="Show stats"
+        className="fixed top-3 right-3 z-20 cursor-pointer rounded-md border border-white/5 bg-neutral-900/25 p-1.5 text-white/70 shadow-lg backdrop-blur-sm transition hover:text-white"
+      >
+        <i className="fa fa-bar-chart text-[11px]" />
+      </button>
+    );
+  }
+
   return (
-    <div
+    <button
+      type="button"
       data-testid="stats-panel"
-      className="fixed top-4 right-4 z-20 min-w-45 rounded-lg border border-white/5 bg-neutral-900/25 px-3 py-2 text-white shadow-lg backdrop-blur-sm"
+      onClick={() => setIsOpen(false)}
+      aria-label="Hide stats"
+      title="Click to hide"
+      className="fixed top-3 right-3 z-20 cursor-pointer rounded-md border border-white/5 bg-neutral-900/25 text-left shadow-lg backdrop-blur-sm transition hover:bg-neutral-900/40"
     >
-      <div className="flex flex-col gap-1">
+      <div className="flex min-w-28 flex-col gap-0.5 px-2 py-1.5">
         <StatRow
           label="FPS"
           value={fps.toFixed(0)}
@@ -41,6 +61,6 @@ export const StatsPanel = () => {
         <StatRow label="Ants" value={antCount} />
         <StatRow label="Pheromones" value={pheromoneCount} />
       </div>
-    </div>
+    </button>
   );
 };
