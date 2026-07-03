@@ -2,7 +2,7 @@ import { EventBus, IEvents, Unsubscribe } from "./events";
 import { FpsMonitor } from "./fps-monitor";
 import type { Renderer, Scene } from "./render";
 import { Simulation } from "./simulations";
-import { World } from "./world";
+import type { World } from "./world";
 
 export type Stats = {
   fps: number;

@@ -1,5 +1,5 @@
 import { MathUtils, Vector } from "../math";
-import WorldConfig from "./world.config";
+import * as WorldConstants from "./world.constants";
 
 export class FoodItem {
   public position: Vector;
@@ -7,7 +7,7 @@ export class FoodItem {
 
   constructor(position: Vector) {
     this.position = position;
-    this.radius = WorldConfig.foodItemRadius;
+    this.radius = WorldConstants.FOOD_ITEM_RADIUS;
   }
 
   public collide(antPosition: Vector) {

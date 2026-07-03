@@ -87,7 +87,7 @@ export class AntColonySimulation extends Simulation {
   //     const pheromones = pheromoneQuadtree.query(quadtreeCircle);
   //     for (let j = 0; j < pheromones.length; j++) {
   //       antennaScore +=
-  //         pheromones[j].strength / AcoConfig.pheromoneInitialStrength;
+  //         pheromones[j].strength / PHEROMONE_INITIAL_STRENGTH;
   //     }
   //     antennaScores.push(antennaScore);
   //   }

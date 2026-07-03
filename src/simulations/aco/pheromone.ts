@@ -1,4 +1,4 @@
-import AcoConfig from "./aco.config";
+import * as AcoConstants from "./aco.constants";
 import type { Vector } from "../../math";
 
 export enum PheromoneType {
@@ -14,11 +14,11 @@ export class Pheromone {
   constructor(position: Vector, type: PheromoneType) {
     this.position = position;
     this.type = type;
-    this.strength = AcoConfig.pheromoneInitialStrength;
+    this.strength = AcoConstants.PHEROMONE_INITIAL_STRENGTH;
   }
 
   private evaporate(dt: number): void {
-    this.strength -= AcoConfig.pheromoneEvaporationRate * dt;
+    this.strength -= AcoConstants.PHEROMONE_EVAPORATION_RATE * dt;
   }
 
   public shouldBeDestroyed(): boolean {

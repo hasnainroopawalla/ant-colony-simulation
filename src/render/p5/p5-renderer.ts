@@ -1,7 +1,7 @@
 import { Renderer, Scene } from "../renderer";
 import p5 from "p5";
 import { createSketch } from "./sketch";
-import RenderConfig from "../render.config";
+import * as RenderConstants from "../render.constants";
 
 export class P5Renderer extends Renderer {
   private p: p5;
@@ -34,7 +34,7 @@ export class P5Renderer extends Renderer {
   }
 
   public render(scene: Scene): void {
-    this.p.background(RenderConfig.worldBackground);
+    this.p.background(RenderConstants.WORLD_BACKGROUND);
 
     this.renderObstacles(scene);
 
@@ -47,15 +47,15 @@ export class P5Renderer extends Renderer {
   private renderAnts(scene: Scene): void {
     scene.simulation.ants.forEach((ant) => {
       this.p.push();
-      this.p.stroke(RenderConfig.antColor);
-      this.p.fill(RenderConfig.antColor);
+      this.p.stroke(RenderConstants.ANT_COLOR);
+      this.p.fill(RenderConstants.ANT_COLOR);
       this.p.translate(ant.position.x, ant.position.y);
       this.p.rotate(ant.velocity.heading());
       this.p.ellipse(
         0,
         0,
-        RenderConfig.antSize * 2,
-        RenderConfig.antSize / 1.5,
+        RenderConstants.ANT_SIZE * 2,
+        RenderConstants.ANT_SIZE / 1.5,
       );
       this.p.pop();
     });
@@ -64,15 +64,15 @@ export class P5Renderer extends Renderer {
   private renderColonies(scene: Scene): void {
     scene.colonies.forEach((colony) => {
       this.p.push();
-      this.p.strokeWeight(RenderConfig.colonyStrokeWeight);
-      this.p.fill(RenderConfig.colonyColor);
+      this.p.strokeWeight(RenderConstants.COLONY_STROKE_WEIGHT);
+      this.p.fill(RenderConstants.COLONY_COLOR);
       this.p.circle(colony.position.x, colony.position.y, colony.radius * 2);
       this.p.pop();
 
       // food count
       this.p.push();
       this.p.textAlign(this.p.CENTER, this.p.CENTER);
-      this.p.textSize(RenderConfig.colonyTextSize);
+      this.p.textSize(RenderConstants.COLONY_TEXT_SIZE);
       this.p.text(colony.foodCount, colony.position.x, colony.position.y);
       this.p.pop();
     });
@@ -81,8 +81,8 @@ export class P5Renderer extends Renderer {
   private renderFoodItems(scene: Scene): void {
     scene.foodItems.forEach((foodItem) => {
       this.p.push();
-      this.p.strokeWeight(RenderConfig.foodItemStrokeWeight);
-      this.p.fill(RenderConfig.foodItemColor);
+      this.p.strokeWeight(RenderConstants.FOOD_ITEM_STROKE_WEIGHT);
+      this.p.fill(RenderConstants.FOOD_ITEM_COLOR);
       this.p.circle(
         foodItem.position.x,
         foodItem.position.y,
@@ -95,8 +95,8 @@ export class P5Renderer extends Renderer {
   private renderObstacles(scene: Scene): void {
     scene.obstacles.forEach((obstacle) => {
       this.p.push();
-      this.p.strokeWeight(RenderConfig.colonyStrokeWeight);
-      this.p.stroke(RenderConfig.colonyColor);
+      this.p.strokeWeight(RenderConstants.COLONY_STROKE_WEIGHT);
+      this.p.stroke(RenderConstants.COLONY_COLOR);
       this.p.noFill();
       this.p.rect(
         obstacle.dims.x,
@@ -110,15 +110,15 @@ export class P5Renderer extends Renderer {
 
   private renderPheromones(scene: Scene): void {
     scene.simulation.pheromones.forEach((pheromone) => {
-      const [colorR, colorG, colorB] = RenderConfig.homePheromoneColorRGB;
+      const [colorR, colorG, colorB] = RenderConstants.HOME_PHEROMONE_COLOR_RGB;
 
       this.p.push();
       this.p.fill(colorR, colorG, colorB, pheromone.strength);
-      this.p.strokeWeight(RenderConfig.pheromoneStrokeWeight);
+      this.p.strokeWeight(RenderConstants.PHEROMONE_STROKE_WEIGHT);
       this.p.circle(
         pheromone.position.x,
         pheromone.position.y,
-        RenderConfig.pheromoneSize,
+        RenderConstants.PHEROMONE_SIZE,
       );
       this.p.pop();
     });

@@ -1,4 +1,4 @@
-import WorldConfig from "../world/world.config";
+import * as WorldConstants from "../world/world.constants";
 import type { Position, RectangleDims } from "./types";
 import { MathUtils } from "./utils";
 import { Vector } from "./vector";
@@ -206,7 +206,7 @@ export class Quadtree<T extends QuadtreeItem> {
     if (!this.divided) {
       if (
         this.points.length < this.capacity ||
-        this.currentDepth === WorldConfig.quadtreeMaxDepth
+        this.currentDepth === WorldConstants.QUADTREE_MAX_DEPTH
       ) {
         this.points.push(point);
         return true;

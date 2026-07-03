@@ -1,6 +1,7 @@
 import { FoodItem } from "../../world/food-item";
 import { Colony } from "../../world/colony";
-import AcoConfig from "./aco.config";
+import * as AcoConstants from "./aco.constants";
+import AcoSettings from "./aco.settings";
 import { Vector, MathUtils } from "../../math";
 import type { World } from "../../world";
 import { Pheromone } from "./pheromone";
@@ -52,7 +53,7 @@ export class Ant {
 
     this.position = spawnPosition;
     this.angle = MathUtils.randomFloat(0, Math.PI * 2);
-    this.velocity = MathUtils.fromAngle(this.angle).mult(AcoConfig.antSpeed);
+    this.velocity = MathUtils.fromAngle(this.angle).mult(AcoSettings.antSpeed);
     this.desiredVelocity = MathUtils.fromAngle(this.angle);
   }
 
@@ -64,7 +65,7 @@ export class Ant {
   //     AcoConfig.antPerceptionColorAlpha,
   //   );
   //   const perception = this.getPerception();
-  //   this.p.circle(perception.x, perception.y, AcoConfig.antPerceptionRange * 2);
+  //   this.p.circle(perception.x, perception.y, AcoSettings.antPerceptionRange * 2);
   //   this.p.pop();
   // }
 
@@ -80,7 +81,6 @@ export class Ant {
     // this.handleWandering();
     this.move(dt);
     this.clampToBounds();
-    // this.steps += 1;
   }
 
   private decide(dt: number): void {
@@ -98,26 +98,24 @@ export class Ant {
   private getAntennas(): IAntennas {
     const leftAntenna = this.position.add(
       this.desiredVelocity
-        .rotate(-AcoConfig.antAntennaRotation)
-        .mult(AcoConfig.antAntennaRange),
+        .rotate(-ANT_ANTENNA_ROTATION)
+        .mult(ANT_ANTENNA_RANGE),
     );
     const frontAntenna = this.position.add(
-      this.desiredVelocity.mult(AcoConfig.antAntennaRange),
+      this.desiredVelocity.mult(ANT_ANTENNA_RANGE),
     );
     const rightAntenna = this.position.add(
-      this.desiredVelocity
-        .rotate(AcoConfig.antAntennaRotation)
-        .mult(AcoConfig.antAntennaRange),
+      this.desiredVelocity.rotate(ANT_ANTENNA_ROTATION).mult(ANT_ANTENNA_RANGE),
     );
 
     // AcoConfig.showAntAntennas &&
-    //   this.p.circle(leftAntenna.x, leftAntenna.y, AcoConfig.antAntennaRadius) &&
+    //   this.p.circle(leftAntenna.x, leftAntenna.y, ANT_ANTENNA_RADIUS) &&
     //   this.p.circle(
     //     frontAntenna.x,
     //     frontAntenna.y,
-    //     AcoConfig.antAntennaRadius,
+    //     ANT_ANTENNA_RADIUS,
     //   ) &&
-    //   this.p.circle(rightAntenna.x, rightAntenna.y, AcoConfig.antAntennaRadius);
+    //   this.p.circle(rightAntenna.x, rightAntenna.y, ANT_ANTENNA_RADIUS);
 
     return { leftAntenna, frontAntenna, rightAntenna };
   }
@@ -125,16 +123,18 @@ export class Ant {
   private getPerception(): Vector {
     return this.position
       .copy()
-      .add(this.velocity.copy().normalize().mult(AcoConfig.antPerceptionRange));
+      .add(
+        this.velocity.copy().normalize().mult(AcoSettings.antPerceptionRange),
+      );
   }
 
   private handleObstacles(dt: number): void {
     const originalDesired = this.desiredVelocity.copy();
     const speed = this.velocity.getMagnitude();
-    const lookahead = Math.max(AcoConfig.antPerceptionRange, speed * dt * 2);
+    const lookahead = Math.max(AcoSettings.antPerceptionRange, speed * dt * 2);
 
     for (const step of Ant.OBSTACLE_SWEEP_OFFSETS) {
-      const angle = step * AcoConfig.antObstacleAngleRange;
+      const angle = step * AcoConstants.ANT_OBSTACLE_ANGLE_RANGE;
       const candidate = originalDesired.copy().rotate(angle, true);
 
       if (this.isDirectionClear(candidate, lookahead)) {
@@ -188,7 +188,10 @@ export class Ant {
 
   private handleWandering(dt: number): void {
     const angle = MathUtils.randomFloat(-1, 1);
-    this.desiredVelocity.rotate(angle * AcoConfig.antWanderStrength * dt, true);
+    this.desiredVelocity.rotate(
+      angle * AcoSettings.antWanderStrength * dt,
+      true,
+    );
   }
 
   private handleAntennaSteering(pheromoneType: IPheromoneType) {
@@ -196,16 +199,16 @@ export class Ant {
     const [leftAntenna, frontAntenna, rightAntenna] =
       this.world.computeAntAntennasPheromoneValues(
         [antennas.leftAntenna, antennas.frontAntenna, antennas.rightAntenna],
-        AcoConfig.antAntennaRadius,
+        AcoConstants.ANT_ANTENNA_RADIUS,
         pheromoneType,
       );
 
     if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
       // do nothing
     } else if (leftAntenna > rightAntenna) {
-      this.desiredVelocity.rotate(-AcoConfig.antAntennaRotation, true);
+      this.desiredVelocity.rotate(-AcoConstants.ANT_ANTENNA_ROTATION, true);
     } else if (rightAntenna > leftAntenna) {
-      this.desiredVelocity.rotate(AcoConfig.antAntennaRotation, true);
+      this.desiredVelocity.rotate(AcoConstants.ANT_ANTENNA_ROTATION, true);
     }
   }
 
@@ -214,7 +217,7 @@ export class Ant {
     if (!this.targetFoodItem) {
       this.targetFoodItem = this.world.getFoodItemInAntPerceptionRange(
         this.getPerception(),
-        AcoConfig.antPerceptionRange,
+        AcoSettings.antPerceptionRange,
       );
     }
 
@@ -255,7 +258,7 @@ export class Ant {
   private colonyInPerceptionRange(): boolean {
     return MathUtils.areCirclesIntersecting(
       this.position,
-      AcoConfig.antPerceptionRange,
+      AcoSettings.antPerceptionRange,
       this.colony.position,
       this.colony.radius,
     );
@@ -270,18 +273,18 @@ export class Ant {
   //   }
   //   return (
   //     MathUtils.distance(this.position, this.lastDepositedPheromone.position) >
-  //     AcoConfig.pheromoneDistanceBetween
+  //     PHEROMONE_DISTANCE_BETWEEN
   //   );
   // }
 
   private move(dt: number): void {
     const desired = this.desiredVelocity
       .copy()
-      .setMagnitude(AcoConfig.antSpeed);
+      .setMagnitude(AcoSettings.antSpeed);
     const steering = desired.sub(this.velocity);
-    const acceleration = steering.limit(AcoConfig.antSteeringLimit);
+    const acceleration = steering.limit(AcoSettings.antSteeringLimit);
 
-    this.velocity.add(acceleration.mult(dt), true).limit(AcoConfig.antSpeed);
+    this.velocity.add(acceleration.mult(dt), true).limit(AcoSettings.antSpeed);
     this.position.add(this.velocity.mult(dt), true);
   }
 }

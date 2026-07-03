@@ -4,7 +4,7 @@ import { Obstacle } from "./obstacle";
 import { Quadtree } from "../math/quadtree";
 import type { Dimensions, Position } from "../math/types";
 import { MathUtils, Vector } from "../math";
-import WorldConfig from "./world.config";
+import * as WorldConstants from "./world.constants";
 
 export class World {
   public colonies: Colony[];
@@ -46,13 +46,13 @@ export class World {
       for (let j = 0; j < clusterSize; j++) {
         const foodItemPosition = new Vector(
           position.x +
-            i * WorldConfig.foodClusterSpacing +
+            i * WorldConstants.FOOD_CLUSTER_SPACING +
             MathUtils.randomFloat() * 10 -
-            WorldConfig.foodClusterSpacing,
+            WorldConstants.FOOD_CLUSTER_SPACING,
           position.y +
-            j * WorldConfig.foodClusterSpacing +
+            j * WorldConstants.FOOD_CLUSTER_SPACING +
             MathUtils.randomFloat() * 10 -
-            WorldConfig.foodClusterSpacing,
+            WorldConstants.FOOD_CLUSTER_SPACING,
         );
 
         const foodItem = new FoodItem(foodItemPosition);

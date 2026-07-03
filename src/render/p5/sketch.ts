@@ -1,5 +1,5 @@
 import type { FrameCallback } from "../renderer";
-import RenderConfig from "../render.config";
+import * as RenderConstants from "../render.constants";
 
 type P5Sketch = (p: p5) => void;
 
@@ -24,7 +24,7 @@ export function createSketch(
 
       const { w, h } = getContainerSize();
       p.createCanvas(w, h);
-      p.frameRate(RenderConfig.frameRate);
+      p.frameRate(RenderConstants.FRAME_RATE);
     };
 
     p.draw = () => {
