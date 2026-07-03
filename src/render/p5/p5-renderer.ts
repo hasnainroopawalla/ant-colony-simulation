@@ -17,6 +17,10 @@ export class P5Renderer extends Renderer {
     return this.p.frameRate();
   }
 
+  public getDeltaTime(): number {
+    return this.p.deltaTime / 1000; // convert to seconds
+  }
+
   public start(): void {
     this.p.loop();
   }
@@ -37,7 +41,7 @@ export class P5Renderer extends Renderer {
     this.renderAnts(scene);
     this.renderColonies(scene);
     this.renderFoodItems(scene);
-    this.renderPheromones(scene);
+    // this.renderPheromones(scene);
   }
 
   private renderAnts(scene: Scene): void {

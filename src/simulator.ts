@@ -1,7 +1,14 @@
 import { EventBus, IEvents, Unsubscribe } from "./events";
+import { FpsMonitor } from "./fps-monitor";
 import type { Renderer, Scene } from "./render";
 import { Simulation } from "./simulations";
 import { World } from "./world";
+
+export type Stats = {
+  fps: number;
+  antCount: number;
+  pheromoneCount: number;
+};
 
 export class Simulator {
   public world: World;
@@ -11,8 +18,7 @@ export class Simulator {
   private renderer: Renderer;
   private simulation: Simulation;
 
-  private lastFrameTime: number | null = null;
-  private static readonly MAX_DT = 0.1;
+  private fpsMonitor: FpsMonitor;
 
   constructor(world: World, simulation: Simulation, renderer: Renderer) {
     this.world = world;
@@ -20,6 +26,7 @@ export class Simulator {
     this.renderer = renderer;
 
     this.eventBus = new EventBus();
+    this.fpsMonitor = new FpsMonitor();
 
     this.renderer.setFrameCallback(() => this.update());
   }
@@ -51,29 +58,26 @@ export class Simulator {
     }
 
     this.renderer.stop();
-    this.lastFrameTime = null;
   }
 
   private update(): void {
-    const now = performance.now();
-    const dt =
-      this.lastFrameTime === null
-        ? 1 / 60
-        : Math.min(
-            (now - this.lastFrameTime) / 1000,
-            Simulator.MAX_DT,
-          );
-    this.lastFrameTime = now;
+    const dt = this.renderer.getDeltaTime();
 
     this.simulation.update(dt);
 
     this.renderer.render(this.getScene());
 
-    this.emit("stats.update", {
-      antCount: this.simulation.getView().ants.length,
-      fps: this.renderer.getFps(),
-      pheromoneCount: this.simulation.getView().pheromones.length,
-    });
+    const view = this.simulation.getView();
+
+    const fps = this.fpsMonitor.update(dt);
+
+    if (fps !== null) {
+      this.emit("stats.update", {
+        fps: fps,
+        antCount: view.ants.length,
+        pheromoneCount: view.pheromones.length,
+      });
+    }
   }
 
   private getScene(): Scene {

@@ -34,4 +34,6 @@ export abstract class Renderer {
   public abstract render(scene: Scene): void;
 
   public abstract getFps(): number;
+
+  public abstract getDeltaTime(): number;
 }

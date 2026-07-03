@@ -132,10 +132,7 @@ export class Ant {
     // Lookahead must always exceed the actual move step for this frame so
     // large dt spikes cannot tunnel through an obstacle.
     const stepDistance = currentSpeed * dt;
-    const lookahead = Math.max(
-      AcoConfig.antPerceptionRange,
-      stepDistance * 2,
-    );
+    const lookahead = Math.max(AcoConfig.antPerceptionRange, stepDistance * 2);
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       // Sweep outward from the original heading: 0, +Δ, -Δ, +2Δ, -2Δ, ...
@@ -163,9 +160,7 @@ export class Ant {
         // Always snap velocity to the safe direction (including attempt 0)
         // so move() can't drift into an obstacle because velocity was still
         // lagging behind the previously-desired heading.
-        this.velocity = this.desiredVelocity
-          .copy()
-          .setMagnitude(currentSpeed);
+        this.velocity = this.desiredVelocity.copy().setMagnitude(currentSpeed);
         return;
       }
     }

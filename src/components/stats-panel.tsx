@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useSimulator } from "./contexts/simulator-context";
+import type { Stats } from "../simulator";
 
 type StatRowProps = {
   label: string;
@@ -25,9 +26,7 @@ const StatRow = ({
 export const StatsPanel = () => {
   const [isOpen, setIsOpen] = React.useState(true);
 
-  const { fps } = useStats();
-  const antCount = 100;
-  const pheromoneCount = 1284;
+  const { fps, antCount, pheromoneCount } = useStats();
 
   if (!isOpen) {
     return (
@@ -68,11 +67,15 @@ export const StatsPanel = () => {
 const useStats = () => {
   const sim = useSimulator();
 
-  const [fps, setFps] = React.useState(0);
+  const [stats, setStats] = React.useState<Stats>({
+    fps: 0,
+    antCount: 0,
+    pheromoneCount: 0,
+  });
 
   React.useEffect(() => {
     const unsubscribe = sim.on("stats.update", (data) => {
-      setFps(data.fps);
+      setStats(data);
     });
 
     return () => {
@@ -80,5 +83,5 @@ const useStats = () => {
     };
   }, [sim]);
 
-  return { fps };
+  return stats;
 };
