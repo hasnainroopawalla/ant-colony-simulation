@@ -33,6 +33,7 @@ export class P5Renderer extends Renderer {
     this.renderAnts(scene);
     this.renderColonies(scene);
     this.renderFoodItems(scene);
+    this.renderPheromones(scene);
   }
 
   private renderAnts(scene: Scene): void {
@@ -75,7 +76,11 @@ export class P5Renderer extends Renderer {
       this.p.push();
       this.p.strokeWeight(RenderConfig.foodItemStrokeWeight);
       this.p.fill(RenderConfig.foodItemColor);
-      this.p.circle(foodItem.position.x, foodItem.position.y, foodItem.radius * 2);
+      this.p.circle(
+        foodItem.position.x,
+        foodItem.position.y,
+        foodItem.radius * 2,
+      );
       this.p.pop();
     });
   }
@@ -91,6 +96,22 @@ export class P5Renderer extends Renderer {
         obstacle.dims.y,
         obstacle.dims.w,
         obstacle.dims.h,
+      );
+      this.p.pop();
+    });
+  }
+
+  private renderPheromones(scene: Scene): void {
+    scene.simulation.pheromones.forEach((pheromone) => {
+      const [colorR, colorG, colorB] = RenderConfig.homePheromoneColorRGB;
+
+      this.p.push();
+      this.p.fill(colorR, colorG, colorB, pheromone.strength);
+      this.p.strokeWeight(RenderConfig.pheromoneStrokeWeight);
+      this.p.circle(
+        pheromone.position.x,
+        pheromone.position.y,
+        RenderConfig.pheromoneSize,
       );
       this.p.pop();
     });

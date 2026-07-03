@@ -1,54 +1,31 @@
 import AcoConfig from "./aco.config";
-import RenderConfig from "../../render/render.config";
-import { Vector } from "../../math";
+import type { Vector } from "../../math";
 
-export enum IPheromoneType {
+export enum PheromoneType {
   Home,
   Food,
 }
 
 export class Pheromone {
-  p: p5;
-  position: Vector;
-  type: IPheromoneType;
-  strength: number;
+  public position: Vector;
+  public type: PheromoneType;
+  public strength: number;
 
-  constructor(p: p5, position: Vector, type: IPheromoneType) {
-    this.p = p;
+  constructor(position: Vector, type: PheromoneType) {
     this.position = position;
     this.type = type;
     this.strength = AcoConfig.pheromoneInitialStrength;
   }
 
-  private evaporate() {
+  private evaporate(): void {
     this.strength -= AcoConfig.pheromoneEvaporationRate;
   }
 
-  public shouldBeDestroyed() {
+  public shouldBeDestroyed(): boolean {
     return this.strength <= 0;
   }
 
-  public update() {
+  public update(): void {
     this.evaporate();
-  }
-
-  public render() {
-    if (
-      this.shouldBeDestroyed() ||
-      (this.type === IPheromoneType.Home && !RenderConfig.showHomePheromones) ||
-      (this.type === IPheromoneType.Food && !RenderConfig.showFoodPheromones)
-    ) {
-      return;
-    }
-    const [colorR, colorG, colorB] =
-      this.type === IPheromoneType.Home
-        ? RenderConfig.homePheromoneColorRGB
-        : RenderConfig.foodPheromoneColorRGB;
-
-    this.p.push();
-    this.p.fill(colorR, colorG, colorB, this.strength);
-    this.p.strokeWeight(RenderConfig.pheromoneStrokeWeight);
-    this.p.circle(this.position.x, this.position.y, RenderConfig.pheromoneSize);
-    this.p.pop();
   }
 }

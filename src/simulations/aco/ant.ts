@@ -3,6 +3,8 @@ import { Colony } from "../../world/colony";
 import AcoConfig from "./aco.config";
 import { Vector, MathUtils } from "../../math";
 import type { World } from "../../world";
+import { Pheromone } from "./pheromone";
+import type { AntColonySimulation } from "./aco";
 
 enum AntState {
   Wandering,
@@ -19,9 +21,10 @@ export class Ant {
   public position: Vector;
   public velocity: Vector;
 
-  private state: AntState;
-
+  private sim: AntColonySimulation;
   private world: World;
+
+  private state: AntState;
   private desiredVelocity: Vector;
   private angle: number;
   private colony: Colony;
@@ -29,9 +32,15 @@ export class Ant {
   private lastDepositedPheromone?: Pheromone;
   private steps: number;
 
-  constructor(colony: Colony, world: World, spawnPosition: Vector) {
+  constructor(
+    colony: Colony,
+    world: World,
+    sim: AntColonySimulation,
+    spawnPosition: Vector,
+  ) {
     this.world = world;
     this.colony = colony;
+    this.sim = sim;
 
     this.steps = 0;
 
@@ -55,11 +64,11 @@ export class Ant {
   //   this.p.pop();
   // }
 
-  public update() {
+  public update(): void {
+    this.depositPheromone();
+
     this.decide();
-    // this.handleBoundaries();
     this.handleObstacles();
-    // this.handlePheromoneDeposit();
 
     // this.isReturningHome() && this.handleReturningHome();
     // this.isReturningHomeUsingPedometer() &&
@@ -77,9 +86,6 @@ export class Ant {
         break;
     }
   }
-
-  // Randomly set the ant's initial orientation and velocity
-  private setSpawnOrientation(): void {}
 
   private approachTarget(target: Vector): void {
     this.desiredVelocity = target.sub(this.position).normalize();
@@ -117,29 +123,6 @@ export class Ant {
       .copy()
       .add(this.velocity.copy().normalize().mult(AcoConfig.antPerceptionRange));
   }
-
-  // private handleObstacles(): void {
-  //   let obstacleInRange: boolean;
-  //   do {
-  //     const perception = this.position.add(
-  //       this.desiredVelocity.mult(AcoConfig.antPerceptionRange * 2),
-  //     );
-  //     obstacleInRange = this.world.isObstacleInAntPerceptionRange(
-  //       this.position,
-  //       perception,
-  //     );
-  //     if (obstacleInRange) {
-  //       // randomly set positive or negative angleRange
-  //       // TODO: turn left/right based on the angle of collision
-  //       this.desiredVelocity.rotate(
-  //         Math.random() < 0.5
-  //           ? AcoConfig.antObstacleAngleRange
-  //           : -AcoConfig.antObstacleAngleRange,
-  //         true,
-  //       );
-  //     }
-  //   } while (obstacleInRange);
-  // }
 
   private handleObstacles(): void {
     const maxAttempts = 8;
@@ -185,6 +168,10 @@ export class Ant {
     // Couldn't find a clear direction — turn around outright.
     this.desiredVelocity.rotate(Math.PI, true);
     this.velocity.rotate(Math.PI, true);
+  }
+
+  private depositPheromone(): void {
+    const pheromone = this.sim.handlePheromoneDeposit(this.position.copy());
   }
 
   private clampToBounds(): void {
@@ -284,30 +271,18 @@ export class Ant {
     );
   }
 
-  private shouldPheromoneBeDeposited() {
-    if (this.state === AntState.ReturningHomeUsingPedometer) {
-      return false;
-    }
-    if (!this.lastDepositedPheromone) {
-      return true;
-    }
-    return (
-      MathUtils.distance(this.position, this.lastDepositedPheromone.position) >
-      AcoConfig.pheromoneDistanceBetween
-    );
-  }
-
-  private handlePheromoneDeposit() {
-    if (!this.shouldPheromoneBeDeposited()) {
-      return;
-    }
-    this.lastDepositedPheromone = new Pheromone(
-      this.p,
-      this.position.copy(),
-      this.isReturningHome() ? IPheromoneType.Food : IPheromoneType.Home,
-    );
-    this.world.depositPheromone(this.lastDepositedPheromone);
-  }
+  // private shouldPheromoneBeDeposited() {
+  //   if (this.state === AntState.ReturningHomeUsingPedometer) {
+  //     return false;
+  //   }
+  //   if (!this.lastDepositedPheromone) {
+  //     return true;
+  //   }
+  //   return (
+  //     MathUtils.distance(this.position, this.lastDepositedPheromone.position) >
+  //     AcoConfig.pheromoneDistanceBetween
+  //   );
+  // }
 
   private move(): void {
     const subtracted = this.desiredVelocity.sub(this.velocity);

@@ -1,4 +1,5 @@
-import { Ant } from "../simulations/aco/ant";
+import type { Ant } from "../simulations/aco/ant";
+import type { Pheromone } from "../simulations/aco/pheromone";
 import type { Colony } from "../world/colony";
 import type { FoodItem } from "../world/food-item";
 import { Obstacle } from "../world/obstacle";
@@ -10,7 +11,7 @@ export type Scene = {
   foodItems: FoodItem[];
   obstacles: Obstacle[];
   colonies: Colony[];
-  simulation: { ants: Ant[] };
+  simulation: { ants: Ant[]; pheromones: Pheromone[] };
 };
 
 export abstract class Renderer {

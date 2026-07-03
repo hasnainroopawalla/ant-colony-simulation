@@ -1,14 +1,17 @@
 import { Quadtree } from "../../math/quadtree";
 import { Simulation } from "../simulation";
 import { Ant } from "./ant";
-import { Pheromone } from "./pheromone";
+import { Pheromone, PheromoneType } from "./pheromone";
 import { World } from "../../world";
-import { MathUtils } from "../../math";
+import { MathUtils, Vector } from "../../math";
 
 export class AntColonySimulation extends Simulation {
   private homePheromoneQuadtree: Quadtree<Pheromone>;
   private foodPheromoneQuadtree: Quadtree<Pheromone>;
+
   private ants: Ant[];
+  private homePheromones: Pheromone[];
+  private foodPheromones: Pheromone[];
 
   constructor(world: World) {
     super(world);
@@ -27,21 +30,29 @@ export class AntColonySimulation extends Simulation {
       h: world.dims.h / 2,
     });
 
-    this.ants = this.spawnAnts(1000);
+    this.ants = this.spawnAnts(100);
+    this.homePheromones = [];
+    this.foodPheromones = [];
   }
 
-  public getView(): { ants: Ant[] } {
-    return { ants: this.ants };
+  public getView(): { ants: Ant[]; pheromones: Pheromone[] } {
+    return {
+      ants: this.ants,
+      pheromones: [...this.homePheromones, ...this.foodPheromones],
+    };
   }
 
-  // public depositPheromone(pheromone: Pheromone): void {
-  //   const pheromoneQuadtree =
-  //     pheromone.type === IPheromoneType.Food
-  //       ? this.foodPheromoneQuadtree
-  //       : this.homePheromoneQuadtree;
+  public handlePheromoneDeposit(position: Vector): Pheromone {
+    // if (!this.shouldPheromoneBeDeposited()) {
+    //   return;
+    // }
+    const pheromone = new Pheromone(position, PheromoneType.Home);
 
-  //   pheromoneQuadtree.insert(pheromone);
-  // }
+    this.homePheromones.push(pheromone);
+    this.homePheromoneQuadtree.insert(pheromone);
+
+    return pheromone;
+  }
 
   // public getFoodItemInAntPerceptionRange(
   //   antPosition: Vector,
@@ -99,7 +110,7 @@ export class AntColonySimulation extends Simulation {
           MathUtils.fromAngle(MathUtils.randomFloat(0, Math.PI * 2)).mult(r),
         );
 
-      return new Ant(colony, this.world, spawnPos);
+      return new Ant(colony, this.world, this, spawnPos);
     });
   }
 }
