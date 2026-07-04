@@ -5,8 +5,11 @@ import { Quadtree } from "../math/quadtree";
 import type { Dimensions, Position } from "../math/types";
 import { MathUtils, Vector } from "../math";
 import * as WorldConstants from "./world.constants";
+import { SettingDescriptor, SettingsProvider } from "../settings-provider";
 
-export class World {
+export class World implements SettingsProvider {
+  public readonly namespace: string = "world";
+
   public colonies: Colony[];
   public foodItems: FoodItem[];
   public obstacles: Obstacle[];
@@ -62,10 +65,7 @@ export class World {
     }
   }
 
-  public isObstacleInAntPerceptionRange(
-    antPosition: Vector,
-    antPerception: Vector,
-  ): boolean {
+  public isPathBlocked(antPosition: Vector, antPerception: Vector): boolean {
     for (let i = 0; i < this.obstacles.length; i++) {
       const obstacle = this.obstacles[i];
       if (
@@ -80,4 +80,10 @@ export class World {
     }
     return false;
   }
+
+  public getSettings(): SettingDescriptor[] {
+    return [];
+  }
+
+  public updateSettings() {}
 }

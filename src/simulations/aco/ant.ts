@@ -1,7 +1,7 @@
 import { FoodItem } from "../../world/food-item";
 import { Colony } from "../../world/colony";
 import * as AcoConstants from "./aco.constants";
-import AcoSettings from "./aco.settings";
+import type { AcoSettings } from "./aco.settings";
 import { Vector, MathUtils } from "../../math";
 import type { World } from "../../world";
 import { Pheromone } from "./pheromone";
@@ -21,6 +21,8 @@ type IAntennas = {
 export class Ant {
   public position: Vector;
   public velocity: Vector;
+
+  private settings: AcoSettings;
 
   private sim: AntColonySimulation;
   private world: World;
@@ -42,10 +44,13 @@ export class Ant {
     world: World,
     sim: AntColonySimulation,
     spawnPosition: Vector,
+    settings: AcoSettings,
   ) {
     this.world = world;
     this.colony = colony;
     this.sim = sim;
+
+    this.settings = settings;
 
     this.steps = 0;
 
@@ -53,7 +58,9 @@ export class Ant {
 
     this.position = spawnPosition;
     this.angle = MathUtils.randomFloat(0, Math.PI * 2);
-    this.velocity = MathUtils.fromAngle(this.angle).mult(AcoSettings.antSpeed);
+    this.velocity = MathUtils.fromAngle(this.angle).mult(
+      this.settings.antSpeed,
+    );
     this.desiredVelocity = MathUtils.fromAngle(this.angle);
   }
 
@@ -65,7 +72,7 @@ export class Ant {
   //     AcoConfig.antPerceptionColorAlpha,
   //   );
   //   const perception = this.getPerception();
-  //   this.p.circle(perception.x, perception.y, AcoSettings.antPerceptionRange * 2);
+  //   this.p.circle(perception.x, perception.y, this.settings.antPerceptionRange * 2);
   //   this.p.pop();
   // }
 
@@ -124,14 +131,17 @@ export class Ant {
     return this.position
       .copy()
       .add(
-        this.velocity.copy().normalize().mult(AcoSettings.antPerceptionRange),
+        this.velocity.copy().normalize().mult(this.settings.antPerceptionRange),
       );
   }
 
   private handleObstacles(dt: number): void {
     const originalDesired = this.desiredVelocity.copy();
     const speed = this.velocity.getMagnitude();
-    const lookahead = Math.max(AcoSettings.antPerceptionRange, speed * dt * 2);
+    const lookahead = Math.max(
+      this.settings.antPerceptionRange,
+      speed * dt * 2,
+    );
 
     for (const step of Ant.OBSTACLE_SWEEP_OFFSETS) {
       const angle = step * AcoConstants.ANT_OBSTACLE_ANGLE_RANGE;
@@ -154,10 +164,7 @@ export class Ant {
       direction.copy().normalize().mult(lookahead),
     );
 
-    return !this.world.isObstacleInAntPerceptionRange(
-      this.position,
-      perception,
-    );
+    return !this.world.isPathBlocked(this.position, perception);
   }
 
   private depositPheromone(): void {
@@ -189,7 +196,7 @@ export class Ant {
   private handleWandering(dt: number): void {
     const angle = MathUtils.randomFloat(-1, 1);
     this.desiredVelocity.rotate(
-      angle * AcoSettings.antWanderStrength * dt,
+      angle * this.settings.antWanderStrength * dt,
       true,
     );
   }
@@ -217,7 +224,7 @@ export class Ant {
     if (!this.targetFoodItem) {
       this.targetFoodItem = this.world.getFoodItemInAntPerceptionRange(
         this.getPerception(),
-        AcoSettings.antPerceptionRange,
+        this.settings.antPerceptionRange,
       );
     }
 
@@ -258,7 +265,7 @@ export class Ant {
   private colonyInPerceptionRange(): boolean {
     return MathUtils.areCirclesIntersecting(
       this.position,
-      AcoSettings.antPerceptionRange,
+      this.settings.antPerceptionRange,
       this.colony.position,
       this.colony.radius,
     );
@@ -280,11 +287,13 @@ export class Ant {
   private move(dt: number): void {
     const desired = this.desiredVelocity
       .copy()
-      .setMagnitude(AcoSettings.antSpeed);
+      .setMagnitude(this.settings.antSpeed);
     const steering = desired.sub(this.velocity);
-    const acceleration = steering.limit(AcoSettings.antSteeringLimit);
+    const acceleration = steering.limit(this.settings.antSteeringLimit);
 
-    this.velocity.add(acceleration.mult(dt), true).limit(AcoSettings.antSpeed);
+    this.velocity
+      .add(acceleration.mult(dt), true)
+      .limit(this.settings.antSpeed);
     this.position.add(this.velocity.mult(dt), true);
   }
 }

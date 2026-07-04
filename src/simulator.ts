@@ -1,6 +1,7 @@
 import { EventBus, IEvents, Unsubscribe } from "./events";
 import { FpsMonitor } from "./fps-monitor";
 import type { Renderer, Scene } from "./render";
+import { SettingsProvider } from "./settings-provider";
 import { Simulation } from "./simulations";
 import type { World } from "./world";
 
@@ -9,7 +10,6 @@ export type Stats = {
   antCount: number;
   pheromoneCount: number;
 };
-
 export class Simulator {
   public world: World;
 
@@ -58,6 +58,10 @@ export class Simulator {
     }
 
     this.renderer.pause();
+  }
+
+  public getSettingsProviders(): SettingsProvider[] {
+    return [this.world, this.simulation];
   }
 
   private update(): void {

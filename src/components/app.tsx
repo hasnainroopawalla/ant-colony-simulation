@@ -6,6 +6,7 @@ import { useStateRef } from "./utils";
 import { ControlPanel } from "./control-panel";
 import { StatsPanel } from "./stats-panel";
 import { SimulatorProvider } from "./contexts/simulator-context";
+import { SettingsProvider } from "./contexts/settings-context";
 
 function App() {
   const [simulator, setSimulator] = React.useState<Simulator | null>(null);
@@ -19,8 +20,10 @@ function App() {
       <div className="flex h-screen w-screen overflow-hidden">
         {simulator ? (
           <SimulatorProvider simulator={simulator}>
-            <ControlPanel />
-            <StatsPanel />
+            <SettingsProvider>
+              <ControlPanel />
+              <StatsPanel />
+            </SettingsProvider>
           </SimulatorProvider>
         ) : (
           <aside className="h-screen w-75 shrink-0 bg-[#121212]" />

@@ -58,26 +58,47 @@ function SettingToggle({
 }
 
 export function ControlPanelContent() {
-  const { getSettings, updateSettings } = useSettings();
+  const { getSettings } = useSettings();
 
   return (
-    <div className="py-2">
-      <SectionHeader title="Ant Behavior" />
-      <SettingSlider label="Speed" value={2} min={0} max={5} />
-      <SettingSlider label="Wander Strength" value={20} min={0} max={100} />
-      <SettingSlider label="Steering Limit" value={10} min={0} max={100} />
-      <SettingSlider label="Perception Range" value={35} min={10} max={100} />
-
-      <SectionHeader title="Pheromones" />
-      <SettingSlider label="Evaporation Rate" value={30} min={0} max={100} />
-      <SettingSlider label="Initial Strength" value={500} min={0} max={1000} />
-      <SettingSlider label="Distance Between" value={200} min={0} max={500} />
-
-      <SectionHeader title="Debug Overlays" />
-      <SettingToggle label="Show perception range" />
-      <SettingToggle label="Show home pheromones" defaultChecked />
-      <SettingToggle label="Show food pheromones" defaultChecked />
-      <SettingToggle label="Show quadtree" />
-    </div>
+    <>
+      {Object.entries(getSettings()).map(([namespace, settings]) => {
+        console.log(namespace, settings);
+        return settings.map((setting) => {
+          console.log(namespace, setting);
+          if (setting.kind === "number") {
+            return (
+              <SettingSlider
+                label={setting.label}
+                value={setting.value}
+                min={setting.min}
+                max={setting.max}
+              />
+            );
+          }
+        });
+      })}
+    </>
   );
+
+  // return ({ Object.entries( getSettings())}
+
+  // <div className="py-2">
+  //   <SectionHeader title="Ant Behavior" />
+  //   <SettingSlider label="Speed" value={2} min={0} max={5} />
+  //   <SettingSlider label="Wander Strength" value={20} min={0} max={100} />
+  //   <SettingSlider label="Steering Limit" value={10} min={0} max={100} />
+  //   <SettingSlider label="Perception Range" value={35} min={10} max={100} />
+
+  //   <SectionHeader title="Pheromones" />
+  //   <SettingSlider label="Evaporation Rate" value={30} min={0} max={100} />
+  //   <SettingSlider label="Initial Strength" value={500} min={0} max={1000} />
+  //   <SettingSlider label="Distance Between" value={200} min={0} max={500} />
+
+  //   <SectionHeader title="Debug Overlays" />
+  //   <SettingToggle label="Show perception range" />
+  //   <SettingToggle label="Show home pheromones" defaultChecked />
+  //   <SettingToggle label="Show food pheromones" defaultChecked />
+  //   <SettingToggle label="Show quadtree" />
+  // </div>
 }

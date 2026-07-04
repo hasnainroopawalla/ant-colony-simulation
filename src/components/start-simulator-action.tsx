@@ -16,12 +16,11 @@ export function StartSimulatorAction({
   useEffectOnce(() => {
     const renderer = new P5Renderer(canvas);
 
-    const dims = {
+    const world = new World({
       w: canvas.clientWidth,
       h: canvas.clientHeight,
-    };
+    });
 
-    const world = new World(dims);
     const simulation = new AntColonySimulation(world);
 
     const simulator = new Simulator(world, simulation, renderer);
