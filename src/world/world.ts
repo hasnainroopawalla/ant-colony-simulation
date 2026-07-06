@@ -5,7 +5,7 @@ import { Quadtree } from "../math/quadtree";
 import type { Dimensions, Position } from "../math/types";
 import { MathUtils, Vector } from "../math";
 import * as WorldConstants from "./world.constants";
-import { SettingDescriptor, SettingsProvider } from "../settings-provider";
+import { SettingDescriptor, SettingsProvider } from "../settings";
 
 export class World implements SettingsProvider {
   public readonly namespace: string = "world";

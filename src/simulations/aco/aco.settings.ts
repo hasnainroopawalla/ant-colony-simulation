@@ -1,4 +1,4 @@
-import type { SettingSchema } from "../../settings-provider";
+import type { SettingsSchema } from "../../settings";
 
 export type AcoSettings = {
   antWanderStrength: number;
@@ -7,7 +7,7 @@ export type AcoSettings = {
   antPerceptionRange: number;
 };
 
-export const acoSettingsSchema: Record<keyof AcoSettings, SettingSchema> = {
+export const acoSettingsSchema: SettingsSchema<AcoSettings> = {
   antSpeed: {
     kind: "number",
     label: "Ant Speed",
@@ -41,11 +41,3 @@ export const acoSettingsSchema: Record<keyof AcoSettings, SettingSchema> = {
     step: 5,
   },
 };
-
-export const defaultAcoSettings = (): AcoSettings =>
-  Object.fromEntries(
-    Object.entries(acoSettingsSchema).map(([key, schema]) => [
-      key,
-      schema.default,
-    ]),
-  ) as AcoSettings;

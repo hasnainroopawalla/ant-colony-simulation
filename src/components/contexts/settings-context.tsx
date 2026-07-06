@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useSimulator } from "./simulator-context";
-import type { SettingDescriptor, SettingValue } from "../../settings-provider";
+import type { SettingDescriptor, SettingValue } from "../../settings";
 
 type SettingsContextValue = {
   getSettings: () => Record<string, SettingDescriptor[]>;
@@ -17,23 +17,19 @@ export const SettingsProvider = ({ children }: React.PropsWithChildren) => {
 
   const getSettings = React.useCallback(
     () =>
-      simulator.getSettingsProviders().reduce(
-        (acc, provider) => {
-          acc[provider.namespace] = provider.getSettings();
-          return acc;
-        },
-        {} as Record<string, SettingDescriptor[]>,
-      ),
+      Object.fromEntries(
+        [...simulator.getSettingsProviders()].map(([namespace, provider]) => [
+          namespace,
+          provider.getSettings(),
+        ]),
+      ) as Record<string, SettingDescriptor[]>,
     [simulator],
   );
 
-  // TODO: fix this, dont use .find()
   const updateSetting = React.useCallback(
     (namespace: string, key: string, value: SettingValue) => {
-      const provider = simulator
-        .getSettingsProviders()
-        .find((p) => p.namespace === namespace);
-      provider?.updateSettings(key as never, value as never);
+      const provider = simulator.getSettingsProviders().get(namespace);
+      provider?.updateSettings(key, value);
     },
     [simulator],
   );

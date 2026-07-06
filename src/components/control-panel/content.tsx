@@ -1,8 +1,9 @@
+import * as React from "react";
 import { useSettings } from "../contexts/settings-context";
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <div className="mt-4 mb-2 px-4 font-mono text-[10px] font-semibold tracking-wider text-white/50 uppercase">
+    <div className="mt-4 mb-2 px-4 font-mono text-[12px] font-semibold tracking-wider text-white/50 uppercase">
       {title}
     </div>
   );
@@ -10,15 +11,28 @@ function SectionHeader({ title }: { title: string }) {
 
 function SettingSlider({
   label,
-  value,
+  initialValue,
   min,
   max,
+  onChange,
 }: {
   label: string;
-  value: number;
-  min?: number;
-  max?: number;
+  initialValue: number;
+  min: number;
+  max: number;
+  onChange: (value: number) => void;
 }) {
+  const [value, setValue] = React.useState(initialValue);
+
+  const _onChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = Number(e.target.value);
+      setValue(newValue);
+      onChange(newValue);
+    },
+    [onChange],
+  );
+
   return (
     <div className="px-4 py-2">
       <div className="mb-1 flex items-center justify-between">
@@ -31,7 +45,8 @@ function SettingSlider({
         type="range"
         min={min}
         max={max}
-        defaultValue={value}
+        value={value}
+        onChange={_onChange}
         className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-sky-400"
       />
     </div>
@@ -58,26 +73,32 @@ function SettingToggle({
 }
 
 export function ControlPanelContent() {
-  const { getSettings } = useSettings();
+  const { getSettings, updateSetting } = useSettings();
 
   return (
     <>
-      {Object.entries(getSettings()).map(([namespace, settings]) => {
-        console.log(namespace, settings);
-        return settings.map((setting) => {
-          console.log(namespace, setting);
-          if (setting.kind === "number") {
-            return (
-              <SettingSlider
-                label={setting.label}
-                value={setting.value}
-                min={setting.min}
-                max={setting.max}
-              />
-            );
-          }
-        });
-      })}
+      {Object.entries(getSettings()).map(([namespace, settings]) => (
+        <React.Fragment key={namespace}>
+          <SectionHeader title={namespace} />
+          {settings.map((setting) => {
+            if (setting.kind === "number") {
+              return (
+                <SettingSlider
+                  key={setting.key}
+                  label={setting.label}
+                  initialValue={setting.value}
+                  min={setting.min}
+                  max={setting.max}
+                  onChange={(value) =>
+                    updateSetting(namespace, setting.key, value)
+                  }
+                />
+              );
+            }
+            return null;
+          })}
+        </React.Fragment>
+      ))}
     </>
   );
 

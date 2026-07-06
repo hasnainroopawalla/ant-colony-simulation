@@ -1,7 +1,7 @@
 import { EventBus, IEvents, Unsubscribe } from "./events";
 import { FpsMonitor } from "./fps-monitor";
 import type { Renderer, Scene } from "./render";
-import { SettingsProvider } from "./settings-provider";
+import { SettingsProvider } from "./settings";
 import { Simulation } from "./simulations";
 import type { World } from "./world";
 
@@ -60,8 +60,8 @@ export class Simulator {
     this.renderer.pause();
   }
 
-  public getSettingsProviders(): SettingsProvider[] {
-    return [this.world, this.simulation];
+  public getSettingsProviders(): Map<string, SettingsProvider> {
+    return new Map([this.world, this.simulation].map((p) => [p.namespace, p]));
   }
 
   private update(): void {

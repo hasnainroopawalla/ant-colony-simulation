@@ -4,12 +4,7 @@ import { Ant } from "./ant";
 import { Pheromone, PheromoneType } from "./pheromone";
 import { World } from "../../world";
 import { MathUtils, Vector } from "../../math";
-import {
-  acoSettingsSchema,
-  defaultAcoSettings,
-  type AcoSettings,
-} from "./aco.settings";
-import { SettingDescriptor } from "../../settings-provider";
+import { acoSettingsSchema, type AcoSettings } from "./aco.settings";
 
 export class AntColonySimulation extends Simulation<AcoSettings> {
   private homePheromoneQuadtree: Quadtree<Pheromone>;
@@ -19,12 +14,8 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
   private homePheromones: Pheromone[];
   private foodPheromones: Pheromone[];
 
-  private settings: AcoSettings;
-
   constructor(world: World) {
-    super(world, "Ant Colony Simulation");
-
-    this.settings = defaultAcoSettings();
+    super(world, "Ant Colony Simulation", acoSettingsSchema);
 
     this.homePheromoneQuadtree = new Quadtree({
       x: world.dims.w / 2,
@@ -106,22 +97,6 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
 
   public update(dt: number): void {
     this.ants.forEach((ant) => ant.update(dt));
-  }
-
-  public getSettings(): SettingDescriptor[] {
-    return (Object.keys(acoSettingsSchema) as Array<keyof AcoSettings>).map(
-      (key) => ({
-        ...acoSettingsSchema[key],
-        value: this.settings[key],
-      }),
-    ) as SettingDescriptor[];
-  }
-
-  public updateSettings(
-    key: keyof AcoSettings,
-    value: AcoSettings[keyof AcoSettings],
-  ): void {
-    this.settings[key] = value;
   }
 
   private spawnAnts(count: number): Ant[] {
