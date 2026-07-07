@@ -6,21 +6,41 @@ import { Vector, MathUtils } from "../../math";
 import type { World } from "../../world";
 import { Pheromone } from "./pheromone";
 import type { AntColonySimulation } from "./aco";
+import { Antenna } from "./antenna";
 
-enum AntState {
+enum AntStateKind {
   Wandering,
-  ReturningHome,
+  ApproachingFood,
+  ReturningHomeWithFood,
 }
 
-type IAntennas = {
-  leftAntenna: Vector;
-  frontAntenna: Vector;
-  rightAntenna: Vector;
+type AntState =
+  | {
+      kind: AntStateKind.Wandering;
+    }
+  | {
+      kind: AntStateKind.ApproachingFood;
+      targetFoodItem: FoodItem;
+    }
+  | {
+      kind: AntStateKind.ReturningHomeWithFood;
+    };
+
+type AntennaSet = {
+  left: Antenna;
+  front: Antenna;
+  right: Antenna;
 };
+
+enum PheromoneType {
+  Home,
+  Food,
+}
 
 export class Ant {
   public position: Vector;
   public velocity: Vector;
+  public antennas: AntennaSet;
 
   private settings: AcoSettings;
 
@@ -31,7 +51,6 @@ export class Ant {
   private desiredVelocity: Vector;
   private angle: number;
   private colony: Colony;
-  private targetFoodItem: FoodItem | null;
   private lastDepositedPheromone?: Pheromone;
   private steps: number;
 
@@ -54,7 +73,14 @@ export class Ant {
 
     this.steps = 0;
 
-    this.state = AntState.Wandering;
+    this.state = { kind: AntStateKind.Wandering };
+
+    // initialize antennas at spawn position - will be updated in the next frame
+    this.antennas = {
+      left: new Antenna(spawnPosition),
+      front: new Antenna(spawnPosition),
+      right: new Antenna(spawnPosition),
+    };
 
     this.position = spawnPosition;
     this.angle = MathUtils.randomFloat(0, Math.PI * 2);
@@ -77,23 +103,27 @@ export class Ant {
   // }
 
   public update(dt: number): void {
+    this.updateAntennas();
+
     this.depositPheromone();
 
     this.decide(dt);
     this.handleObstacles(dt);
 
-    // this.isReturningHome() && this.handleReturningHome();
-    // this.isReturningHomeUsingPedometer() &&
-    //   this.handleReturningHomeUsingPedometer();
-    // this.handleWandering();
     this.move(dt);
     this.clampToBounds();
   }
 
   private decide(dt: number): void {
-    switch (this.state) {
-      case AntState.Wandering:
+    switch (this.state.kind) {
+      case AntStateKind.Wandering:
         this.handleWandering(dt);
+        break;
+      case AntStateKind.ApproachingFood:
+        this.handleApproachingFood(this.state.targetFoodItem);
+        break;
+      case AntStateKind.ReturningHomeWithFood:
+        this.handleReturningHome();
         break;
     }
   }
@@ -102,29 +132,20 @@ export class Ant {
     this.desiredVelocity = target.sub(this.position).normalize();
   }
 
-  private getAntennas(): IAntennas {
-    const leftAntenna = this.position.add(
-      this.desiredVelocity
-        .rotate(-ANT_ANTENNA_ROTATION)
-        .mult(ANT_ANTENNA_RANGE),
+  private updateAntennas(): void {
+    this.antennas.left.position = this.getAntennaPosition(
+      -AcoConstants.ANT_ANTENNA_ROTATION,
     );
-    const frontAntenna = this.position.add(
-      this.desiredVelocity.mult(ANT_ANTENNA_RANGE),
+    this.antennas.front.position = this.getAntennaPosition(0);
+    this.antennas.right.position = this.getAntennaPosition(
+      AcoConstants.ANT_ANTENNA_ROTATION,
     );
-    const rightAntenna = this.position.add(
-      this.desiredVelocity.rotate(ANT_ANTENNA_ROTATION).mult(ANT_ANTENNA_RANGE),
-    );
+  }
 
-    // AcoConfig.showAntAntennas &&
-    //   this.p.circle(leftAntenna.x, leftAntenna.y, ANT_ANTENNA_RADIUS) &&
-    //   this.p.circle(
-    //     frontAntenna.x,
-    //     frontAntenna.y,
-    //     ANT_ANTENNA_RADIUS,
-    //   ) &&
-    //   this.p.circle(rightAntenna.x, rightAntenna.y, ANT_ANTENNA_RADIUS);
-
-    return { leftAntenna, frontAntenna, rightAntenna };
+  private getAntennaPosition(angle: number): Vector {
+    return this.position.add(
+      this.desiredVelocity.rotate(angle).mult(AcoConstants.ANT_ANTENNA_RANGE),
+    );
   }
 
   private getPerception(): Vector {
@@ -199,24 +220,41 @@ export class Ant {
       angle * this.settings.antWanderStrength * dt,
       true,
     );
+
+    const foodItem = this.world.queryFood(
+      this.getPerception(),
+      this.settings.antPerceptionRange,
+    );
+
+    if (foodItem) {
+      this.state = {
+        kind: AntStateKind.ApproachingFood,
+        targetFoodItem: foodItem,
+      };
+    }
   }
 
-  private handleAntennaSteering(pheromoneType: IPheromoneType) {
-    const antennas = this.getAntennas();
-    const [leftAntenna, frontAntenna, rightAntenna] =
-      this.world.computeAntAntennasPheromoneValues(
-        [antennas.leftAntenna, antennas.frontAntenna, antennas.rightAntenna],
-        AcoConstants.ANT_ANTENNA_RADIUS,
-        pheromoneType,
-      );
+  private handleApproachingFood(foodItem: FoodItem): void {
+    this.approachTarget(foodItem.position);
 
-    if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
-      // do nothing
-    } else if (leftAntenna > rightAntenna) {
-      this.desiredVelocity.rotate(-AcoConstants.ANT_ANTENNA_ROTATION, true);
-    } else if (rightAntenna > leftAntenna) {
-      this.desiredVelocity.rotate(AcoConstants.ANT_ANTENNA_ROTATION, true);
+    if (foodItem.collide(this.position)) {
+      this.state = { kind: AntStateKind.ReturningHomeWithFood };
     }
+  }
+
+  private handleAntennaSteering(pheromoneType: PheromoneType): void {
+    const leftAntenna = this.antennas.left;
+
+    const leftScore = this.sim.samplePheromone(leftAntenna, pheromoneType);
+    console.log("leftScore", leftScore);
+
+    // if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
+    //   // do nothing
+    // } else if (leftAntenna > rightAntenna) {
+    //   this.desiredVelocity.rotate(-AcoConstants.ANT_ANTENNA_ROTATION, true);
+    // } else if (rightAntenna > leftAntenna) {
+    //   this.desiredVelocity.rotate(AcoConstants.ANT_ANTENNA_ROTATION, true);
+    // }
   }
 
   private handleWandering1() {
@@ -244,22 +282,24 @@ export class Ant {
     }
   }
 
-  private handleReturningHome() {
-    if (this.colonyInPerceptionRange()) {
-      this.approachTarget(this.colony.position);
-      // check if food item is delivered to colony
-      if (this.colony.collide(this.position)) {
-        // rotate 180 degrees
-        this.desiredVelocity.rotate(Math.PI, true);
-        this.targetFoodItem.delivered();
-        this.targetFoodItem = null;
-        this.colony.incrementFoodCount();
-        this.searchingForFood();
-      }
-    } else {
-      // follow home pheromones to deliver food
-      this.handleAntennaSteering(IPheromoneType.Home);
-    }
+  private handleReturningHome(): void {
+    this.handleAntennaSteering(IPheromoneType.Home);
+    // this.approachTarget(this.colony.position);
+    // if (this.colonyInPerceptionRange()) {
+    //   this.approachTarget(this.colony.position);
+    //   // check if food item is delivered to colony
+    //   if (this.colony.collide(this.position)) {
+    //     // rotate 180 degrees
+    //     this.desiredVelocity.rotate(Math.PI, true);
+    //     this.targetFoodItem.delivered();
+    //     this.targetFoodItem = null;
+    //     this.colony.incrementFoodCount();
+    //     this.searchingForFood();
+    //   }
+    // } else {
+    //   // follow home pheromones to deliver food
+    //   this.handleAntennaSteering(IPheromoneType.Home);
+    // }
   }
 
   private colonyInPerceptionRange(): boolean {

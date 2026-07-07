@@ -2,6 +2,8 @@ import { Renderer, Scene } from "../renderer";
 import p5 from "p5";
 import { createSketch } from "./sketch";
 import * as RenderConstants from "../render.constants";
+// TODO fix import
+import { Antenna } from "../../simulations/aco/antenna";
 
 export class P5Renderer extends Renderer {
   private p: p5;
@@ -58,6 +60,12 @@ export class P5Renderer extends Renderer {
         RenderConstants.ANT_SIZE / 1.5,
       );
       this.p.pop();
+
+      this.renderAntennas(
+        ant.antennas.left,
+        ant.antennas.front,
+        ant.antennas.right,
+      );
     });
   }
 
@@ -122,5 +130,11 @@ export class P5Renderer extends Renderer {
       );
       this.p.pop();
     });
+  }
+
+  public renderAntennas(left: Antenna, front: Antenna, right: Antenna): void {
+    this.p.circle(left.position.x, left.position.y, left.radius * 2);
+    this.p.circle(front.position.x, front.position.y, front.radius * 2);
+    this.p.circle(right.position.x, right.position.y, right.radius * 2);
   }
 }

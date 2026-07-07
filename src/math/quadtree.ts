@@ -33,8 +33,6 @@ class Circle<T extends QuadtreeItem> {
   }
 }
 
-export const quadtreeCircle = new Circle(0, 0, 0);
-
 export class Rectangle<T extends QuadtreeItem> {
   public dims: RectangleDims;
 
@@ -169,33 +167,9 @@ export class Quadtree<T extends QuadtreeItem> {
     }
   }
 
-  public query(range: Circle<T>, results?: T[]): T[] {
-    if (!results) {
-      results = [];
-    }
-
-    if (!this.boundary.intersects(range)) {
-      return [];
-    }
-
-    // Highlight the quadtrees in the perception range of the ant
-    // EngineConfig.showHighlightedQuadtree && this.highlightQuadtree();
-
-    for (let i = 0; i < this.points.length; i++) {
-      const point = this.points[i];
-      if (range.contains(point)) {
-        results.push(point);
-      }
-    }
-
-    if (this.divided) {
-      this.topLeft?.query(range, results);
-      this.bottomLeft?.query(range, results);
-      this.bottomRight?.query(range, results);
-      this.topRight?.query(range, results);
-    }
-
-    return results;
+  public query(range: { x: number; y: number; r: number }, results?: T[]): T[] {
+    const rangeCircle = new Circle(range.x, range.y, range.r);
+    return this._query(rangeCircle, results);
   }
 
   public insert(point: T): boolean {
@@ -222,5 +196,34 @@ export class Quadtree<T extends QuadtreeItem> {
       this.bottomRight?.insert(point) ||
       this.topRight?.insert(point)
     );
+  }
+
+  private _query(rangeCircle: Circle<T>, results?: T[]): T[] {
+    if (!results) {
+      results = [];
+    }
+
+    if (!this.boundary.intersects(rangeCircle)) {
+      return [];
+    }
+
+    // Highlight the quadtrees in the perception range of the ant
+    // EngineConfig.showHighlightedQuadtree && this.highlightQuadtree();
+
+    for (let i = 0; i < this.points.length; i++) {
+      const point = this.points[i];
+      if (rangeCircle.contains(point)) {
+        results.push(point);
+      }
+    }
+
+    if (this.divided) {
+      this.topLeft?.query(rangeCircle, results);
+      this.bottomLeft?.query(rangeCircle, results);
+      this.bottomRight?.query(rangeCircle, results);
+      this.topRight?.query(rangeCircle, results);
+    }
+
+    return results;
   }
 }

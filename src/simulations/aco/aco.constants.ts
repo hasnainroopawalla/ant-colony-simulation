@@ -1,7 +1,7 @@
 // Ant behavior — geometry
-export const ANT_ANTENNA_RADIUS = 70;
-export const ANT_ANTENNA_RANGE = 90;
-export const ANT_ANTENNA_ROTATION = 1.1;
+export const ANT_ANTENNA_RADIUS = 10;
+export const ANT_ANTENNA_RANGE = 20;
+export const ANT_ANTENNA_ROTATION = 1;
 export const ANT_OBSTACLE_ANGLE_RANGE = 0.7;
 
 // Pheromone behavior

@@ -81,9 +81,25 @@ export class World implements SettingsProvider {
     return false;
   }
 
+  // TODO: fix
   public getSettings(): SettingDescriptor[] {
     return [];
   }
 
+  // TODO: fix
   public updateSettings() {}
+
+  public queryFood(center: Vector, radius: number): FoodItem | null {
+    const found = this.foodQuadtree.query({
+      x: center.x,
+      y: center.y,
+      r: radius,
+    });
+    for (let i = 0; i < found.length; i++) {
+      const foodItem = found[i];
+      return foodItem;
+    }
+
+    return null;
+  }
 }

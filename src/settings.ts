@@ -2,7 +2,7 @@ export type SettingValue = number | boolean;
 
 export type Settings = Record<string, SettingValue>;
 
-export type SettingSchema =
+type SettingSchema =
   | {
       kind: "number";
       label: string;

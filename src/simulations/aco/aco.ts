@@ -5,6 +5,8 @@ import { Pheromone, PheromoneType } from "./pheromone";
 import { World } from "../../world";
 import { MathUtils, Vector } from "../../math";
 import { acoSettingsSchema, type AcoSettings } from "./aco.settings";
+import * as AcoConstants from "./aco.constants";
+import { Antenna } from "./antenna";
 
 export class AntColonySimulation extends Simulation<AcoSettings> {
   private homePheromoneQuadtree: Quadtree<Pheromone>;
@@ -31,7 +33,7 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
       h: world.dims.h / 2,
     });
 
-    this.ants = this.spawnAnts(100);
+    this.ants = this.spawnAnts(1);
     this.homePheromones = [];
     this.foodPheromones = [];
   }
@@ -55,45 +57,50 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
     return pheromone;
   }
 
-  // public getFoodItemInAntPerceptionRange(
-  //   antPosition: Vector,
-  //   antPerceptionRange: number,
-  // ): FoodItem | null {
-  //   quadtreeCircle.set(antPosition.x, antPosition.y, antPerceptionRange);
-  //   const found = this.foodItemsQuadtree.query(quadtreeCircle);
-  //   for (let i = 0; i < found.length; i++) {
-  //     const foodItem = found[i];
-  //     if (foodItem.isSpawned()) {
-  //       foodItem.reserved();
-  //       return foodItem;
-  //     }
-  //   }
-  // }
+  public samplePheromone(
+    antenna: Antenna,
+    pheromoneType: PheromoneType,
+  ): number {
+    const pheromones = this.homePheromoneQuadtree.query({
+      x: antenna.position.x,
+      y: antenna.position.y,
+      r: antenna.radius,
+    });
 
-  // public computeAntAntennasPheromoneValues(
-  //   antennas: Vector[],
-  //   antAntennaRadius: number,
-  //   pheromoneType: IPheromoneType,
-  // ): number[] {
-  //   const antennaScores: number[] = [];
-  //   const pheromoneQuadtree =
-  //     pheromoneType === IPheromoneType.Food
-  //       ? this.foodPheromoneQuadtree
-  //       : this.homePheromoneQuadtree;
+    const score = pheromones.reduce((acc, pheromone) => {
+      acc += pheromone.strength / AcoConstants.PHEROMONE_INITIAL_STRENGTH;
+      return acc;
+    }, 0);
 
-  //   for (let i = 0; i < antennas.length; i++) {
-  //     const antenna = antennas[i];
-  //     let antennaScore = 0;
-  //     quadtreeCircle.set(antenna.x, antenna.y, antAntennaRadius);
-  //     const pheromones = pheromoneQuadtree.query(quadtreeCircle);
-  //     for (let j = 0; j < pheromones.length; j++) {
-  //       antennaScore +=
-  //         pheromones[j].strength / PHEROMONE_INITIAL_STRENGTH;
-  //     }
-  //     antennaScores.push(antennaScore);
-  //   }
-  //   return antennaScores;
-  // }
+    return score;
+  }
+
+  public computeAntennaPheromoneScore(
+    antennas: Vector[],
+    antAntennaRadius: number,
+    pheromoneType: IPheromoneType,
+  ): number[] {
+    const antennaScores: number[] = [];
+    const pheromoneQuadtree =
+      pheromoneType === IPheromoneType.Food
+        ? this.foodPheromoneQuadtree
+        : this.homePheromoneQuadtree;
+
+    for (let i = 0; i < antennas.length; i++) {
+      const antenna = antennas[i];
+      let antennaScore = 0;
+      const pheromones = pheromoneQuadtree.query({
+        x: antenna.x,
+        y: antenna.y,
+        r: antAntennaRadius,
+      });
+      for (let j = 0; j < pheromones.length; j++) {
+        antennaScore += pheromones[j].strength / PHEROMONE_INITIAL_STRENGTH;
+      }
+      antennaScores.push(antennaScore);
+    }
+    return antennaScores;
+  }
 
   public update(dt: number): void {
     this.ants.forEach((ant) => ant.update(dt));
