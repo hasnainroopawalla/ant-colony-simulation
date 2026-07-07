@@ -215,46 +215,54 @@ export class Ant {
   }
 
   private handleWandering(dt: number): void {
-    const angle = MathUtils.randomFloat(-1, 1);
-    this.desiredVelocity.rotate(
-      angle * this.settings.antWanderStrength * dt,
-      true,
-    );
-
     const foodItem = this.world.queryFood(
       this.getPerception(),
       this.settings.antPerceptionRange,
     );
 
     if (foodItem) {
+      console.log("Food item found within perception range:", foodItem);
       this.state = {
         kind: AntStateKind.ApproachingFood,
         targetFoodItem: foodItem,
       };
+      return;
     }
+
+    this.desiredVelocity.rotate(
+      MathUtils.randomFloat(-1, 1) * this.settings.antWanderStrength * dt,
+      true,
+    );
+
+    this.followFoodPheromones(dt);
   }
 
   private handleApproachingFood(foodItem: FoodItem): void {
     this.approachTarget(foodItem.position);
 
     if (foodItem.collide(this.position)) {
+      console.log("Returning home with food item:", foodItem);
       this.state = { kind: AntStateKind.ReturningHomeWithFood };
     }
   }
 
-  private handleAntennaSteering(pheromoneType: PheromoneType): void {
-    const leftAntenna = this.antennas.left;
+  private followFoodPheromones(dt: number): void {
+    const leftScore = this.sim.samplePheromone(
+      this.antennas.left,
+      PheromoneType.Home,
+    );
+    const rightScore = this.sim.samplePheromone(
+      this.antennas.right,
+      PheromoneType.Home,
+    );
 
-    const leftScore = this.sim.samplePheromone(leftAntenna, pheromoneType);
-    console.log("leftScore", leftScore);
-
-    // if (frontAntenna > leftAntenna && frontAntenna > rightAntenna) {
-    //   // do nothing
-    // } else if (leftAntenna > rightAntenna) {
-    //   this.desiredVelocity.rotate(-AcoConstants.ANT_ANTENNA_ROTATION, true);
-    // } else if (rightAntenna > leftAntenna) {
-    //   this.desiredVelocity.rotate(AcoConstants.ANT_ANTENNA_ROTATION, true);
-    // }
+    if (leftScore > rightScore) {
+      // steer left
+      this.desiredVelocity.rotate(-AcoConstants.ANT_ANTENNA_ROTATION, true);
+    } else if (rightScore > leftScore) {
+      // steer right
+      this.desiredVelocity.rotate(AcoConstants.ANT_ANTENNA_ROTATION, true);
+    }
   }
 
   private handleWandering1() {
