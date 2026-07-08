@@ -82,7 +82,7 @@ export class Ant {
     );
     this.desiredVelocity = MathUtils.fromAngle(this.angle);
 
-    this.lastDroppedPheromonePosition = spawnPosition.copy();
+    this.lastDroppedPheromonePosition = spawnPosition;
   }
 
   // private renderPerceptionRange() {
@@ -142,15 +142,12 @@ export class Ant {
   }
 
   private getPerception(): Vector {
-    return this.position
-      .copy()
-      .add(
-        this.velocity.copy().normalize().mult(this.settings.antPerceptionRange),
-      );
+    return this.position.add(
+      this.velocity.normalize().mult(this.settings.antPerceptionRange),
+    );
   }
 
   private handleObstacles(dt: number): void {
-    const originalDesired = this.desiredVelocity.copy();
     const speed = this.velocity.getMagnitude();
     const lookahead = Math.max(
       this.settings.antPerceptionRange,
@@ -159,33 +156,30 @@ export class Ant {
 
     for (const step of Ant.OBSTACLE_SWEEP_OFFSETS) {
       const angle = step * AcoConstants.ANT_OBSTACLE_ANGLE_RANGE;
-      const candidate = originalDesired.copy().rotate(angle, true);
+      const candidate = this.desiredVelocity.rotate(angle);
 
       if (this.isDirectionClear(candidate, lookahead)) {
         this.desiredVelocity = candidate;
-        this.velocity = candidate.copy().setMagnitude(speed);
+        this.velocity = candidate.setMagnitude(speed);
         return;
       }
     }
 
     // No clear direction — reverse.
-    this.desiredVelocity.rotate(Math.PI, true);
-    this.velocity.rotate(Math.PI, true);
+    this.desiredVelocity = this.desiredVelocity.rotate(Math.PI);
+    this.velocity = this.velocity.rotate(Math.PI);
   }
 
   private isDirectionClear(direction: Vector, lookahead: number): boolean {
-    const perception = this.position.add(
-      direction.copy().normalize().mult(lookahead),
-    );
+    const perception = this.position.add(direction.normalize().mult(lookahead));
 
     return !this.world.isPathBlocked(this.position, perception);
   }
 
   private depositPheromone(pheromoneType: PheromoneType): void {
     if (this.shouldDepositPheromone()) {
-      const newPheromonePosition = this.position.copy();
-      this.sim.depositPheromone(newPheromonePosition, pheromoneType);
-      this.lastDroppedPheromonePosition = newPheromonePosition;
+      this.sim.depositPheromone(this.position, pheromoneType);
+      this.lastDroppedPheromonePosition = this.position;
     }
   }
 
@@ -227,9 +221,8 @@ export class Ant {
       return;
     }
 
-    this.desiredVelocity.rotate(
+    this.desiredVelocity = this.desiredVelocity.rotate(
       MathUtils.randomFloat(-1, 1) * this.settings.antWanderStrength * dt,
-      true,
     );
 
     this.followPheromones(PheromoneType.Food);
@@ -242,9 +235,8 @@ export class Ant {
     this.approachTarget(foodItem.position);
 
     if (foodItem.collide(this.position)) {
-      console.log("Returning home with food item:", foodItem);
       // TODO: add some jitter here for more natural movement
-      this.desiredVelocity.rotate(Math.PI, true);
+      this.desiredVelocity = this.desiredVelocity.rotate(Math.PI);
       this.state = { kind: AntStateKind.ReturningHomeWithFood };
     }
   }
@@ -261,10 +253,14 @@ export class Ant {
 
     if (leftScore > rightScore) {
       // steer left
-      this.desiredVelocity.rotate(-AcoConstants.ANT_ANTENNA_ROTATION, true);
+      this.desiredVelocity = this.desiredVelocity.rotate(
+        -AcoConstants.ANT_ANTENNA_ROTATION,
+      );
     } else if (rightScore > leftScore) {
       // steer right
-      this.desiredVelocity.rotate(AcoConstants.ANT_ANTENNA_ROTATION, true);
+      this.desiredVelocity = this.desiredVelocity.rotate(
+        AcoConstants.ANT_ANTENNA_ROTATION,
+      );
     }
   }
 
@@ -332,15 +328,13 @@ export class Ant {
   }
 
   private move(dt: number): void {
-    const desired = this.desiredVelocity
-      .copy()
-      .setMagnitude(this.settings.antSpeed);
+    const desired = this.desiredVelocity.setMagnitude(this.settings.antSpeed);
     const steering = desired.sub(this.velocity);
     const acceleration = steering.limit(this.settings.antSteeringLimit);
 
-    this.velocity
-      .add(acceleration.mult(dt), true)
+    this.velocity = this.velocity
+      .add(acceleration.mult(dt))
       .limit(this.settings.antSpeed);
-    this.position.add(this.velocity.mult(dt), true);
+    this.position = this.position.add(this.velocity.mult(dt));
   }
 }

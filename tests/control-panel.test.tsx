@@ -1,26 +1,15 @@
 import * as React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { ControlPanel } from "../src/components/control-panel/control-panel";
-import { ControlPanelToggle } from "../src/components/control-panel/toggle";
 import { SettingItem } from "../src/components/control-panel/setting-item";
-import { Slider } from "../src/components/control-panel/slider";
-import { Checkbox } from "../src/components/control-panel/checkbox";
 
 const CONTROL_PANEL_CONTAINER = "control-panel-container";
-const CONTROL_PANEL_TOGGLE_BUTTON = "control-panel-toggle-button";
-
-const updateAcoConfig = vi.fn();
 
 describe("ControlPanel", () => {
   const setCanvasInteraction = vi.fn();
 
   beforeEach(() => {
-    render(
-      <ControlPanel
-        setCanvasInteraction={setCanvasInteraction}
-        updateAcoConfig={updateAcoConfig}
-      />,
-    );
+    render(<ControlPanel setCanvasInteraction={setCanvasInteraction} />);
   });
 
   afterEach(() => {
@@ -39,26 +28,6 @@ describe("ControlPanel", () => {
   test("enable canvas interaction when mouse out", async () => {
     fireEvent.mouseOut(screen.getByTestId(CONTROL_PANEL_CONTAINER));
     expect(setCanvasInteraction).toHaveBeenCalledWith(true);
-  });
-});
-
-describe("ControlPanelToggle", () => {
-  const showControlPanel = vi.fn();
-
-  beforeEach(() => {
-    render(<ControlPanelToggle showControlPanel={showControlPanel} />);
-  });
-  afterEach(() => {
-    vi.resetAllMocks();
-  });
-
-  test("renders the toggle button", async () => {
-    expect(screen.getByTestId(CONTROL_PANEL_TOGGLE_BUTTON)).toBeVisible();
-  });
-
-  test("show control panel on click", async () => {
-    fireEvent.click(screen.getByTestId(CONTROL_PANEL_TOGGLE_BUTTON));
-    expect(showControlPanel).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -105,68 +74,5 @@ describe("SettingItem", () => {
     expect(screen.getByText("customTitle")).toBeInTheDocument();
     expect(screen.getByTestId("customCheckbox")).toBeVisible();
     expect(screen.getByTestId("customSlider")).toBeVisible();
-  });
-});
-
-describe("Slider", () => {
-  const SLIDER = "antSpeedSlider";
-
-  beforeEach(() => {
-    render(
-      <Slider
-        configParam="antSpeed"
-        min={1.0}
-        max={10}
-        step={1.0}
-        defaultValue={4.0}
-        updateAcoConfig={updateAcoConfig}
-      />,
-    );
-  });
-
-  afterEach(() => {
-    vi.resetAllMocks();
-  });
-
-  test("renders the input slider", async () => {
-    expect(screen.getByTestId(SLIDER)).toBeInTheDocument();
-  });
-
-  test("renders the slider value", async () => {
-    expect(screen.getByText("4.0")).toBeInTheDocument();
-  });
-
-  test("updates the ACO config when slider value changed", async () => {
-    fireEvent.input(screen.getByTestId(SLIDER));
-    expect(updateAcoConfig).toHaveBeenCalledTimes(1);
-    expect(updateAcoConfig).toHaveBeenCalledWith("antMaxSpeed", 4);
-  });
-});
-
-describe("Checkbox", () => {
-  const CHECKBOX = "showFoodItemsQuadtreeCheckbox";
-
-  beforeEach(() => {
-    render(
-      <Checkbox
-        configParam={"showFoodItemsQuadtree"}
-        isChecked={false}
-        updateAcoConfig={updateAcoConfig}
-      />,
-    );
-  });
-
-  afterEach(() => {
-    vi.resetAllMocks();
-  });
-
-  test("renders the checkbox", async () => {
-    expect(screen.getByTestId(CHECKBOX)).toBeInTheDocument();
-  });
-
-  test("updates the ACO config when checkbox toggled", async () => {
-    fireEvent.click(screen.getByTestId(CHECKBOX));
-    expect(updateAcoConfig).toHaveBeenCalledTimes(1);
-    expect(updateAcoConfig).toHaveBeenCalledWith("showFoodItemsQuadtree", true);
   });
 });

@@ -49,9 +49,6 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
     position: Vector,
     pheromoneType: PheromoneType,
   ): Pheromone {
-    // if (!this.shouldPheromoneBeDeposited()) {
-    //   return;
-    // }
     const pheromone = new Pheromone(position, pheromoneType);
 
     const [pheromoneQuadtree, pheromones] =
@@ -119,13 +116,10 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
       // TODO: better colony assignment
       const colony = this.world.colonies[0];
       // Uniform disk sampling: sqrt(rand) prevents clustering at the center.
-      // TODO: check if copy() is required everywhere
       const r = Math.sqrt(MathUtils.randomFloat()) * colony.radius;
-      const spawnPos = colony.position
-        .copy()
-        .add(
-          MathUtils.fromAngle(MathUtils.randomFloat(0, Math.PI * 2)).mult(r),
-        );
+      const spawnPos = colony.position.add(
+        MathUtils.fromAngle(MathUtils.randomFloat(0, Math.PI * 2)).mult(r),
+      );
 
       return new Ant(colony, this.world, this, spawnPos, this.settings);
     });
