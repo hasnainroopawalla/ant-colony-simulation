@@ -65,11 +65,13 @@ export class P5Renderer extends Renderer {
       );
       this.p.pop();
 
-      // this.renderAntennas(
-      //   ant.antennas.left,
-      //   ant.antennas.front,
-      //   ant.antennas.right,
-      // );
+      if (this.settings.showAntAntennas) {
+        this.renderAntennas(
+          ant.antennas.left,
+          ant.antennas.front,
+          ant.antennas.right,
+        );
+      }
     });
   }
 

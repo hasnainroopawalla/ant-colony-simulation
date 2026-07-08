@@ -261,31 +261,6 @@ export class Ant {
     );
   }
 
-  // private handleWandering1() {
-  //   // check if food item exists within perception range
-  //   if (!this.targetFoodItem) {
-  //     this.targetFoodItem = this.world.getFoodItemInAntPerceptionRange(
-  //       this.getPerception(),
-  //       this.settings.antPerceptionRange,
-  //     );
-  //   }
-
-  //   if (!this.targetFoodItem) {
-  //     // follow food pheromones if no food item is found within perception range
-  //     this.handleAntennaSteering(IPheromoneType.Food);
-  //   } else {
-  //     // check if reserved food item is picked up
-  //     if (this.targetFoodItem.collide(this.position)) {
-  //       // rotate 180 degrees
-  //       this.desiredVelocity.rotate(Math.PI, true);
-  //       this.targetFoodItem.pickedUp();
-  //       this.returningHome();
-  //     } else {
-  //       this.approachTarget(this.targetFoodItem.position);
-  //     }
-  //   }
-  // }
-
   private handleReturningHome(dt: number): void {
     this.depositPheromone(PheromoneType.Food);
 
@@ -296,6 +271,7 @@ export class Ant {
 
       if (this.colony.contains(this.position)) {
         this.colony.incrementFoodCount();
+        // TODO: add jitter
         this.desiredVelocity = this.desiredVelocity.rotate(Math.PI);
         this.state = { kind: AntStateKind.Wandering };
       }

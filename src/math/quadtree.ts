@@ -89,6 +89,49 @@ export class Quadtree<T extends QuadtreeItem> {
     this.points = [];
   }
 
+  public query(range: { x: number; y: number; r: number }, results?: T[]): T[] {
+    const rangeCircle = new Circle(range.x, range.y, range.r);
+    return this._query(rangeCircle, results);
+  }
+
+  public insert(point: T): boolean {
+    if (!this.boundary.contains(point.position)) {
+      return false;
+    }
+
+    if (!this.divided) {
+      if (
+        this.points.length < this.capacity ||
+        this.currentDepth === WorldConstants.QUADTREE_MAX_DEPTH
+      ) {
+        this.points.push(point);
+        return true;
+      }
+
+      this.subdivide();
+      this.divided = true;
+    }
+
+    return !!(
+      this.topLeft?.insert(point) ||
+      this.bottomLeft?.insert(point) ||
+      this.bottomRight?.insert(point) ||
+      this.topRight?.insert(point)
+    );
+  }
+
+  public rebuild(newPoints: T[]): void {
+    this.points = [];
+
+    this.divided = false;
+    this.topLeft = undefined;
+    this.bottomLeft = undefined;
+    this.bottomRight = undefined;
+    this.topRight = undefined;
+
+    newPoints.forEach((point) => this.insert(point));
+  }
+
   private subdivide() {
     this.topLeft = new Quadtree(
       {
@@ -165,37 +208,6 @@ export class Quadtree<T extends QuadtreeItem> {
       this.bottomRight?.update(showBoundary);
       this.topRight?.update(showBoundary);
     }
-  }
-
-  public query(range: { x: number; y: number; r: number }, results?: T[]): T[] {
-    const rangeCircle = new Circle(range.x, range.y, range.r);
-    return this._query(rangeCircle, results);
-  }
-
-  public insert(point: T): boolean {
-    if (!this.boundary.contains(point.position)) {
-      return false;
-    }
-
-    if (!this.divided) {
-      if (
-        this.points.length < this.capacity ||
-        this.currentDepth === WorldConstants.QUADTREE_MAX_DEPTH
-      ) {
-        this.points.push(point);
-        return true;
-      }
-
-      this.subdivide();
-      this.divided = true;
-    }
-
-    return !!(
-      this.topLeft?.insert(point) ||
-      this.bottomLeft?.insert(point) ||
-      this.bottomRight?.insert(point) ||
-      this.topRight?.insert(point)
-    );
   }
 
   private _query(rangeCircle: Circle<T>, results?: T[]): T[] {

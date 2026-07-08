@@ -30,15 +30,7 @@ export type SettingDescriptor = { key: string } & (
     })
 );
 
-// export type SettingsProvider<TSettings extends Settings = Settings> = {
-//   readonly namespace: string;
-//   getSettings: () => SettingDescriptor[];
-//   updateSettings<K extends keyof TSettings>(key: K, value: TSettings[K]): void;
-// };
-
-export function defaultSettings<T extends Settings>(
-  schema: SettingsSchema<T>,
-): T {
+function defaultSettings<T extends Settings>(schema: SettingsSchema<T>): T {
   const out = {} as T;
   for (const key in schema) {
     out[key] = schema[key].default as T[typeof key];
@@ -46,7 +38,7 @@ export function defaultSettings<T extends Settings>(
   return out;
 }
 
-export function toDescriptors<T extends Settings>(
+function toDescriptors<T extends Settings>(
   schema: SettingsSchema<T>,
   values: T,
 ): SettingDescriptor[] {

@@ -7,9 +7,7 @@ export class Colony {
   foodCount: number;
 
   constructor() {
-    // TODO: fix position
     this.position = new Vector(200, 200);
-    // this.position = new Vector(this.p.windowWidth / 2, this.p.windowHeight / 2);
     this.radius = WorldConstants.COLONY_RADIUS;
     this.foodCount = 0;
   }

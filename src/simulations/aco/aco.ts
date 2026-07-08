@@ -85,6 +85,17 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
 
     this.homePheromones.forEach((pheromone) => pheromone.update(dt));
     this.foodPheromones.forEach((pheromone) => pheromone.update(dt));
+
+    // TODO: is this optimal?
+    this.homePheromones = this.homePheromones.filter(
+      (pheromone) => !pheromone.isExpired(),
+    );
+    this.foodPheromones = this.foodPheromones.filter(
+      (pheromone) => !pheromone.isExpired(),
+    );
+
+    this.homePheromoneQuadtree.rebuild(this.homePheromones);
+    this.foodPheromoneQuadtree.rebuild(this.foodPheromones);
   }
 
   private spawnAnts(count: number): Ant[] {

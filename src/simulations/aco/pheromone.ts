@@ -17,6 +17,7 @@ export class Pheromone {
     this.strength = AcoConstants.PHEROMONE_INITIAL_STRENGTH;
   }
 
+  // TODO: use this to delete from quadtree
   public isExpired(): boolean {
     return this.strength <= 0;
   }
