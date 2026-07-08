@@ -146,4 +146,16 @@ export class P5Renderer extends Renderer {
     this.p.circle(front.position.x, front.position.y, front.radius * 2);
     this.p.circle(right.position.x, right.position.y, right.radius * 2);
   }
+
+  //   private renderPerception(ant: Antenna): void {
+  //     this.p.push();
+  //     this.p.strokeWeight(AcoConfig.antPerceptionStrokeWeight);
+  //     this.p.fill(
+  //       AcoConfig.antPerceptionColorGray,
+  //       AcoConfig.antPerceptionColorAlpha,
+  //     );
+  //     const perception = this.getPerception();
+  //     this.p.circle(perception.x, perception.y, this.settings.antPerceptionRange * 2);
+  //     this.p.pop();
+  // }
 }

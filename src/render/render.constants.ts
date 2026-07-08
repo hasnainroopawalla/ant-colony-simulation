@@ -13,7 +13,6 @@ export const ANT_COLOR = "#FFEA00";
 export const ANT_PERCEPTION_COLOR_GRAY = 255;
 export const ANT_PERCEPTION_COLOR_ALPHA = 30;
 export const ANT_PERCEPTION_STROKE_WEIGHT = 1;
-export const SHOW_ANT_PERCEPTION_RANGE = false;
 export const SHOW_ANT_ANTENNAS = false;
 
 // Food

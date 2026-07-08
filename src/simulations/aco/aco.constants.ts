@@ -10,5 +10,5 @@ export const ANT_PHEROMONE_STEERING_RATE = 4;
 
 // Pheromone behavior
 export const PHEROMONE_DISTANCE_BETWEEN = 200;
-export const PHEROMONE_EVAPORATION_RATE = 0; // strength units per second
+export const PHEROMONE_EVAPORATION_RATE = 20; // strength units per second
 export const PHEROMONE_INITIAL_STRENGTH = 500;

@@ -7,8 +7,6 @@ import { MathUtils, Vector } from "../math";
 import * as WorldConstants from "./world.constants";
 
 export class World {
-  public readonly namespace: string = "world";
-
   public colonies: Colony[];
   public foodItems: FoodItem[];
   public obstacles: Obstacle[];

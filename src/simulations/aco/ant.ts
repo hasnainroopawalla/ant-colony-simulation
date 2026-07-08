@@ -85,18 +85,6 @@ export class Ant {
     this.lastDroppedPheromonePosition = spawnPosition;
   }
 
-  // private renderPerceptionRange() {
-  //   this.p.push();
-  //   this.p.strokeWeight(AcoConfig.antPerceptionStrokeWeight);
-  //   this.p.fill(
-  //     AcoConfig.antPerceptionColorGray,
-  //     AcoConfig.antPerceptionColorAlpha,
-  //   );
-  //   const perception = this.getPerception();
-  //   this.p.circle(perception.x, perception.y, this.settings.antPerceptionRange * 2);
-  //   this.p.pop();
-  // }
-
   public update(dt: number): void {
     this.updateAntennas();
 
@@ -154,6 +142,7 @@ export class Ant {
       speed * dt * 2,
     );
 
+    // TODO: add jitter
     for (const step of Ant.OBSTACLE_SWEEP_OFFSETS) {
       const angle = step * AcoConstants.ANT_OBSTACLE_ANGLE_RANGE;
       const candidate = this.desiredVelocity.rotate(angle);
@@ -305,6 +294,7 @@ export class Ant {
     this.velocity = this.velocity
       .add(acceleration.mult(dt))
       .limit(this.settings.antSpeed);
+
     this.position = this.position.add(this.velocity.mult(dt));
   }
 }
