@@ -33,7 +33,7 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
       h: world.dims.h / 2,
     });
 
-    this.ants = this.spawnAnts(50);
+    this.ants = this.spawnAnts(10);
     this.homePheromones = [];
     this.foodPheromones = [];
   }
@@ -45,14 +45,20 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
     };
   }
 
-  public handlePheromoneDeposit(position: Vector): Pheromone {
+  public depositPheromone(
+    position: Vector,
+    pheromoneType: PheromoneType,
+  ): Pheromone {
     // if (!this.shouldPheromoneBeDeposited()) {
     //   return;
     // }
-    const pheromone = new Pheromone(position, PheromoneType.Home);
+    const pheromone = new Pheromone(position, pheromoneType);
 
-    this.homePheromones.push(pheromone);
-    this.homePheromoneQuadtree.insert(pheromone);
+    const [pheromoneQuadtree, pheromones] =
+      this.getPheromoneCollection(pheromoneType);
+
+    pheromones.push(pheromone);
+    pheromoneQuadtree.insert(pheromone);
 
     return pheromone;
   }
@@ -61,7 +67,9 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
     antenna: Antenna,
     pheromoneType: PheromoneType,
   ): number {
-    const pheromones = this.homePheromoneQuadtree.query({
+    const [pheromoneQuadtree] = this.getPheromoneCollection(pheromoneType);
+
+    const pheromones = pheromoneQuadtree.query({
       x: antenna.position.x,
       y: antenna.position.y,
       r: antenna.radius,
@@ -75,32 +83,32 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
     return score;
   }
 
-  public computeAntennaPheromoneScore(
-    antennas: Vector[],
-    antAntennaRadius: number,
-    pheromoneType: IPheromoneType,
-  ): number[] {
-    const antennaScores: number[] = [];
-    const pheromoneQuadtree =
-      pheromoneType === IPheromoneType.Food
-        ? this.foodPheromoneQuadtree
-        : this.homePheromoneQuadtree;
+  // public computeAntennaPheromoneScore(
+  //   antennas: Vector[],
+  //   antAntennaRadius: number,
+  //   pheromoneType: IPheromoneType,
+  // ): number[] {
+  //   const antennaScores: number[] = [];
+  //   const pheromoneQuadtree =
+  //     pheromoneType === IPheromoneType.Food
+  //       ? this.foodPheromoneQuadtree
+  //       : this.homePheromoneQuadtree;
 
-    for (let i = 0; i < antennas.length; i++) {
-      const antenna = antennas[i];
-      let antennaScore = 0;
-      const pheromones = pheromoneQuadtree.query({
-        x: antenna.x,
-        y: antenna.y,
-        r: antAntennaRadius,
-      });
-      for (let j = 0; j < pheromones.length; j++) {
-        antennaScore += pheromones[j].strength / PHEROMONE_INITIAL_STRENGTH;
-      }
-      antennaScores.push(antennaScore);
-    }
-    return antennaScores;
-  }
+  //   for (let i = 0; i < antennas.length; i++) {
+  //     const antenna = antennas[i];
+  //     let antennaScore = 0;
+  //     const pheromones = pheromoneQuadtree.query({
+  //       x: antenna.x,
+  //       y: antenna.y,
+  //       r: antAntennaRadius,
+  //     });
+  //     for (let j = 0; j < pheromones.length; j++) {
+  //       antennaScore += pheromones[j].strength / PHEROMONE_INITIAL_STRENGTH;
+  //     }
+  //     antennaScores.push(antennaScore);
+  //   }
+  //   return antennaScores;
+  // }
 
   public update(dt: number): void {
     this.ants.forEach((ant) => ant.update(dt));
@@ -111,6 +119,7 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
       // TODO: better colony assignment
       const colony = this.world.colonies[0];
       // Uniform disk sampling: sqrt(rand) prevents clustering at the center.
+      // TODO: check if copy() is required everywhere
       const r = Math.sqrt(MathUtils.randomFloat()) * colony.radius;
       const spawnPos = colony.position
         .copy()
@@ -120,5 +129,13 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
 
       return new Ant(colony, this.world, this, spawnPos, this.settings);
     });
+  }
+
+  private getPheromoneCollection(
+    pheromoneType: PheromoneType,
+  ): [Quadtree<Pheromone>, Pheromone[]] {
+    return pheromoneType === PheromoneType.Food
+      ? [this.foodPheromoneQuadtree, this.foodPheromones]
+      : [this.homePheromoneQuadtree, this.homePheromones];
   }
 }

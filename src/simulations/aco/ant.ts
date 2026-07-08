@@ -4,7 +4,7 @@ import * as AcoConstants from "./aco.constants";
 import type { AcoSettings } from "./aco.settings";
 import { Vector, MathUtils } from "../../math";
 import type { World } from "../../world";
-import { Pheromone } from "./pheromone";
+import { PheromoneType } from "./pheromone";
 import type { AntColonySimulation } from "./aco";
 import { Antenna } from "./antenna";
 
@@ -32,11 +32,6 @@ type AntennaSet = {
   right: Antenna;
 };
 
-enum PheromoneType {
-  Home,
-  Food,
-}
-
 export class Ant {
   public position: Vector;
   public velocity: Vector;
@@ -51,8 +46,8 @@ export class Ant {
   private desiredVelocity: Vector;
   private angle: number;
   private colony: Colony;
-  private lastDepositedPheromone?: Pheromone;
-  private steps: number;
+
+  private lastDroppedPheromonePosition: Vector;
 
   // Sweep outward from the current heading: center first, then alternating
   // sides at increasing magnitudes. Finds the closest clear direction.
@@ -71,8 +66,6 @@ export class Ant {
 
     this.settings = settings;
 
-    this.steps = 0;
-
     this.state = { kind: AntStateKind.Wandering };
 
     // initialize antennas at spawn position - will be updated in the next frame
@@ -88,6 +81,8 @@ export class Ant {
       this.settings.antSpeed,
     );
     this.desiredVelocity = MathUtils.fromAngle(this.angle);
+
+    this.lastDroppedPheromonePosition = spawnPosition.copy();
   }
 
   // private renderPerceptionRange() {
@@ -104,8 +99,6 @@ export class Ant {
 
   public update(dt: number): void {
     this.updateAntennas();
-
-    this.depositPheromone();
 
     this.decide(dt);
     this.handleObstacles(dt);
@@ -188,8 +181,12 @@ export class Ant {
     return !this.world.isPathBlocked(this.position, perception);
   }
 
-  private depositPheromone(): void {
-    const pheromone = this.sim.handlePheromoneDeposit(this.position.copy());
+  private depositPheromone(pheromoneType: PheromoneType): void {
+    if (this.shouldDepositPheromone()) {
+      const newPheromonePosition = this.position.copy();
+      this.sim.depositPheromone(newPheromonePosition, pheromoneType);
+      this.lastDroppedPheromonePosition = newPheromonePosition;
+    }
   }
 
   private clampToBounds(): void {
@@ -215,13 +212,14 @@ export class Ant {
   }
 
   private handleWandering(dt: number): void {
+    this.depositPheromone(PheromoneType.Home);
+
     const foodItem = this.world.queryFood(
       this.getPerception(),
       this.settings.antPerceptionRange,
     );
 
     if (foodItem) {
-      console.log("Food item found within perception range:", foodItem);
       this.state = {
         kind: AntStateKind.ApproachingFood,
         targetFoodItem: foodItem,
@@ -234,26 +232,31 @@ export class Ant {
       true,
     );
 
-    this.followFoodPheromones(dt);
+    this.followPheromones(PheromoneType.Food);
   }
 
   private handleApproachingFood(foodItem: FoodItem): void {
+    // TODO: is this required here?
+    this.depositPheromone(PheromoneType.Home);
+
     this.approachTarget(foodItem.position);
 
     if (foodItem.collide(this.position)) {
       console.log("Returning home with food item:", foodItem);
+      // TODO: add some jitter here for more natural movement
+      this.desiredVelocity.rotate(Math.PI, true);
       this.state = { kind: AntStateKind.ReturningHomeWithFood };
     }
   }
 
-  private followFoodPheromones(dt: number): void {
+  private followPheromones(pheromoneType: PheromoneType): void {
     const leftScore = this.sim.samplePheromone(
       this.antennas.left,
-      PheromoneType.Home,
+      pheromoneType,
     );
     const rightScore = this.sim.samplePheromone(
       this.antennas.right,
-      PheromoneType.Home,
+      pheromoneType,
     );
 
     if (leftScore > rightScore) {
@@ -265,33 +268,35 @@ export class Ant {
     }
   }
 
-  private handleWandering1() {
-    // check if food item exists within perception range
-    if (!this.targetFoodItem) {
-      this.targetFoodItem = this.world.getFoodItemInAntPerceptionRange(
-        this.getPerception(),
-        this.settings.antPerceptionRange,
-      );
-    }
+  // private handleWandering1() {
+  //   // check if food item exists within perception range
+  //   if (!this.targetFoodItem) {
+  //     this.targetFoodItem = this.world.getFoodItemInAntPerceptionRange(
+  //       this.getPerception(),
+  //       this.settings.antPerceptionRange,
+  //     );
+  //   }
 
-    if (!this.targetFoodItem) {
-      // follow food pheromones if no food item is found within perception range
-      this.handleAntennaSteering(IPheromoneType.Food);
-    } else {
-      // check if reserved food item is picked up
-      if (this.targetFoodItem.collide(this.position)) {
-        // rotate 180 degrees
-        this.desiredVelocity.rotate(Math.PI, true);
-        this.targetFoodItem.pickedUp();
-        this.returningHome();
-      } else {
-        this.approachTarget(this.targetFoodItem.position);
-      }
-    }
-  }
+  //   if (!this.targetFoodItem) {
+  //     // follow food pheromones if no food item is found within perception range
+  //     this.handleAntennaSteering(IPheromoneType.Food);
+  //   } else {
+  //     // check if reserved food item is picked up
+  //     if (this.targetFoodItem.collide(this.position)) {
+  //       // rotate 180 degrees
+  //       this.desiredVelocity.rotate(Math.PI, true);
+  //       this.targetFoodItem.pickedUp();
+  //       this.returningHome();
+  //     } else {
+  //       this.approachTarget(this.targetFoodItem.position);
+  //     }
+  //   }
+  // }
 
   private handleReturningHome(): void {
-    this.handleAntennaSteering(IPheromoneType.Home);
+    this.depositPheromone(PheromoneType.Food);
+
+    this.followPheromones(PheromoneType.Home);
     // this.approachTarget(this.colony.position);
     // if (this.colonyInPerceptionRange()) {
     //   this.approachTarget(this.colony.position);
@@ -319,18 +324,12 @@ export class Ant {
     );
   }
 
-  // private shouldPheromoneBeDeposited() {
-  //   if (this.state === AntState.ReturningHomeUsingPedometer) {
-  //     return false;
-  //   }
-  //   if (!this.lastDepositedPheromone) {
-  //     return true;
-  //   }
-  //   return (
-  //     MathUtils.distance(this.position, this.lastDepositedPheromone.position) >
-  //     PHEROMONE_DISTANCE_BETWEEN
-  //   );
-  // }
+  private shouldDepositPheromone(): boolean {
+    return (
+      MathUtils.distance(this.position, this.lastDroppedPheromonePosition) >
+      AcoConstants.PHEROMONE_DISTANCE_BETWEEN
+    );
+  }
 
   private move(dt: number): void {
     const desired = this.desiredVelocity

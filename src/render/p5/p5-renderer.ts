@@ -4,6 +4,7 @@ import { createSketch } from "./sketch";
 import * as RenderConstants from "../render.constants";
 // TODO fix import
 import { Antenna } from "../../simulations/aco/antenna";
+import { PheromoneType } from "../../simulations/aco/pheromone";
 
 export class P5Renderer extends Renderer {
   private p: p5;
@@ -43,7 +44,7 @@ export class P5Renderer extends Renderer {
     this.renderAnts(scene);
     this.renderColonies(scene);
     this.renderFoodItems(scene);
-    // this.renderPheromones(scene);
+    this.renderPheromones(scene);
   }
 
   private renderAnts(scene: Scene): void {
@@ -118,7 +119,10 @@ export class P5Renderer extends Renderer {
 
   private renderPheromones(scene: Scene): void {
     scene.simulation.pheromones.forEach((pheromone) => {
-      const [colorR, colorG, colorB] = RenderConstants.HOME_PHEROMONE_COLOR_RGB;
+      const [colorR, colorG, colorB] =
+        pheromone.type === PheromoneType.Home
+          ? RenderConstants.HOME_PHEROMONE_COLOR_RGB
+          : RenderConstants.FOOD_PHEROMONE_COLOR_RGB;
 
       this.p.push();
       this.p.fill(colorR, colorG, colorB, pheromone.strength);

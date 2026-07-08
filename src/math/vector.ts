@@ -8,6 +8,7 @@ export class Vector {
     this.y = y;
   }
 
+  // TODO: remove the possibility to `assign` to a vector
   private assign(value: Vector): void {
     this.x = value.x;
     this.y = value.y;
