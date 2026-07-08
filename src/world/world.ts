@@ -5,9 +5,8 @@ import { Quadtree } from "../math/quadtree";
 import type { Dimensions, Position } from "../math/types";
 import { MathUtils, Vector } from "../math";
 import * as WorldConstants from "./world.constants";
-import { SettingDescriptor, SettingsProvider } from "../settings";
 
-export class World implements SettingsProvider {
+export class World {
   public readonly namespace: string = "world";
 
   public colonies: Colony[];
@@ -80,14 +79,6 @@ export class World implements SettingsProvider {
     }
     return false;
   }
-
-  // TODO: fix
-  public getSettings(): SettingDescriptor[] {
-    return [];
-  }
-
-  // TODO: fix
-  public updateSettings() {}
 
   public queryFood(center: Vector, radius: number): FoodItem | null {
     const found = this.foodQuadtree.query({

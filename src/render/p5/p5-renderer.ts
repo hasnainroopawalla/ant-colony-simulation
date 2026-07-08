@@ -44,7 +44,10 @@ export class P5Renderer extends Renderer {
     this.renderAnts(scene);
     this.renderColonies(scene);
     this.renderFoodItems(scene);
-    this.renderPheromones(scene);
+
+    if (this.settings.showPheromones) {
+      this.renderPheromones(scene);
+    }
   }
 
   private renderAnts(scene: Scene): void {

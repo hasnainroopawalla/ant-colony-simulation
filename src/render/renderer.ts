@@ -1,8 +1,10 @@
+import { Configurable } from "../settings";
 import type { Ant } from "../simulations/aco/ant";
 import type { Pheromone } from "../simulations/aco/pheromone";
 import type { Colony } from "../world/colony";
 import type { FoodItem } from "../world/food-item";
 import { Obstacle } from "../world/obstacle";
+import { RendererSettings, rendererSettingsSchema } from "./renderer.settings";
 
 export type FrameCallback = () => void;
 
@@ -14,10 +16,12 @@ export type Scene = {
   simulation: { ants: Ant[]; pheromones: Pheromone[] };
 };
 
-export abstract class Renderer {
+export abstract class Renderer extends Configurable<RendererSettings> {
   protected frameCallback: FrameCallback;
 
   constructor() {
+    super("Renderer", rendererSettingsSchema);
+
     this.frameCallback = () => {};
   }
 

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useSettings } from "../contexts/settings-context";
+import { SettingDescriptor } from "../../settings";
 
 function SectionHeader({ title }: { title: string }) {
   return (
@@ -55,18 +56,32 @@ function SettingSlider({
 
 function SettingToggle({
   label,
-  defaultChecked = false,
+  initialValue,
+  onChange,
 }: {
   label: string;
-  defaultChecked?: boolean;
+  initialValue: boolean;
+  onChange: (value: boolean) => void;
 }) {
+  const [value, setValue] = React.useState(initialValue);
+
+  const _onChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.checked;
+      setValue(newValue);
+      onChange(newValue);
+    },
+    [onChange],
+  );
+
   return (
     <label className="flex cursor-pointer items-center justify-between px-4 py-2 font-mono text-[11px] text-white/80 hover:bg-white/5">
       <span>{label}</span>
       <input
         type="checkbox"
-        defaultChecked={defaultChecked}
+        checked={value}
         className="h-4 w-4 cursor-pointer accent-sky-400"
+        onChange={_onChange}
       />
     </label>
   );
@@ -75,51 +90,44 @@ function SettingToggle({
 export function ControlPanelContent() {
   const { getSettings, updateSetting } = useSettings();
 
+  const getSettingComponent = React.useCallback(
+    (setting: SettingDescriptor, namespace: string) => {
+      switch (setting.kind) {
+        case "number":
+          return (
+            <SettingSlider
+              key={setting.key}
+              label={setting.label}
+              initialValue={setting.value}
+              min={setting.min}
+              max={setting.max}
+              onChange={(value) => updateSetting(namespace, setting.key, value)}
+            />
+          );
+        case "boolean":
+          return (
+            <SettingToggle
+              key={setting.key}
+              label={setting.label}
+              initialValue={setting.value}
+              onChange={(value) => updateSetting(namespace, setting.key, value)}
+            />
+          );
+        default:
+          return null;
+      }
+    },
+    [],
+  );
+
   return (
     <>
       {Object.entries(getSettings()).map(([namespace, settings]) => (
         <React.Fragment key={namespace}>
           <SectionHeader title={namespace} />
-          {settings.map((setting) => {
-            if (setting.kind === "number") {
-              return (
-                <SettingSlider
-                  key={setting.key}
-                  label={setting.label}
-                  initialValue={setting.value}
-                  min={setting.min}
-                  max={setting.max}
-                  onChange={(value) =>
-                    updateSetting(namespace, setting.key, value)
-                  }
-                />
-              );
-            }
-            return null;
-          })}
+          {settings.map((setting) => getSettingComponent(setting, namespace))}
         </React.Fragment>
       ))}
     </>
   );
-
-  // return ({ Object.entries( getSettings())}
-
-  // <div className="py-2">
-  //   <SectionHeader title="Ant Behavior" />
-  //   <SettingSlider label="Speed" value={2} min={0} max={5} />
-  //   <SettingSlider label="Wander Strength" value={20} min={0} max={100} />
-  //   <SettingSlider label="Steering Limit" value={10} min={0} max={100} />
-  //   <SettingSlider label="Perception Range" value={35} min={10} max={100} />
-
-  //   <SectionHeader title="Pheromones" />
-  //   <SettingSlider label="Evaporation Rate" value={30} min={0} max={100} />
-  //   <SettingSlider label="Initial Strength" value={500} min={0} max={1000} />
-  //   <SettingSlider label="Distance Between" value={200} min={0} max={500} />
-
-  //   <SectionHeader title="Debug Overlays" />
-  //   <SettingToggle label="Show perception range" />
-  //   <SettingToggle label="Show home pheromones" defaultChecked />
-  //   <SettingToggle label="Show food pheromones" defaultChecked />
-  //   <SettingToggle label="Show quadtree" />
-  // </div>
 }

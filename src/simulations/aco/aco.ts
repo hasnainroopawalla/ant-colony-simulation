@@ -17,7 +17,7 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
   private foodPheromones: Pheromone[];
 
   constructor(world: World) {
-    super(world, "Ant Colony Simulation", acoSettingsSchema);
+    super(world, acoSettingsSchema);
 
     this.homePheromoneQuadtree = new Quadtree({
       x: world.dims.w / 2,
@@ -33,7 +33,7 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
       h: world.dims.h / 2,
     });
 
-    this.ants = this.spawnAnts(10);
+    this.ants = this.spawnAnts(100);
     this.homePheromones = [];
     this.foodPheromones = [];
   }
@@ -80,35 +80,11 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
     return score;
   }
 
-  // public computeAntennaPheromoneScore(
-  //   antennas: Vector[],
-  //   antAntennaRadius: number,
-  //   pheromoneType: IPheromoneType,
-  // ): number[] {
-  //   const antennaScores: number[] = [];
-  //   const pheromoneQuadtree =
-  //     pheromoneType === IPheromoneType.Food
-  //       ? this.foodPheromoneQuadtree
-  //       : this.homePheromoneQuadtree;
-
-  //   for (let i = 0; i < antennas.length; i++) {
-  //     const antenna = antennas[i];
-  //     let antennaScore = 0;
-  //     const pheromones = pheromoneQuadtree.query({
-  //       x: antenna.x,
-  //       y: antenna.y,
-  //       r: antAntennaRadius,
-  //     });
-  //     for (let j = 0; j < pheromones.length; j++) {
-  //       antennaScore += pheromones[j].strength / PHEROMONE_INITIAL_STRENGTH;
-  //     }
-  //     antennaScores.push(antennaScore);
-  //   }
-  //   return antennaScores;
-  // }
-
   public update(dt: number): void {
     this.ants.forEach((ant) => ant.update(dt));
+
+    this.homePheromones.forEach((pheromone) => pheromone.update(dt));
+    this.foodPheromones.forEach((pheromone) => pheromone.update(dt));
   }
 
   private spawnAnts(count: number): Ant[] {

@@ -30,11 +30,11 @@ export type SettingDescriptor = { key: string } & (
     })
 );
 
-export type SettingsProvider<TSettings extends Settings = Settings> = {
-  readonly namespace: string;
-  getSettings: () => SettingDescriptor[];
-  updateSettings<K extends keyof TSettings>(key: K, value: TSettings[K]): void;
-};
+// export type SettingsProvider<TSettings extends Settings = Settings> = {
+//   readonly namespace: string;
+//   getSettings: () => SettingDescriptor[];
+//   updateSettings<K extends keyof TSettings>(key: K, value: TSettings[K]): void;
+// };
 
 export function defaultSettings<T extends Settings>(
   schema: SettingsSchema<T>,
@@ -55,4 +55,29 @@ export function toDescriptors<T extends Settings>(
     key,
     value: values[key],
   })) as SettingDescriptor[];
+}
+
+export class Configurable<TSettings extends Settings = Settings> {
+  public readonly namespace: string;
+
+  protected settings: TSettings;
+
+  private readonly settingsSchema: SettingsSchema<TSettings>;
+
+  constructor(namespace: string, settingsSchema: SettingsSchema<TSettings>) {
+    this.namespace = namespace;
+    this.settingsSchema = settingsSchema;
+    this.settings = defaultSettings(settingsSchema);
+  }
+
+  public getSettings(): SettingDescriptor[] {
+    return toDescriptors(this.settingsSchema, this.settings);
+  }
+
+  public updateSettings<K extends keyof TSettings>(
+    key: K,
+    value: TSettings[K],
+  ): void {
+    this.settings[key] = value;
+  }
 }

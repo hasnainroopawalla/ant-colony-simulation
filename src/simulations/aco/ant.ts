@@ -116,7 +116,7 @@ export class Ant {
         this.handleApproachingFood(this.state.targetFoodItem);
         break;
       case AntStateKind.ReturningHomeWithFood:
-        this.handleReturningHome();
+        this.handleReturningHome(dt);
         break;
     }
   }
@@ -225,7 +225,7 @@ export class Ant {
       MathUtils.randomFloat(-1, 1) * this.settings.antWanderStrength * dt,
     );
 
-    this.followPheromones(PheromoneType.Food);
+    this.followPheromones(PheromoneType.Food, dt);
   }
 
   private handleApproachingFood(foodItem: FoodItem): void {
@@ -241,7 +241,7 @@ export class Ant {
     }
   }
 
-  private followPheromones(pheromoneType: PheromoneType): void {
+  private followPheromones(pheromoneType: PheromoneType, dt: number): void {
     const leftScore = this.sim.samplePheromone(
       this.antennas.left,
       pheromoneType,
@@ -251,17 +251,14 @@ export class Ant {
       pheromoneType,
     );
 
-    if (leftScore > rightScore) {
-      // steer left
-      this.desiredVelocity = this.desiredVelocity.rotate(
-        -AcoConstants.ANT_ANTENNA_ROTATION,
-      );
-    } else if (rightScore > leftScore) {
-      // steer right
-      this.desiredVelocity = this.desiredVelocity.rotate(
-        AcoConstants.ANT_ANTENNA_ROTATION,
-      );
+    if (leftScore === rightScore) {
+      return;
     }
+
+    const step = AcoConstants.ANT_PHEROMONE_STEERING_RATE * dt;
+    this.desiredVelocity = this.desiredVelocity.rotate(
+      leftScore > rightScore ? -step : step,
+    );
   }
 
   // private handleWandering1() {
@@ -289,26 +286,23 @@ export class Ant {
   //   }
   // }
 
-  private handleReturningHome(): void {
+  private handleReturningHome(dt: number): void {
     this.depositPheromone(PheromoneType.Food);
 
-    this.followPheromones(PheromoneType.Home);
-    // this.approachTarget(this.colony.position);
-    // if (this.colonyInPerceptionRange()) {
-    //   this.approachTarget(this.colony.position);
-    //   // check if food item is delivered to colony
-    //   if (this.colony.collide(this.position)) {
-    //     // rotate 180 degrees
-    //     this.desiredVelocity.rotate(Math.PI, true);
-    //     this.targetFoodItem.delivered();
-    //     this.targetFoodItem = null;
-    //     this.colony.incrementFoodCount();
-    //     this.searchingForFood();
-    //   }
-    // } else {
-    //   // follow home pheromones to deliver food
-    //   this.handleAntennaSteering(IPheromoneType.Home);
-    // }
+    // Once the colony is visible, home in on it directly so the ant
+    // actually arrives instead of chasing nearby pheromone trails.
+    if (this.colonyInPerceptionRange()) {
+      this.approachTarget(this.colony.position);
+
+      if (this.colony.contains(this.position)) {
+        this.colony.incrementFoodCount();
+        this.desiredVelocity = this.desiredVelocity.rotate(Math.PI);
+        this.state = { kind: AntStateKind.Wandering };
+      }
+      return;
+    }
+
+    this.followPheromones(PheromoneType.Home, dt);
   }
 
   private colonyInPerceptionRange(): boolean {

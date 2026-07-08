@@ -17,15 +17,11 @@ export class Pheromone {
     this.strength = AcoConstants.PHEROMONE_INITIAL_STRENGTH;
   }
 
-  private evaporate(dt: number): void {
-    this.strength -= AcoConstants.PHEROMONE_EVAPORATION_RATE * dt;
-  }
-
-  public shouldBeDestroyed(): boolean {
+  public isExpired(): boolean {
     return this.strength <= 0;
   }
 
   public update(dt: number): void {
-    this.evaporate(dt);
+    this.strength -= Math.max(0, AcoConstants.PHEROMONE_EVAPORATION_RATE * dt);
   }
 }
