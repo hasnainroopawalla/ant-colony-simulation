@@ -5,6 +5,8 @@ import * as RenderConstants from "../render.constants";
 // TODO fix import
 import { Antenna } from "../../simulations/aco/antenna";
 import { PheromoneType } from "../../simulations/aco/pheromone";
+import { MathUtils } from "../../math";
+import * as WorldConstants from "../../world/world.constants";
 
 export class P5Renderer extends Renderer {
   private p: p5;
@@ -80,7 +82,11 @@ export class P5Renderer extends Renderer {
       this.p.push();
       this.p.strokeWeight(RenderConstants.COLONY_STROKE_WEIGHT);
       this.p.fill(RenderConstants.COLONY_COLOR);
-      this.p.circle(colony.position.x, colony.position.y, colony.radius * 2);
+      this.p.circle(
+        colony.position.x,
+        colony.position.y,
+        RenderConstants.COLONY_RADIUS * 2,
+      );
       this.p.pop();
 
       // food count
@@ -96,7 +102,18 @@ export class P5Renderer extends Renderer {
     scene.foodItems.forEach((foodItem) => {
       this.p.push();
       this.p.strokeWeight(RenderConstants.FOOD_ITEM_STROKE_WEIGHT);
-      this.p.fill(RenderConstants.FOOD_ITEM_COLOR);
+      this.p.fill(
+        RenderConstants.FOOD_ITEM_COLOR[0],
+        RenderConstants.FOOD_ITEM_COLOR[1],
+        RenderConstants.FOOD_ITEM_COLOR[2],
+        MathUtils.mapRange(
+          foodItem.quantity,
+          0,
+          WorldConstants.MAX_FOOD_QUANTITY,
+          0,
+          255,
+        ), // alpha based on quantity
+      );
       this.p.circle(
         foodItem.position.x,
         foodItem.position.y,

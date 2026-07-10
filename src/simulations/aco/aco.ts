@@ -103,7 +103,7 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
       // TODO: better colony assignment
       const colony = this.world.colonies[0];
       // Uniform disk sampling: sqrt(rand) prevents clustering at the center.
-      const r = Math.sqrt(MathUtils.randomFloat()) * colony.radius;
+      const r = Math.sqrt(MathUtils.randomFloat());
       const spawnPos = colony.position.add(
         MathUtils.fromAngle(MathUtils.randomFloat(0, Math.PI * 2)).mult(r),
       );

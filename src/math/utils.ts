@@ -17,6 +17,14 @@ function distance(
   return euclidean ? Math.sqrt(distance) : distance;
 }
 
+function arePointsClose(
+  position1: Vector,
+  position2: Vector,
+  threshold: number,
+): boolean {
+  return distanceSquared(position1, position2) <= threshold * threshold;
+}
+
 function isPointInCircle(
   pointPosition: Vector,
   circlePosition: Vector,
@@ -25,20 +33,12 @@ function isPointInCircle(
   return distance(pointPosition, circlePosition) <= Math.pow(circleRadius, 2);
 }
 
-function areCirclesIntersecting(
-  circle1Position: Vector,
-  circle1Radius: number,
-  circle2Position: Vector,
-  circle2Radius: number,
-): boolean {
-  return (
-    distance(circle1Position, circle2Position) <=
-    Math.pow(circle1Radius + circle2Radius, 2)
-  );
-}
-
 function randomFloat(min: number = 0, max: number = 1): number {
   return Math.random() * (max - min) + min;
+}
+
+function randomInt(min: number = 0, max: number = 1): number {
+  return Math.floor(randomFloat(min, max + 1));
 }
 
 function isLineIntersectingRect(
@@ -81,11 +81,28 @@ function fromAngle(angle: number): Vector {
   return new Vector(Math.cos(angle), Math.sin(angle));
 }
 
+function clampNumber(num: number, a: number, b: number): number {
+  return Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
+}
+
+function mapRange(
+  value: number,
+  inMin: number,
+  inMax: number,
+  outMin: number,
+  outMax: number,
+): number {
+  return ((value - inMin) / (inMax - inMin)) * (outMax - outMin) + outMin;
+}
+
 export const MathUtils = {
   distance,
   randomFloat,
+  randomInt,
   isPointInCircle,
-  areCirclesIntersecting,
   isLineIntersectingRect,
   fromAngle,
+  arePointsClose,
+  clampNumber,
+  mapRange,
 };

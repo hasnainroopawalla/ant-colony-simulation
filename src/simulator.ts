@@ -71,6 +71,8 @@ export class Simulator {
 
     this.simulation.update(dt);
 
+    this.world.update();
+
     this.renderer.render(this.getScene());
 
     const view = this.simulation.getView();

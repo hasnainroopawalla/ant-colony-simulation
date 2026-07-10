@@ -1,9 +1,9 @@
 import { Colony } from "./colony";
 import { FoodItem } from "./food-item";
 import { Obstacle } from "./obstacle";
-import { Quadtree } from "../math/quadtree";
-import type { Dimensions, Position } from "../math/types";
+import type { Circle, Dimensions, Position } from "../math/types";
 import { MathUtils, Vector } from "../math";
+import { Quadtree } from "../math/quadtree";
 import * as WorldConstants from "./world.constants";
 
 export class World {
@@ -18,8 +18,22 @@ export class World {
   constructor(dims: Dimensions) {
     this.dims = dims;
 
-    this.colonies = [new Colony()];
+    this.colonies = [
+      new Colony({
+        x: 200,
+        y: 200,
+      }),
+    ];
+
     this.foodItems = [];
+
+    // TODO are these dims correct?
+    this.foodQuadtree = new Quadtree({
+      x: this.dims.w / 2,
+      y: this.dims.h / 2,
+      w: this.dims.w / 2,
+      h: this.dims.h / 2,
+    });
 
     // initialize the world boundaries as obstacles
     this.obstacles = [
@@ -31,17 +45,10 @@ export class World {
       new Obstacle({ x: 300, y: 400, w: 80, h: 200 }),
     ];
 
-    this.foodQuadtree = new Quadtree({
-      x: this.dims.w / 2,
-      y: this.dims.h / 2,
-      w: this.dims.w / 2,
-      h: this.dims.h / 2,
-    });
-
-    this.createFoodCluster({ x: 500, y: 700 });
+    this.createFoodCluster({ x: 500, y: 700 }, 10);
   }
 
-  public createFoodCluster(position: Position, clusterSize: number = 10) {
+  public createFoodCluster(position: Position, clusterSize: number) {
     for (let i = 0; i < clusterSize; i++) {
       for (let j = 0; j < clusterSize; j++) {
         const foodItemPosition = new Vector(
@@ -55,7 +62,11 @@ export class World {
             WorldConstants.FOOD_CLUSTER_SPACING,
         );
 
-        const foodItem = new FoodItem(foodItemPosition);
+        const foodItem = new FoodItem(
+          foodItemPosition,
+          MathUtils.randomInt(1, WorldConstants.MAX_FOOD_QUANTITY),
+        );
+
         this.foodItems.push(foodItem);
         this.foodQuadtree.insert(foodItem);
       }
@@ -78,17 +89,21 @@ export class World {
     return false;
   }
 
-  public queryFood(center: Vector, radius: number): FoodItem | null {
+  public queryFood(circle: Circle): FoodItem | null {
     const found = this.foodQuadtree.query({
-      x: center.x,
-      y: center.y,
-      r: radius,
+      x: circle.center.x,
+      y: circle.center.y,
+      r: circle.radius,
     });
-    for (let i = 0; i < found.length; i++) {
-      const foodItem = found[i];
-      return foodItem;
-    }
 
-    return null;
+    return found.length > 0 ? found[0] : null;
+  }
+
+  public update(): void {
+    this.foodItems = this.foodItems.filter(
+      (foodItem) => !foodItem.isDepleted(),
+    );
+
+    this.foodQuadtree.rebuild(this.foodItems);
   }
 }

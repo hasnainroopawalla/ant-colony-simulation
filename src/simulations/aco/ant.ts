@@ -1,12 +1,12 @@
-import { FoodItem } from "../../world/food-item";
 import { Colony } from "../../world/colony";
 import * as AcoConstants from "./aco.constants";
 import type { AcoSettings } from "./aco.settings";
 import { Vector, MathUtils } from "../../math";
-import type { World } from "../../world";
+import type { FoodItem, World } from "../../world";
 import { PheromoneType } from "./pheromone";
 import type { AntColonySimulation } from "./aco";
 import { Antenna } from "./antenna";
+import { Circle } from "../../math/types";
 
 enum AntStateKind {
   Wandering,
@@ -134,10 +134,13 @@ export class Ant {
     );
   }
 
-  private getPerception(): Vector {
-    return this.position.add(
-      this.velocity.normalize().mult(this.settings.antPerceptionRange),
-    );
+  private getPerception(): Circle {
+    return {
+      center: this.position.add(
+        this.velocity.normalize().mult(this.settings.antPerceptionRange),
+      ),
+      radius: this.settings.antPerceptionRange,
+    };
   }
 
   private handleObstacles(dt: number): void {
@@ -202,10 +205,7 @@ export class Ant {
   private handleWandering(dt: number): void {
     this.depositPheromone(PheromoneType.Home);
 
-    const foodItem = this.world.queryFood(
-      this.getPerception(),
-      this.settings.antPerceptionRange,
-    );
+    const foodItem = this.world.queryFood(this.getPerception());
 
     if (foodItem) {
       this.state = {
@@ -228,8 +228,8 @@ export class Ant {
 
     this.approachTarget(foodItem.position);
 
-    if (foodItem.collide(this.position)) {
-      // TODO: add some jitter here for more natural movement
+    if (this.hasReached(foodItem.position)) {
+      foodItem.consume();
       this.flipDirection();
       this.state = { kind: AntStateKind.ReturningHomeWithFood };
     }
@@ -263,9 +263,8 @@ export class Ant {
     if (this.colonyInPerceptionRange()) {
       this.approachTarget(this.colony.position);
 
-      if (this.colony.contains(this.position)) {
+      if (this.hasReached(this.colony.position)) {
         this.colony.incrementFoodCount();
-        // TODO: add jitter
         this.flipDirection();
         this.state = { kind: AntStateKind.Wandering };
       }
@@ -281,11 +280,12 @@ export class Ant {
   }
 
   private colonyInPerceptionRange(): boolean {
-    return MathUtils.areCirclesIntersecting(
-      this.position,
-      this.settings.antPerceptionRange,
+    const perception = this.getPerception();
+
+    return MathUtils.isPointInCircle(
       this.colony.position,
-      this.colony.radius,
+      perception.center,
+      perception.radius,
     );
   }
 
@@ -315,5 +315,13 @@ export class Ant {
 
     // Integrate the step just taken so homeVector keeps tracking (home - position).
     this.homeVector = this.homeVector.sub(this.velocity.mult(dt));
+  }
+
+  private hasReached(position: Vector): boolean {
+    return MathUtils.arePointsClose(
+      this.position,
+      position,
+      AcoConstants.ANT_CONTACT_RADIUS,
+    );
   }
 }

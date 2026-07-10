@@ -18,12 +18,6 @@ class Circle<T extends QuadtreeItem> {
     this.r = r;
   }
 
-  public set(x: number, y: number, r: number): void {
-    this.x = x;
-    this.y = y;
-    this.r = r;
-  }
-
   public contains(item: T): boolean {
     return MathUtils.isPointInCircle(
       new Vector(item.position.x, item.position.y),
@@ -186,29 +180,29 @@ export class Quadtree<T extends QuadtreeItem> {
   //   this.p.pop();
   // }
 
-  public update(showBoundary: boolean = false): void {
-    // if (showBoundary) {
-    //   this.p.push();
-    //   this.p.stroke(EngineConfig.quadtreeDefaultColor);
-    //   this.p.strokeWeight(EngineConfig.quadtreeDefaultStrokeWeight);
-    //   this.p.rectMode(this.p.CENTER);
-    //   this.p.noFill();
-    //   this.p.rect(
-    //     this.boundary.x,
-    //     this.boundary.y,
-    //     this.boundary.w * 2,
-    //     this.boundary.h * 2,
-    //   );
-    //   this.p.pop();
-    // }
+  // public update(showBoundary: boolean = false): void {
+  // if (showBoundary) {
+  //   this.p.push();
+  //   this.p.stroke(EngineConfig.quadtreeDefaultColor);
+  //   this.p.strokeWeight(EngineConfig.quadtreeDefaultStrokeWeight);
+  //   this.p.rectMode(this.p.CENTER);
+  //   this.p.noFill();
+  //   this.p.rect(
+  //     this.boundary.x,
+  //     this.boundary.y,
+  //     this.boundary.w * 2,
+  //     this.boundary.h * 2,
+  //   );
+  //   this.p.pop();
+  // }
 
-    if (this.divided) {
-      this.topLeft?.update(showBoundary);
-      this.bottomLeft?.update(showBoundary);
-      this.bottomRight?.update(showBoundary);
-      this.topRight?.update(showBoundary);
-    }
-  }
+  // if (this.divided) {
+  //   this.topLeft?.update(showBoundary);
+  //   this.bottomLeft?.update(showBoundary);
+  //   this.bottomRight?.update(showBoundary);
+  //   this.topRight?.update(showBoundary);
+  // }
+  // }
 
   private _query(rangeCircle: Circle<T>, results?: T[]): T[] {
     if (!results) {
