@@ -42,6 +42,9 @@ export class Ant {
   private sim: AntColonySimulation;
   private world: World;
 
+  // Running path-integration estimate of the displacement from here back to the nest.
+  private homeVector: Vector;
+
   private state: AntState;
   private desiredVelocity: Vector;
   private angle: number;
@@ -83,6 +86,8 @@ export class Ant {
     this.desiredVelocity = MathUtils.fromAngle(this.angle);
 
     this.lastDroppedPheromonePosition = spawnPosition;
+
+    this.homeVector = this.colony.position.sub(spawnPosition);
   }
 
   public update(dt: number): void {
@@ -155,7 +160,7 @@ export class Ant {
     }
 
     // No clear direction — reverse.
-    this.desiredVelocity = this.desiredVelocity.rotate(Math.PI);
+    this.flipDirection();
     this.velocity = this.velocity.rotate(Math.PI);
   }
 
@@ -225,7 +230,7 @@ export class Ant {
 
     if (foodItem.collide(this.position)) {
       // TODO: add some jitter here for more natural movement
-      this.desiredVelocity = this.desiredVelocity.rotate(Math.PI);
+      this.flipDirection();
       this.state = { kind: AntStateKind.ReturningHomeWithFood };
     }
   }
@@ -261,13 +266,18 @@ export class Ant {
       if (this.colony.contains(this.position)) {
         this.colony.incrementFoodCount();
         // TODO: add jitter
-        this.desiredVelocity = this.desiredVelocity.rotate(Math.PI);
+        this.flipDirection();
         this.state = { kind: AntStateKind.Wandering };
       }
       return;
     }
 
     this.followPheromones(PheromoneType.Home, dt);
+
+    const homeDirection = this.homeVector.normalize();
+    this.desiredVelocity = this.desiredVelocity
+      .add(homeDirection.mult(AcoConstants.ANT_HOME_BIAS))
+      .normalize();
   }
 
   private colonyInPerceptionRange(): boolean {
@@ -286,6 +296,12 @@ export class Ant {
     );
   }
 
+  private flipDirection(): void {
+    this.desiredVelocity = this.desiredVelocity.rotate(
+      Math.PI + MathUtils.randomFloat(-1, 1) * AcoConstants.ANT_TURN_JITTER,
+    );
+  }
+
   private move(dt: number): void {
     const desired = this.desiredVelocity.setMagnitude(this.settings.antSpeed);
     const steering = desired.sub(this.velocity);
@@ -296,5 +312,8 @@ export class Ant {
       .limit(this.settings.antSpeed);
 
     this.position = this.position.add(this.velocity.mult(dt));
+
+    // Integrate the step just taken so homeVector keeps tracking (home - position).
+    this.homeVector = this.homeVector.sub(this.velocity.mult(dt));
   }
 }
