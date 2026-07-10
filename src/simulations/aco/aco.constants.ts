@@ -2,7 +2,7 @@ export const ANT_ANTENNA_RADIUS = 15; // was 10
 export const ANT_ANTENNA_RANGE = 25; // was 20
 export const ANT_ANTENNA_ROTATION = 1;
 export const ANT_OBSTACLE_ANGLE_RANGE = 0.7;
-export const ANT_HOME_BIAS = 0.05;
+export const ANT_HOME_BIAS = 0.1;
 export const ANT_TURN_JITTER = 0.4; // max random deviation (rad) on U-turns
 
 // Rate (rad/s) at which an ant steers toward a pheromone trail when one
