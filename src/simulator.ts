@@ -1,5 +1,6 @@
 import { EventBus, IEvents, Unsubscribe } from "./events";
 import { FpsMonitor } from "./fps-monitor";
+import { Position } from "./math/types";
 import type { Renderer, Scene } from "./render";
 import { Configurable } from "./settings";
 import { Simulation } from "./simulations";
@@ -29,6 +30,10 @@ export class Simulator {
     this.fpsMonitor = new FpsMonitor();
 
     this.renderer.setFrameCallback(() => this.update());
+
+    this.renderer.setMouseClickCallback((position) =>
+      this.onMouseClick(position),
+    );
   }
 
   public on<K extends keyof IEvents>(
@@ -64,6 +69,10 @@ export class Simulator {
     return new Map(
       [this.simulation, this.renderer].map((p) => [p.namespace, p]),
     );
+  }
+
+  private onMouseClick(position: Position): void {
+    this.world.createFoodCluster(position);
   }
 
   private update(): void {

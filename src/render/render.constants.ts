@@ -8,6 +8,9 @@ export const COLONY_COLOR = "#ffffff";
 export const COLONY_STROKE_WEIGHT = 1;
 export const COLONY_TEXT_SIZE = 20;
 
+// Obstacle
+export const OBSTACLE_COLOR = "#3B3838";
+
 // Ant
 export const ANT_SIZE = 2;
 export const HOME_ANT_COLOR = "#FFEA00";

@@ -51,7 +51,7 @@ export class World {
     this.createFoodCluster({ x: 500, y: 700 }, 10);
   }
 
-  public createFoodCluster(position: Position, clusterSize: number) {
+  public createFoodCluster(position: Position, clusterSize: number = 10) {
     for (let i = 0; i < clusterSize; i++) {
       for (let j = 0; j < clusterSize; j++) {
         const foodItemPosition = new Vector(

@@ -33,7 +33,7 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
       h: world.dims.h / 2,
     });
 
-    this.ants = this.spawnAnts(100);
+    this.ants = this.spawnAnts(200);
     this.homePheromones = [];
     this.foodPheromones = [];
   }

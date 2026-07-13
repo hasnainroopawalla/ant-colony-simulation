@@ -8,6 +8,7 @@ import { PheromoneType } from "../../simulations/aco/pheromone";
 import { MathUtils } from "../../math";
 import * as WorldConstants from "../../world/world.constants";
 import { AntStateKind } from "../../simulations/aco/ant";
+import type { Position } from "../../math/types";
 
 export class P5Renderer extends Renderer {
   private p: p5;
@@ -15,7 +16,11 @@ export class P5Renderer extends Renderer {
   constructor(canvas: HTMLDivElement) {
     super();
 
-    const sketch = createSketch(canvas, () => this.frameCallback());
+    const sketch = createSketch(canvas, {
+      frame: () => this.frameCallback(),
+      onMouseClick: (position: Position) => this.onMouseClick(position),
+    });
+
     this.p = new p5(sketch, canvas);
   }
 
@@ -51,6 +56,10 @@ export class P5Renderer extends Renderer {
     if (this.settings.showPheromones) {
       this.renderPheromones(scene);
     }
+  }
+
+  public onMouseClick(position: Position): void {
+    this.mouseClickCallback(position);
   }
 
   private renderAnts(scene: Scene): void {
@@ -133,13 +142,14 @@ export class P5Renderer extends Renderer {
     scene.obstacles.forEach((obstacle) => {
       this.p.push();
       this.p.strokeWeight(RenderConstants.COLONY_STROKE_WEIGHT);
-      this.p.stroke(RenderConstants.COLONY_COLOR);
-      this.p.noFill();
+      this.p.stroke(RenderConstants.OBSTACLE_COLOR);
+      this.p.fill(RenderConstants.OBSTACLE_COLOR);
       this.p.rect(
         obstacle.dims.x,
         obstacle.dims.y,
         obstacle.dims.w,
         obstacle.dims.h,
+        5 /* corner radius */,
       );
       this.p.pop();
     });

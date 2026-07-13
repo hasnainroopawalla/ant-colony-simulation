@@ -1,4 +1,5 @@
 import type { FrameCallback } from "../renderer";
+import type { Position } from "../../math/types";
 import * as RenderConstants from "../render.constants";
 
 type P5Sketch = (p: p5) => void;
@@ -9,7 +10,10 @@ export const setCanvasInteraction = () => {};
 
 export function createSketch(
   container: HTMLElement,
-  frameCallback: FrameCallback,
+  callbacks: {
+    frame: FrameCallback;
+    onMouseClick: (position: Position) => void;
+  },
 ): P5Sketch {
   return (p: p5) => {
     const getContainerSize = () => ({
@@ -28,12 +32,16 @@ export function createSketch(
     };
 
     p.draw = () => {
-      frameCallback();
+      callbacks.frame();
     };
 
     p.windowResized = () => {
       const { w, h } = getContainerSize();
       p.resizeCanvas(w, h);
+    };
+
+    p.mouseClicked = () => {
+      callbacks.onMouseClick({ x: p.mouseX, y: p.mouseY });
     };
   };
 }
