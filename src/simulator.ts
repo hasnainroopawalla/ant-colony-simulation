@@ -4,6 +4,7 @@ import { Position } from "./math/types";
 import type { Renderer, Scene } from "./render";
 import { Configurable } from "./settings";
 import { Simulation } from "./simulations";
+import type { SimulationView } from "./simulations/simulation";
 import type { World } from "./world";
 
 export type Stats = {
@@ -82,9 +83,9 @@ export class Simulator {
 
     this.world.update();
 
-    this.renderer.render(this.getScene());
-
     const view = this.simulation.getView();
+
+    this.renderer.render(this.getScene(view));
 
     const fps = this.fpsMonitor.update(dt);
 
@@ -97,12 +98,12 @@ export class Simulator {
     }
   }
 
-  private getScene(): Scene {
+  private getScene(view: SimulationView): Scene {
     return {
       foodItems: this.world.foodItems,
       obstacles: this.world.obstacles,
       colonies: this.world.colonies,
-      simulation: this.simulation.getView(),
+      simulation: view,
     };
   }
 }
