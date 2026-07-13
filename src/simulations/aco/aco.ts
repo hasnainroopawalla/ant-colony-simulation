@@ -1,9 +1,8 @@
-import { Quadtree } from "../../math/quadtree";
 import { Simulation } from "../simulation";
 import { Ant } from "./ant";
 import { Pheromone, PheromoneType } from "./pheromone";
 import { World } from "../../world";
-import { MathUtils, Vector } from "../../math";
+import { MathUtils, Vector, Quadtree } from "../../math";
 import { acoSettingsSchema, type AcoSettings } from "./aco.settings";
 import * as AcoConstants from "./aco.constants";
 import { Antenna } from "./antenna";

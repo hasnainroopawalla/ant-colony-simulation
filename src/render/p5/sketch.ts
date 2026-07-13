@@ -1,5 +1,5 @@
 import type { FrameCallback } from "../renderer";
-import type { Position } from "../../math/types";
+import type { Position } from "../../math";
 import * as RenderConstants from "../render.constants";
 
 type P5Sketch = (p: p5) => void;

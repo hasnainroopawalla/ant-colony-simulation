@@ -2,13 +2,10 @@ import { Renderer, Scene } from "../renderer";
 import p5 from "p5";
 import { createSketch } from "./sketch";
 import * as RenderConstants from "../render.constants";
-// TODO fix import
-import { Antenna } from "../../simulations/aco/antenna";
-import { PheromoneType } from "../../simulations/aco/pheromone";
+import { Antenna, PheromoneType, AntStateKind } from "../../simulations";
 import { MathUtils } from "../../math";
-import * as WorldConstants from "../../world/world.constants";
-import { AntStateKind } from "../../simulations/aco/ant";
-import type { Position } from "../../math/types";
+import type { Position } from "../../math";
+import { WorldConstants } from "../../world";
 
 export class P5Renderer extends Renderer {
   private p: p5;

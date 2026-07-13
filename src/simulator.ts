@@ -1,10 +1,9 @@
 import { EventBus, IEvents, Unsubscribe } from "./events";
 import { FpsMonitor } from "./fps-monitor";
-import { Position } from "./math/types";
+import { Position } from "./math";
 import type { Renderer, Scene } from "./render";
 import { Configurable } from "./settings";
-import { Simulation } from "./simulations";
-import type { SimulationView } from "./simulations/simulation";
+import { Simulation, type SimulationView } from "./simulations";
 import type { World } from "./world";
 
 export type Stats = {
@@ -12,6 +11,7 @@ export type Stats = {
   antCount: number;
   pheromoneCount: number;
 };
+
 export class Simulator {
   public world: World;
 

@@ -1,7 +1,6 @@
 import { Configurable, type Settings, type SettingsSchema } from "../settings";
 import type { World } from "../world";
-import type { Ant } from "./aco/ant";
-import type { Pheromone } from "./aco/pheromone";
+import type { Ant, Pheromone } from "./aco";
 
 export type SimulationView = {
   ants: Ant[];

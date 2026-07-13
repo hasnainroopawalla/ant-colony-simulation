@@ -1,12 +1,11 @@
-import { Colony } from "../../world/colony";
 import * as AcoConstants from "./aco.constants";
 import type { AcoSettings } from "./aco.settings";
 import { Vector, MathUtils } from "../../math";
-import type { FoodItem, World } from "../../world";
+import type { Circle } from "../../math";
+import type { Colony, FoodItem, World } from "../../world";
 import { PheromoneType } from "./pheromone";
 import type { AntColonySimulation } from "./aco";
 import { Antenna } from "./antenna";
-import { Circle } from "../../math/types";
 
 export enum AntStateKind {
   Wandering,

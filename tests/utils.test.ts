@@ -1,5 +1,4 @@
-import { MathUtils } from "./utils";
-import { Vector } from "./vector";
+import { MathUtils, Vector } from "../src/math";
 
 const {
   distance,

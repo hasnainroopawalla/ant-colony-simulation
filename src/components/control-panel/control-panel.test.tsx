@@ -1,7 +1,7 @@
 import * as React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ControlPanel } from "../src/components/control-panel/control-panel";
-import { SettingItem } from "../src/components/control-panel/setting-item";
+import { ControlPanel } from "./control-panel";
+import { SettingItem } from "./setting-item";
 
 const CONTROL_PANEL_CONTAINER = "control-panel-container";
 

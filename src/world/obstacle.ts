@@ -1,4 +1,4 @@
-import type { RectangleDims } from "../math/types";
+import type { RectangleDims } from "../math";
 
 export class Obstacle {
   public dims: RectangleDims;

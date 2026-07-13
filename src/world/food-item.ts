@@ -1,5 +1,5 @@
 import { Vector } from "../math";
-import type { Position } from "../math/types";
+import type { Position } from "../math";
 import * as WorldConstants from "./world.constants";
 
 export class FoodItem {

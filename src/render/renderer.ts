@@ -1,11 +1,9 @@
 import { Configurable } from "../settings";
-import type { Ant } from "../simulations/aco/ant";
-import type { Pheromone } from "../simulations/aco/pheromone";
-import type { Colony } from "../world/colony";
-import type { FoodItem } from "../world";
-import { Obstacle } from "../world/obstacle";
+import type { Ant, Pheromone } from "../simulations";
+import { Obstacle } from "../world";
+import type { Colony, FoodItem } from "../world";
 import { RendererSettings, rendererSettingsSchema } from "./renderer.settings";
-import type { Position } from "../math/types";
+import type { Position } from "../math";
 
 export type FrameCallback = () => void;
 

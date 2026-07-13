@@ -1,9 +1,8 @@
 import { Colony } from "./colony";
 import { FoodItem } from "./food-item";
 import { Obstacle } from "./obstacle";
-import type { Circle, Dimensions, Position } from "../math/types";
-import { MathUtils, Vector } from "../math";
-import { Quadtree } from "../math/quadtree";
+import { MathUtils, Vector, Quadtree } from "../math";
+import type { Circle, Dimensions, Position } from "../math";
 import * as WorldConstants from "./world.constants";
 
 export class World {
