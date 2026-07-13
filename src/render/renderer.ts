@@ -1,7 +1,6 @@
 import { Configurable } from "../settings";
 import type { Ant, Pheromone } from "../simulations";
-import { Obstacle } from "../world";
-import type { Colony, FoodItem } from "../world";
+import { Obstacle, type Colony, type FoodItem } from "../world";
 import { RendererSettings, rendererSettingsSchema } from "./renderer.settings";
 import type { Position } from "../math";
 

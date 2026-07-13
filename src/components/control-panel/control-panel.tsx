@@ -1,26 +1,13 @@
 import * as React from "react";
 import { ControlPanelContent } from "./content";
 
-type IControlPanelProps = {
-  setCanvasInteraction?: (_: boolean) => void;
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  updateAcoConfig?: (...args: any[]) => void;
-};
-
-export const ControlPanel = (props: IControlPanelProps) => {
-  const { setCanvasInteraction, updateAcoConfig } = props;
+export function ControlPanel() {
   const [isPlaying, setIsPlaying] = React.useState(true);
-
-  const handleMouseOver = () => setCanvasInteraction?.(false);
-  const handleMouseOut = () => setCanvasInteraction?.(true);
 
   return (
     <aside
       id="control-panel-container"
       data-testid="control-panel-container"
-      onMouseOver={handleMouseOver}
-      onMouseOut={handleMouseOut}
       className="relative flex h-screen w-75 shrink-0 flex-col border-r border-black/50 bg-[#121212] text-white"
     >
       <div className="flex items-center justify-between gap-3 border-b border-white/5 bg-white/2 px-4 py-2.5">
@@ -74,4 +61,4 @@ export const ControlPanel = (props: IControlPanelProps) => {
       </div>
     </aside>
   );
-};
+}
