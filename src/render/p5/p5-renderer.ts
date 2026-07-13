@@ -7,6 +7,7 @@ import { Antenna } from "../../simulations/aco/antenna";
 import { PheromoneType } from "../../simulations/aco/pheromone";
 import { MathUtils } from "../../math";
 import * as WorldConstants from "../../world/world.constants";
+import { AntStateKind } from "../../simulations/aco/ant";
 
 export class P5Renderer extends Renderer {
   private p: p5;
@@ -54,9 +55,14 @@ export class P5Renderer extends Renderer {
 
   private renderAnts(scene: Scene): void {
     scene.simulation.ants.forEach((ant) => {
+      const antColor =
+        ant.state.kind === AntStateKind.ReturningHomeWithFood
+          ? RenderConstants.FOOD_ANT_COLOR
+          : RenderConstants.HOME_ANT_COLOR;
+
       this.p.push();
-      this.p.stroke(RenderConstants.ANT_COLOR);
-      this.p.fill(RenderConstants.ANT_COLOR);
+      this.p.stroke(antColor);
+      this.p.fill(antColor);
       this.p.translate(ant.position.x, ant.position.y);
       this.p.rotate(ant.velocity.heading());
       this.p.ellipse(

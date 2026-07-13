@@ -8,7 +8,7 @@ import type { AntColonySimulation } from "./aco";
 import { Antenna } from "./antenna";
 import { Circle } from "../../math/types";
 
-enum AntStateKind {
+export enum AntStateKind {
   Wandering,
   ApproachingFood,
   ReturningHomeWithFood,
@@ -36,6 +36,7 @@ export class Ant {
   public position: Vector;
   public velocity: Vector;
   public antennas: AntennaSet;
+  public state: AntState;
 
   private settings: AcoSettings;
 
@@ -45,7 +46,6 @@ export class Ant {
   // Running path-integration estimate of the displacement from here back to the nest.
   private homeVector: Vector;
 
-  private state: AntState;
   private desiredVelocity: Vector;
   private angle: number;
   private colony: Colony;

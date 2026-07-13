@@ -10,7 +10,8 @@ export const COLONY_TEXT_SIZE = 20;
 
 // Ant
 export const ANT_SIZE = 2;
-export const ANT_COLOR = "#FFEA00";
+export const HOME_ANT_COLOR = "#FFEA00";
+export const FOOD_ANT_COLOR = "#E85454";
 export const ANT_PERCEPTION_COLOR_GRAY = 255;
 export const ANT_PERCEPTION_COLOR_ALPHA = 30;
 export const ANT_PERCEPTION_STROKE_WEIGHT = 1;

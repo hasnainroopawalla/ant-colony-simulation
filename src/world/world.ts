@@ -43,6 +43,9 @@ export class World {
       new Obstacle({ x: 0, y: this.dims.h, w: this.dims.w, h: 0 }),
 
       new Obstacle({ x: 300, y: 400, w: 80, h: 200 }),
+
+      new Obstacle({ x: 400, y: 300, w: 80, h: 40 }),
+      new Obstacle({ x: 430, y: 400, w: 60, h: 40 }),
     ];
 
     this.createFoodCluster({ x: 500, y: 700 }, 10);
