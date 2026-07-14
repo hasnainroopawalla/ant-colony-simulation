@@ -1,5 +1,4 @@
-import { Vector } from "../math";
-import type { Position } from "../math";
+import { Vector, type Position } from "../math";
 
 export class Colony {
   public position: Vector;

@@ -1,100 +1,76 @@
 import { Simulation } from "../simulation";
 import { Ant } from "./ant";
-import { Pheromone, PheromoneType } from "./pheromone";
+import { PheromoneType } from "./pheromone";
 import { World } from "../../world";
-import { MathUtils, Vector, Quadtree } from "../../math";
+import { MathUtils, Vector } from "../../math";
 import { acoSettingsSchema, type AcoSettings } from "./aco.settings";
+import { PheromoneField } from "./pheromone-field";
 import * as AcoConstants from "./aco.constants";
 import { Antenna } from "./antenna";
+import { AcoSimulationView } from "../../render/renderer";
 
 export class AntColonySimulation extends Simulation<AcoSettings> {
-  private homePheromoneQuadtree: Quadtree<Pheromone>;
-  private foodPheromoneQuadtree: Quadtree<Pheromone>;
+  private pheromoneField: PheromoneField;
 
   private ants: Ant[];
-  private homePheromones: Pheromone[];
-  private foodPheromones: Pheromone[];
 
   constructor(world: World) {
     super(world, acoSettingsSchema);
 
-    this.homePheromoneQuadtree = new Quadtree({
-      x: world.dims.w / 2,
-      y: world.dims.h / 2,
-      w: world.dims.w / 2,
-      h: world.dims.h / 2,
-    });
-
-    this.foodPheromoneQuadtree = new Quadtree({
-      x: world.dims.w / 2,
-      y: world.dims.h / 2,
-      w: world.dims.w / 2,
-      h: world.dims.h / 2,
-    });
-
-    this.ants = this.spawnAnts(200);
-    this.homePheromones = [];
-    this.foodPheromones = [];
+    this.pheromoneField = new PheromoneField(world.dims);
+    this.ants = this.spawnAnts(2000);
   }
 
-  public getView(): { ants: Ant[]; pheromones: Pheromone[] } {
+  public getView(): AcoSimulationView {
     return {
       ants: this.ants,
-      pheromones: [...this.homePheromones, ...this.foodPheromones],
+      pheromoneField: this.pheromoneField,
     };
   }
 
   public depositPheromone(
     position: Vector,
     pheromoneType: PheromoneType,
-  ): Pheromone {
-    const pheromone = new Pheromone(position, pheromoneType);
-
-    const [pheromoneQuadtree, pheromones] =
-      this.getPheromoneCollection(pheromoneType);
-
-    pheromones.push(pheromone);
-    pheromoneQuadtree.insert(pheromone);
-
-    return pheromone;
+  ): void {
+    this.pheromoneField.deposit(
+      position,
+      pheromoneType,
+      AcoConstants.PHEROMONE_INITIAL_STRENGTH,
+    );
   }
 
   public samplePheromone(
     antenna: Antenna,
     pheromoneType: PheromoneType,
   ): number {
-    const [pheromoneQuadtree] = this.getPheromoneCollection(pheromoneType);
+    this.pheromoneField.sample(antenna.position, pheromoneType);
+    // TODO: fix
+    return 500;
 
-    const pheromones = pheromoneQuadtree.query({
-      x: antenna.position.x,
-      y: antenna.position.y,
-      r: antenna.radius,
-    });
+    // const score = pheromones.reduce((acc, pheromone) => {
+    //   acc += pheromone.strength / AcoConstants.PHEROMONE_INITIAL_STRENGTH;
+    //   return acc;
+    // }, 0);
 
-    const score = pheromones.reduce((acc, pheromone) => {
-      acc += pheromone.strength / AcoConstants.PHEROMONE_INITIAL_STRENGTH;
-      return acc;
-    }, 0);
-
-    return score;
+    // return score;
   }
 
   public update(dt: number): void {
     this.ants.forEach((ant) => ant.update(dt));
 
-    this.homePheromones.forEach((pheromone) => pheromone.update(dt));
-    this.foodPheromones.forEach((pheromone) => pheromone.update(dt));
+    // this.homePheromones.forEach((pheromone) => pheromone.update(dt));
+    // this.foodPheromones.forEach((pheromone) => pheromone.update(dt));
 
-    // TODO: is this optimal?
-    this.homePheromones = this.homePheromones.filter(
-      (pheromone) => !pheromone.isExpired(),
-    );
-    this.foodPheromones = this.foodPheromones.filter(
-      (pheromone) => !pheromone.isExpired(),
-    );
+    // // TODO: is this optimal?
+    // this.homePheromones = this.homePheromones.filter(
+    //   (pheromone) => !pheromone.isExpired(),
+    // );
+    // this.foodPheromones = this.foodPheromones.filter(
+    //   (pheromone) => !pheromone.isExpired(),
+    // );
 
-    this.homePheromoneQuadtree.rebuild(this.homePheromones);
-    this.foodPheromoneQuadtree.rebuild(this.foodPheromones);
+    // this.homePheromoneQuadtree.rebuild(this.homePheromones);
+    // this.foodPheromoneQuadtree.rebuild(this.foodPheromones);
   }
 
   private spawnAnts(count: number): Ant[] {
@@ -109,13 +85,5 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
 
       return new Ant(colony, this.world, this, spawnPos, this.settings);
     });
-  }
-
-  private getPheromoneCollection(
-    pheromoneType: PheromoneType,
-  ): [Quadtree<Pheromone>, Pheromone[]] {
-    return pheromoneType === PheromoneType.Food
-      ? [this.foodPheromoneQuadtree, this.foodPheromones]
-      : [this.homePheromoneQuadtree, this.homePheromones];
   }
 }

@@ -1,19 +1,25 @@
 import { Configurable } from "../settings";
-import type { Ant, Pheromone } from "../simulations";
+import type { Ant } from "../simulations";
 import { Obstacle, type Colony, type FoodItem } from "../world";
 import { RendererSettings, rendererSettingsSchema } from "./renderer.settings";
 import type { Position } from "../math";
+import type { PheromoneField } from "../simulations/aco";
 
 export type FrameCallback = () => void;
 
 export type MouseClickCallback = (position: Position) => void;
+
+export type AcoSimulationView = {
+  ants: Ant[];
+  pheromoneField: PheromoneField;
+};
 
 // TODO: make this generic
 export type Scene = {
   foodItems: FoodItem[];
   obstacles: Obstacle[];
   colonies: Colony[];
-  simulation: { ants: Ant[]; pheromones: Pheromone[] };
+  simulation: AcoSimulationView;
 };
 
 export abstract class Renderer extends Configurable<RendererSettings> {

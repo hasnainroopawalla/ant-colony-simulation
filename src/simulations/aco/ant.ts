@@ -1,7 +1,6 @@
 import * as AcoConstants from "./aco.constants";
 import type { AcoSettings } from "./aco.settings";
-import { Vector, MathUtils } from "../../math";
-import type { Circle } from "../../math";
+import { Vector, MathUtils, Circle } from "../../math";
 import type { Colony, FoodItem, World } from "../../world";
 import { PheromoneType } from "./pheromone";
 import type { AntColonySimulation } from "./aco";
@@ -222,7 +221,6 @@ export class Ant {
   }
 
   private handleApproachingFood(foodItem: FoodItem): void {
-    // TODO: is this required here?
     this.depositPheromone(PheromoneType.Home);
 
     this.approachTarget(foodItem.position);

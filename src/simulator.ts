@@ -93,7 +93,8 @@ export class Simulator {
       this.emit("stats.update", {
         fps: fps,
         antCount: view.ants.length,
-        pheromoneCount: view.pheromones.length,
+        // TODO: check
+        pheromoneCount: 100,
       });
     }
   }

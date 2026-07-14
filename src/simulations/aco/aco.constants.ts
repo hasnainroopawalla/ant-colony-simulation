@@ -15,3 +15,6 @@ export const ANT_PHEROMONE_STEERING_RATE = 4;
 export const PHEROMONE_DISTANCE_BETWEEN = 50;
 export const PHEROMONE_EVAPORATION_RATE = 10; // strength units per second
 export const PHEROMONE_INITIAL_STRENGTH = 500;
+
+// Pheromone Field
+export const PHEROMONE_FIELD_CELL_SIZE = 8;
