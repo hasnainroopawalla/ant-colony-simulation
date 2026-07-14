@@ -33,6 +33,19 @@ function isPointInCircle(
   return distance(pointPosition, circlePosition) <= Math.pow(circleRadius, 2);
 }
 
+function isCircleIntersectingRect(
+  circleCenter: Position,
+  circleRadius: number,
+  rect: RectangleDims,
+): boolean {
+  const closestX = clampNumber(circleCenter.x, rect.x, rect.x + rect.w);
+  const closestY = clampNumber(circleCenter.y, rect.y, rect.y + rect.h);
+  const dx = circleCenter.x - closestX;
+  const dy = circleCenter.y - closestY;
+
+  return dx * dx + dy * dy <= circleRadius * circleRadius;
+}
+
 function randomFloat(min: number = 0, max: number = 1): number {
   return Math.random() * (max - min) + min;
 }
@@ -85,6 +98,25 @@ function clampNumber(num: number, a: number, b: number): number {
   return Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
 }
 
+function toCellIndex(value: number, cellSize: number): number {
+  // Which grid cell a world coordinate falls into.
+  return Math.floor(value / cellSize);
+}
+
+function toClampedCellRange(
+  min: number,
+  max: number,
+  cellSize: number,
+  lastIndex: number,
+): [number, number] {
+  // Convert a world-space span into an inclusive cell-index range, clamped so
+  // it never runs off either edge of the grid.
+  return [
+    clampNumber(toCellIndex(min, cellSize), 0, lastIndex),
+    clampNumber(toCellIndex(max, cellSize), 0, lastIndex),
+  ];
+}
+
 function mapRange(
   value: number,
   inMin: number,
@@ -100,9 +132,12 @@ export const MathUtils = {
   randomFloat,
   randomInt,
   isPointInCircle,
+  isCircleIntersectingRect,
   isLineIntersectingRect,
   fromAngle,
   arePointsClose,
   clampNumber,
+  toCellIndex,
+  toClampedCellRange,
   mapRange,
 };

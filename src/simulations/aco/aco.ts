@@ -18,7 +18,7 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
     super(world, acoSettingsSchema);
 
     this.pheromoneField = new PheromoneField(world.dims);
-    this.ants = this.spawnAnts(2000);
+    this.ants = this.spawnAnts(500);
   }
 
   public getView(): AcoSimulationView {
@@ -35,7 +35,7 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
     this.pheromoneField.deposit(
       position,
       pheromoneType,
-      AcoConstants.PHEROMONE_INITIAL_STRENGTH,
+      AcoConstants.PHEROMONE_DEPOSIT_AMOUNT,
     );
   }
 
@@ -43,34 +43,16 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
     antenna: Antenna,
     pheromoneType: PheromoneType,
   ): number {
-    this.pheromoneField.sample(antenna.position, pheromoneType);
-    // TODO: fix
-    return 500;
-
-    // const score = pheromones.reduce((acc, pheromone) => {
-    //   acc += pheromone.strength / AcoConstants.PHEROMONE_INITIAL_STRENGTH;
-    //   return acc;
-    // }, 0);
-
-    // return score;
+    return this.pheromoneField.sample(
+      antenna.position,
+      antenna.radius,
+      pheromoneType,
+    );
   }
 
   public update(dt: number): void {
     this.ants.forEach((ant) => ant.update(dt));
-
-    // this.homePheromones.forEach((pheromone) => pheromone.update(dt));
-    // this.foodPheromones.forEach((pheromone) => pheromone.update(dt));
-
-    // // TODO: is this optimal?
-    // this.homePheromones = this.homePheromones.filter(
-    //   (pheromone) => !pheromone.isExpired(),
-    // );
-    // this.foodPheromones = this.foodPheromones.filter(
-    //   (pheromone) => !pheromone.isExpired(),
-    // );
-
-    // this.homePheromoneQuadtree.rebuild(this.homePheromones);
-    // this.foodPheromoneQuadtree.rebuild(this.foodPheromones);
+    this.pheromoneField.evaporate(dt);
   }
 
   private spawnAnts(count: number): Ant[] {

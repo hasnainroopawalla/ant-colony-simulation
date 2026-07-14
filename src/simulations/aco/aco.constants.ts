@@ -11,10 +11,10 @@ export const ANT_CONTACT_RADIUS = 5;
 // so the ant curves smoothly instead of snapping onto trails.
 export const ANT_PHEROMONE_STEERING_RATE = 4;
 
-// Pheromone behavior
-export const PHEROMONE_DISTANCE_BETWEEN = 50;
-export const PHEROMONE_EVAPORATION_RATE = 10; // strength units per second
-export const PHEROMONE_INITIAL_STRENGTH = 500;
-
 // Pheromone Field
 export const PHEROMONE_FIELD_CELL_SIZE = 8;
+
+export const PHEROMONE_MAX_STRENGTH = 1;
+export const PHEROMONE_DEPOSIT_AMOUNT = 0.08;
+export const PHEROMONE_EVAPORATION_RATE = 0.05;
+export const PHEROMONE_DISTANCE_BETWEEN = PHEROMONE_FIELD_CELL_SIZE * 0.6; // ~5
