@@ -6,7 +6,7 @@ import { acoSettingsSchema, type AcoSettings } from "./aco.settings";
 import { PheromoneField, PheromoneType } from "./pheromone-field";
 import * as AcoConstants from "./aco.constants";
 import { Antenna } from "./antenna";
-import { AcoSimulationView } from "../../render/renderer";
+import { SimulationView } from "../../render";
 
 export class AntColonySimulation extends Simulation<AcoSettings> {
   private pheromoneField: PheromoneField;
@@ -20,7 +20,7 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
     this.ants = this.spawnAnts(500);
   }
 
-  public getView(): AcoSimulationView {
+  public getView(): SimulationView {
     return {
       ants: this.ants,
       pheromoneField: this.pheromoneField,

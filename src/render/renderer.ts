@@ -9,7 +9,7 @@ export type FrameCallback = () => void;
 
 export type MouseClickCallback = (position: Position) => void;
 
-export type AcoSimulationView = {
+export type SimulationView = {
   ants: Ant[];
   pheromoneField: PheromoneField;
 };
@@ -20,7 +20,7 @@ export type Scene = {
   foodQuadtree: Quadtree<FoodItem>;
   obstacles: Obstacle[];
   colonies: Colony[];
-  simulation: AcoSimulationView;
+  simulation: SimulationView;
 };
 
 export abstract class Renderer extends Configurable<RendererSettings> {

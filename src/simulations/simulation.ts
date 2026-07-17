@@ -1,6 +1,7 @@
-import { AcoSimulationView } from "../render/renderer";
+import { SimulationView } from "../render";
 import { Configurable, type Settings, type SettingsSchema } from "../settings";
 import type { World } from "../world";
+
 export abstract class Simulation<
   TSettings extends Settings = Settings,
 > extends Configurable<TSettings> {
@@ -15,5 +16,5 @@ export abstract class Simulation<
   public abstract update(dt: number): void;
 
   // TODO: this should be generic, not ACO-specific
-  public abstract getView(): AcoSimulationView;
+  public abstract getView(): SimulationView;
 }

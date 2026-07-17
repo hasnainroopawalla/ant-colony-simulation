@@ -1,2 +1,2 @@
-export { Simulation, type SimulationView } from "./simulation";
+export { Simulation } from "./simulation";
 export * from "./aco";

@@ -1,9 +1,9 @@
 import { EventBus, IEvents, Unsubscribe } from "./events";
 import { FpsMonitor } from "./fps-monitor";
 import { Position } from "./math";
-import type { Renderer, Scene } from "./render";
+import type { Renderer, Scene, SimulationView } from "./render";
 import { Configurable } from "./settings";
-import { Simulation, type SimulationView } from "./simulations";
+import { Simulation } from "./simulations";
 import type { World } from "./world";
 
 export type Stats = {
