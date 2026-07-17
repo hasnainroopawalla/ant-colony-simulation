@@ -1,3 +1,3 @@
 export type IEvents = {
-  "stats.update": { fps: number; antCount: number };
+  "stats.update": { fps: number; antCount: number; foodAmount: number };
 };

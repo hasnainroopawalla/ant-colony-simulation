@@ -9,6 +9,7 @@ import type { World } from "./world";
 export type Stats = {
   fps: number;
   antCount: number;
+  foodAmount: number;
 };
 
 export enum PlacementMode {
@@ -113,9 +114,15 @@ export class Simulator {
     const fps = this.fpsMonitor.update(dt);
 
     if (fps !== null) {
+      const foodAmount = this.world.foodItems.reduce(
+        (sum, foodItem) => sum + foodItem.quantity,
+        0,
+      );
+
       this.emit("stats.update", {
         fps: fps,
         antCount: view.ants.length,
+        foodAmount,
       });
     }
   }
