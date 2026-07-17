@@ -1,144 +1,133 @@
 import * as React from "react";
-import { SettingItem } from "./setting-item";
-import { Checkbox } from "./checkbox";
-import { Slider } from "./slider";
-import { IUpdateAcoConfig, config } from "../../aco";
+import { useSettings } from "../contexts/settings-context";
+import { SettingDescriptor } from "../../settings";
 
-type IControlPanelContentProps = {
-  hideControlPanel: () => void;
-  updateAcoConfig: IUpdateAcoConfig;
-};
-
-export const ControlPanelContent = (props: IControlPanelContentProps) => {
-  const { hideControlPanel, updateAcoConfig } = props;
-
+function SectionHeader({ title }: { title: string }) {
   return (
-    <div className="control-panel-content absolute mt-5 ml-5 w-[350px] max-h-[60%] overflow-auto rounded-[0.6rem] bg-black/70">
-      <div className="control-panel-header flex flex-row justify-between px-2.5 py-5 text-[25px] text-white">
-        <div>
-          <span>Ant Colony Simulation</span>
-        </div>
-        <div>
-          <a
-            className="close-button cursor-pointer"
-            data-testid="control-panel-close-button"
-            onClick={hideControlPanel}
-          >
-            &times;
-          </a>
-        </div>
-      </div>
-      <div className="control-panel-items">
-        <SettingItem
-          title={"maxSpeed"}
-          slider={
-            <Slider
-              configParam={"antMaxSpeed"}
-              min={0.1}
-              max={5}
-              step={0.1}
-              defaultValue={config.antMaxSpeed}
-              updateAcoConfig={updateAcoConfig}
-            />
-          }
-        />
-        <SettingItem
-          title={"wanderStrength"}
-          slider={
-            <Slider
-              configParam={"antWanderStrength"}
-              min={0}
-              max={0.3}
-              step={0.01}
-              defaultValue={config.antWanderStrength}
-              updateAcoConfig={updateAcoConfig}
-            />
-          }
-        />
-        <SettingItem
-          title={"steeringLimit"}
-          slider={
-            <Slider
-              configParam={"antSteeringLimit"}
-              min={0.1}
-              max={1.0}
-              step={0.1}
-              defaultValue={config.antSteeringLimit}
-              updateAcoConfig={updateAcoConfig}
-            />
-          }
-        />
-        <SettingItem
-          title={"perceptionRange"}
-          slider={
-            <Slider
-              configParam={"antPerceptionRange"}
-              min={10}
-              max={100}
-              step={1}
-              defaultValue={config.antPerceptionRange}
-              updateAcoConfig={updateAcoConfig}
-            />
-          }
-          checkbox={
-            <Checkbox
-              configParam={"showAntPerceptionRange"}
-              isChecked={config.showAntPerceptionRange}
-              updateAcoConfig={updateAcoConfig}
-            />
-          }
-        />
-        <SettingItem
-          title={"showFoodItemsQuadtree"}
-          checkbox={
-            <Checkbox
-              configParam={"showFoodItemsQuadtree"}
-              isChecked={config.showFoodItemsQuadtree}
-              updateAcoConfig={updateAcoConfig}
-            />
-          }
-        />
-        <SettingItem
-          title={"showHomePheromones"}
-          checkbox={
-            <Checkbox
-              configParam={"showHomePheromones"}
-              isChecked={config.showHomePheromones}
-              updateAcoConfig={updateAcoConfig}
-            />
-          }
-        />
-        <SettingItem
-          title={"showHomePheromonesQuadtree"}
-          checkbox={
-            <Checkbox
-              configParam={"showHomePheromonesQuadtree"}
-              isChecked={config.showHomePheromonesQuadtree}
-              updateAcoConfig={updateAcoConfig}
-            />
-          }
-        />
-        <SettingItem
-          title={"showFoodPheromones"}
-          checkbox={
-            <Checkbox
-              configParam={"showFoodPheromones"}
-              isChecked={config.showFoodPheromones}
-              updateAcoConfig={updateAcoConfig}
-            />
-          }
-        />
-        <SettingItem
-          title={"showFoodPheromonesQuadtree"}
-          checkbox={
-            <Checkbox
-              configParam={"showFoodPheromonesQuadtree"}
-              isChecked={config.showFoodPheromonesQuadtree}
-              updateAcoConfig={updateAcoConfig}
-            />
-          }
-        />
-      </div>
+    <div className="mt-4 mb-2 px-4 font-mono text-[12px] font-semibold tracking-wider text-white/50 uppercase">
+      {title}
     </div>
   );
-};
+}
+
+function SettingSlider({
+  label,
+  initialValue,
+  min,
+  max,
+  onChange,
+}: {
+  label: string;
+  initialValue: number;
+  min: number;
+  max: number;
+  onChange: (value: number) => void;
+}) {
+  const [value, setValue] = React.useState(initialValue);
+
+  const _onChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = Number(e.target.value);
+      setValue(newValue);
+      onChange(newValue);
+    },
+    [onChange],
+  );
+
+  return (
+    <div className="px-4 py-2">
+      <div className="mb-1 flex items-center justify-between">
+        <span className="font-mono text-[11px] text-white/80">{label}</span>
+        <span className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-xs text-white/90">
+          {value}
+        </span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        value={value}
+        onChange={_onChange}
+        className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-sky-400"
+      />
+    </div>
+  );
+}
+
+function SettingToggle({
+  label,
+  initialValue,
+  onChange,
+}: {
+  label: string;
+  initialValue: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  const [value, setValue] = React.useState(initialValue);
+
+  const _onChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.checked;
+      setValue(newValue);
+      onChange(newValue);
+    },
+    [onChange],
+  );
+
+  return (
+    <label className="flex cursor-pointer items-center justify-between px-4 py-2 font-mono text-[11px] text-white/80 hover:bg-white/5">
+      <span>{label}</span>
+      <input
+        type="checkbox"
+        checked={value}
+        className="h-4 w-4 cursor-pointer accent-sky-400"
+        onChange={_onChange}
+      />
+    </label>
+  );
+}
+
+export function ControlPanelContent() {
+  const { getSettings, updateSetting } = useSettings();
+
+  const getSettingComponent = React.useCallback(
+    (setting: SettingDescriptor, namespace: string) => {
+      switch (setting.kind) {
+        case "number":
+          return (
+            <SettingSlider
+              key={setting.key}
+              label={setting.label}
+              initialValue={setting.value}
+              min={setting.min}
+              max={setting.max}
+              onChange={(value) => updateSetting(namespace, setting.key, value)}
+            />
+          );
+        case "boolean":
+          return (
+            <SettingToggle
+              key={setting.key}
+              label={setting.label}
+              initialValue={setting.value}
+              onChange={(value) => updateSetting(namespace, setting.key, value)}
+            />
+          );
+        default:
+          return null;
+      }
+    },
+    [],
+  );
+
+  return (
+    <>
+      {Object.entries(getSettings()).map(([namespace, settings]) => (
+        <React.Fragment key={namespace}>
+          <SectionHeader title={namespace} />
+          {settings.map((setting) => getSettingComponent(setting, namespace))}
+        </React.Fragment>
+      ))}
+    </>
+  );
+}

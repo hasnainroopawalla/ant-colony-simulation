@@ -1,14 +1,18 @@
-import { MathUtils, Vector } from "../src/math";
+import { MathUtils } from "./utils";
+import { Vector } from "./vector";
 
 const {
   distance,
   isPointInCircle,
+  isCircleIntersectingRect,
   randomFloat,
   randomInt,
   arePointsClose,
   isLineIntersectingRect,
   fromAngle,
   clampNumber,
+  toCellIndex,
+  toClampedCellRange,
   mapRange,
 } = MathUtils;
 
@@ -227,5 +231,72 @@ describe("mapRange", () => {
 
   test("should extrapolate values outside the input range", () => {
     expect(mapRange(15, 0, 10, 0, 100)).toBe(150);
+  });
+});
+
+describe("isCircleIntersectingRect", () => {
+  const rect = { x: 10, y: 10, w: 20, h: 20 }; // spans (10,10)..(30,30)
+
+  test("should return true when the circle center is inside the rectangle", () => {
+    expect(isCircleIntersectingRect({ x: 20, y: 20 }, 1, rect)).toBe(true);
+  });
+
+  test("should return true when the circle overlaps an edge from outside", () => {
+    // closest point (10, 20) is 5 away; radius 6 reaches it
+    expect(isCircleIntersectingRect({ x: 5, y: 20 }, 6, rect)).toBe(true);
+  });
+
+  test("should return false when the circle stops short of an edge", () => {
+    // closest point (10, 20) is 5 away; radius 4 does not reach it
+    expect(isCircleIntersectingRect({ x: 5, y: 20 }, 4, rect)).toBe(false);
+  });
+
+  test("should return true when the circle just touches a corner (boundary)", () => {
+    // closest point (10, 10) is exactly 5 away (3-4-5 triangle)
+    expect(isCircleIntersectingRect({ x: 7, y: 6 }, 5, rect)).toBe(true);
+  });
+
+  test("should return false when the circle is entirely outside", () => {
+    expect(isCircleIntersectingRect({ x: 0, y: 0 }, 2, rect)).toBe(false);
+  });
+});
+
+describe("toCellIndex", () => {
+  test("should return 0 for a coordinate at the grid origin", () => {
+    expect(toCellIndex(0, 8)).toBe(0);
+  });
+
+  test("should floor a coordinate within the first cell", () => {
+    expect(toCellIndex(7, 8)).toBe(0);
+  });
+
+  test("should advance to the next cell at the boundary", () => {
+    expect(toCellIndex(8, 8)).toBe(1);
+  });
+
+  test("should map coordinates into the correct cell", () => {
+    expect(toCellIndex(20, 8)).toBe(2);
+  });
+
+  test("should return a negative index for coordinates left of the origin", () => {
+    expect(toCellIndex(-1, 8)).toBe(-1);
+  });
+});
+
+describe("toClampedCellRange", () => {
+  test("should convert a span into an inclusive cell-index range", () => {
+    expect(toClampedCellRange(7, 20, 8, 5)).toEqual([0, 2]);
+  });
+
+  test("should clamp the lower bound to 0", () => {
+    expect(toClampedCellRange(-10, 5, 8, 5)).toEqual([0, 0]);
+  });
+
+  test("should clamp the upper bound to the last index", () => {
+    expect(toClampedCellRange(30, 100, 8, 5)).toEqual([3, 5]);
+  });
+
+  test("should collapse to the last index when the span is beyond the grid", () => {
+    expect(toClampedCellRange(100, 200, 8, 5)).toEqual([5, 5]);
   });
 });
