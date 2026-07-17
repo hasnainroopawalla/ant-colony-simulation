@@ -1,15 +1,13 @@
 import * as React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { ControlPanel } from "./control-panel";
 import { SettingItem } from "./setting-item";
 
 const CONTROL_PANEL_CONTAINER = "control-panel-container";
 
 describe("ControlPanel", () => {
-  const setCanvasInteraction = vi.fn();
-
   beforeEach(() => {
-    render(<ControlPanel setCanvasInteraction={setCanvasInteraction} />);
+    render(<ControlPanel />);
   });
 
   afterEach(() => {
@@ -18,16 +16,6 @@ describe("ControlPanel", () => {
 
   test("renders the control panel open by default", async () => {
     expect(screen.getByTestId(CONTROL_PANEL_CONTAINER)).toBeVisible();
-  });
-
-  test("disable canvas interaction when mouse over", async () => {
-    fireEvent.mouseOver(screen.getByTestId(CONTROL_PANEL_CONTAINER));
-    expect(setCanvasInteraction).toHaveBeenCalledWith(false);
-  });
-
-  test("enable canvas interaction when mouse out", async () => {
-    fireEvent.mouseOut(screen.getByTestId(CONTROL_PANEL_CONTAINER));
-    expect(setCanvasInteraction).toHaveBeenCalledWith(true);
   });
 });
 
