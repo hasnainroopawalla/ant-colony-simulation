@@ -80,6 +80,59 @@ export class World {
     }
   }
 
+  public createObstacle(
+    position: Position,
+    size: number = WorldConstants.OBSTACLE_DEFAULT_SIZE,
+  ) {
+    // center the obstacle on the click position
+    this.obstacles.push(
+      new Obstacle({
+        x: position.x - size / 2,
+        y: position.y - size / 2,
+        w: size,
+        h: size,
+      }),
+    );
+  }
+
+  // If the given position lies inside a (non-boundary) obstacle, returns the
+  // nearest position just outside it. Otherwise returns null. Used to free
+  // ants that end up trapped inside an obstacle placed on top of them.
+  public escapeObstacle(position: Vector): Vector | null {
+    for (const obstacle of this.obstacles) {
+      const { x, y, w, h } = obstacle.dims;
+
+      // Skip degenerate boundary obstacles - those are handled by clamping.
+      if (w <= 0 || h <= 0) {
+        continue;
+      }
+
+      if (!MathUtils.isPointInRect(position, obstacle.dims)) {
+        continue;
+      }
+
+      const margin = WorldConstants.OBSTACLE_ESCAPE_MARGIN;
+      const distLeft = position.x - x;
+      const distRight = x + w - position.x;
+      const distTop = position.y - y;
+      const distBottom = y + h - position.y;
+      const nearest = Math.min(distLeft, distRight, distTop, distBottom);
+
+      if (nearest === distLeft) {
+        return new Vector(x - margin, position.y);
+      }
+      if (nearest === distRight) {
+        return new Vector(x + w + margin, position.y);
+      }
+      if (nearest === distTop) {
+        return new Vector(position.x, y - margin);
+      }
+      return new Vector(position.x, y + h + margin);
+    }
+
+    return null;
+  }
+
   public isPathBlocked(antPosition: Vector, antPerception: Vector): boolean {
     for (let i = 0; i < this.obstacles.length; i++) {
       const obstacle = this.obstacles[i];

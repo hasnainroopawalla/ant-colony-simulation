@@ -46,6 +46,15 @@ function isCircleIntersectingRect(
   return dx * dx + dy * dy <= circleRadius * circleRadius;
 }
 
+function isPointInRect(point: Position, rect: RectangleDims): boolean {
+  return (
+    point.x >= rect.x &&
+    point.x <= rect.x + rect.w &&
+    point.y >= rect.y &&
+    point.y <= rect.y + rect.h
+  );
+}
+
 function randomFloat(min: number = 0, max: number = 1): number {
   return Math.random() * (max - min) + min;
 }
@@ -133,6 +142,7 @@ export const MathUtils = {
   randomInt,
   isPointInCircle,
   isCircleIntersectingRect,
+  isPointInRect,
   isLineIntersectingRect,
   fromAngle,
   arePointsClose,

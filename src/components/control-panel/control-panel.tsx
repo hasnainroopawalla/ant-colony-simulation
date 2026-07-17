@@ -1,5 +1,6 @@
 import { ControlPanelContent } from "./content";
 import { ControlPanelActions } from "./control-panel-actions";
+import { PlacementModeSelector } from "./placement-mode-selector";
 
 export function ControlPanel() {
   return (
@@ -16,6 +17,7 @@ export function ControlPanel() {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
+        <PlacementModeSelector />
         <ControlPanelContent />
       </div>
 
