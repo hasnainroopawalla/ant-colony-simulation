@@ -25,7 +25,6 @@ export function StartSimulatorAction({
 
     const simulator = new Simulator(world, simulation, renderer);
 
-    // TODO: make this a promise
     simulator.start();
 
     onSimulatorStartSuccess(simulator);

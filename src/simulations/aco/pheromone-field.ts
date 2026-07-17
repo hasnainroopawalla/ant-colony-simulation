@@ -1,6 +1,10 @@
 import { MathUtils, type Dimensions, type Position } from "../../math";
 import * as AcoConstants from "./aco.constants";
-import { PheromoneType } from "./pheromone";
+
+export enum PheromoneType {
+  Home,
+  Food,
+}
 
 export class PheromoneField {
   private rows: number;

@@ -1,4 +1,5 @@
 import * as WorldConstants from "../world/world.constants";
+import * as MathConstants from "./math.constants";
 import type { Position, RectangleDims } from "./types";
 import { MathUtils } from "./utils";
 import { Vector } from "./vector";
@@ -63,20 +64,20 @@ export class Rectangle<T extends QuadtreeItem> {
 }
 
 export class Quadtree<T extends QuadtreeItem> {
-  capacity: number;
-  boundary: Rectangle<T>;
+  private capacity: number;
+  private boundary: Rectangle<T>;
 
-  points: T[];
+  private points: T[];
 
-  divided: boolean;
-  currentDepth: number;
-  topLeft?: Quadtree<T>;
-  bottomLeft?: Quadtree<T>;
-  bottomRight?: Quadtree<T>;
-  topRight?: Quadtree<T>;
+  private divided: boolean;
+  private currentDepth: number;
+  private topLeft?: Quadtree<T>;
+  private bottomLeft?: Quadtree<T>;
+  private bottomRight?: Quadtree<T>;
+  private topRight?: Quadtree<T>;
 
   constructor(dims: RectangleDims, currentDepth: number = 0) {
-    this.capacity = 4; // TODO: hardcoded?
+    this.capacity = MathConstants.QUADTREE_MAX_ITEMS;
     this.currentDepth = currentDepth;
     this.boundary = new Rectangle(dims);
     this.divided = false;
@@ -126,6 +127,19 @@ export class Quadtree<T extends QuadtreeItem> {
     newPoints.forEach((point) => this.insert(point));
   }
 
+  public getBoundaries(results: RectangleDims[] = []): RectangleDims[] {
+    results.push(this.boundary.dims);
+
+    if (this.divided) {
+      this.topLeft?.getBoundaries(results);
+      this.bottomLeft?.getBoundaries(results);
+      this.bottomRight?.getBoundaries(results);
+      this.topRight?.getBoundaries(results);
+    }
+
+    return results;
+  }
+
   private subdivide() {
     this.topLeft = new Quadtree(
       {
@@ -164,45 +178,6 @@ export class Quadtree<T extends QuadtreeItem> {
       this.currentDepth + 1,
     );
   }
-
-  // private highlightQuadtree(): void {
-  //   this.p.push();
-  //   this.p.stroke(EngineConfig.quadtreeHighlightedColor);
-  //   this.p.strokeWeight(EngineConfig.quadtreeHighlightedStrokeWeight);
-  //   this.p.rectMode(this.p.CENTER);
-  //   this.p.noFill();
-  //   this.p.rect(
-  //     this.boundary.dims.x,
-  //     this.boundary.dims.y,
-  //     this.boundary.dims.w * 2,
-  //     this.boundary.dims.h * 2,
-  //   );
-  //   this.p.pop();
-  // }
-
-  // public update(showBoundary: boolean = false): void {
-  // if (showBoundary) {
-  //   this.p.push();
-  //   this.p.stroke(EngineConfig.quadtreeDefaultColor);
-  //   this.p.strokeWeight(EngineConfig.quadtreeDefaultStrokeWeight);
-  //   this.p.rectMode(this.p.CENTER);
-  //   this.p.noFill();
-  //   this.p.rect(
-  //     this.boundary.x,
-  //     this.boundary.y,
-  //     this.boundary.w * 2,
-  //     this.boundary.h * 2,
-  //   );
-  //   this.p.pop();
-  // }
-
-  // if (this.divided) {
-  //   this.topLeft?.update(showBoundary);
-  //   this.bottomLeft?.update(showBoundary);
-  //   this.bottomRight?.update(showBoundary);
-  //   this.topRight?.update(showBoundary);
-  // }
-  // }
 
   private _query(rangeCircle: Circle<T>, results?: T[]): T[] {
     if (!results) {

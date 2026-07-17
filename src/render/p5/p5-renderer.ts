@@ -14,7 +14,7 @@ export class P5Renderer extends Renderer {
     super();
 
     const sketch = createSketch(canvas, {
-      frame: () => this.frameCallback(),
+      frame: () => this.callbacks.frame(),
       onMouseClick: (position: Position) => this.onMouseClick(position),
     });
 
@@ -56,10 +56,18 @@ export class P5Renderer extends Renderer {
     this.renderAnts(scene);
     this.renderColonies(scene);
     this.renderFoodItems(scene);
+
+    if (this.settings.showFoodQuadtree) {
+      this.renderQuadtree(scene);
+    }
+
+    if (this.settings.showAntPerception) {
+      this.renderAntPerception(scene);
+    }
   }
 
   public onMouseClick(position: Position): void {
-    this.mouseClickCallback(position);
+    this.callbacks.mouseClick(position);
   }
 
   private renderAnts(scene: Scene): void {
@@ -114,9 +122,9 @@ export class P5Renderer extends Renderer {
   }
 
   private renderFoodItems(scene: Scene): void {
+    this.p.push();
+    this.p.strokeWeight(RenderConstants.FOOD_ITEM_STROKE_WEIGHT);
     scene.foodItems.forEach((foodItem) => {
-      this.p.push();
-      this.p.strokeWeight(RenderConstants.FOOD_ITEM_STROKE_WEIGHT);
       this.p.fill(
         RenderConstants.FOOD_ITEM_COLOR[0],
         RenderConstants.FOOD_ITEM_COLOR[1],
@@ -134,16 +142,16 @@ export class P5Renderer extends Renderer {
         foodItem.position.y,
         foodItem.radius * 2,
       );
-      this.p.pop();
     });
+    this.p.pop();
   }
 
   private renderObstacles(scene: Scene): void {
+    this.p.push();
+    this.p.strokeWeight(RenderConstants.COLONY_STROKE_WEIGHT);
+    this.p.stroke(RenderConstants.OBSTACLE_COLOR);
+    this.p.fill(RenderConstants.OBSTACLE_COLOR);
     scene.obstacles.forEach((obstacle) => {
-      this.p.push();
-      this.p.strokeWeight(RenderConstants.COLONY_STROKE_WEIGHT);
-      this.p.stroke(RenderConstants.OBSTACLE_COLOR);
-      this.p.fill(RenderConstants.OBSTACLE_COLOR);
       this.p.rect(
         obstacle.dims.x,
         obstacle.dims.y,
@@ -151,8 +159,8 @@ export class P5Renderer extends Renderer {
         obstacle.dims.h,
         5 /* corner radius */,
       );
-      this.p.pop();
     });
+    this.p.pop();
   }
 
   private renderAntennas(left: Antenna, front: Antenna, right: Antenna): void {
@@ -214,15 +222,35 @@ export class P5Renderer extends Renderer {
       Math.min(1, strength) * RenderConstants.PHEROMONE_FIELD_MAX_ALPHA;
   }
 
-  //   private renderPerception(ant: Antenna): void {
-  //     this.p.push();
-  //     this.p.strokeWeight(AcoConfig.antPerceptionStrokeWeight);
-  //     this.p.fill(
-  //       AcoConfig.antPerceptionColorGray,
-  //       AcoConfig.antPerceptionColorAlpha,
-  //     );
-  //     const perception = this.getPerception();
-  //     this.p.circle(perception.x, perception.y, this.settings.antPerceptionRange * 2);
-  //     this.p.pop();
-  // }
+  private renderQuadtree(scene: Scene) {
+    this.p.push();
+    this.p.stroke(RenderConstants.QUADTREE_HIGHLIGHTED_COLOR);
+    this.p.strokeWeight(RenderConstants.QUADTREE_HIGHLIGHTED_STROKE_WEIGHT);
+    this.p.rectMode(this.p.CENTER);
+    this.p.noFill();
+
+    scene.foodQuadtree.getBoundaries().forEach((boundary) => {
+      this.p.rect(boundary.x, boundary.y, boundary.w * 2, boundary.h * 2);
+    });
+
+    this.p.pop();
+  }
+
+  private renderAntPerception(scene: Scene): void {
+    this.p.push();
+    this.p.strokeWeight(RenderConstants.ANT_PERCEPTION_STROKE_WEIGHT);
+    this.p.fill(
+      RenderConstants.ANT_PERCEPTION_COLOR_GRAY,
+      RenderConstants.ANT_PERCEPTION_COLOR_ALPHA,
+    );
+    scene.simulation.ants.forEach((ant) => {
+      const perception = ant.getPerception();
+      this.p.circle(
+        perception.center.x,
+        perception.center.y,
+        perception.radius * 2,
+      );
+    });
+    this.p.pop();
+  }
 }

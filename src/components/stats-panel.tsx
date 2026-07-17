@@ -28,7 +28,7 @@ function StatRow({
 export function StatsPanel() {
   const [isOpen, setIsOpen] = React.useState(true);
 
-  const { fps, antCount, pheromoneCount } = useStats();
+  const { fps, antCount } = useStats();
 
   if (!isOpen) {
     return (
@@ -60,7 +60,6 @@ export function StatsPanel() {
           accentClassName="text-emerald-400"
         />
         <StatRow label="Ants" value={antCount} />
-        <StatRow label="Pheromones" value={pheromoneCount} />
       </div>
     </button>
   );
@@ -72,7 +71,6 @@ const useStats = () => {
   const [stats, setStats] = React.useState<Stats>({
     fps: 0,
     antCount: 0,
-    pheromoneCount: 0,
   });
 
   React.useEffect(() => {

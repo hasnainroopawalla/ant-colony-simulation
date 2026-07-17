@@ -2,7 +2,7 @@ import { Configurable } from "../settings";
 import type { Ant } from "../simulations";
 import { Obstacle, type Colony, type FoodItem } from "../world";
 import { RendererSettings, rendererSettingsSchema } from "./renderer.settings";
-import type { Position } from "../math";
+import type { Position, Quadtree } from "../math";
 import type { PheromoneField } from "../simulations/aco";
 
 export type FrameCallback = () => void;
@@ -17,30 +17,33 @@ export type AcoSimulationView = {
 // TODO: make this generic
 export type Scene = {
   foodItems: FoodItem[];
+  foodQuadtree: Quadtree<FoodItem>;
   obstacles: Obstacle[];
   colonies: Colony[];
   simulation: AcoSimulationView;
 };
 
 export abstract class Renderer extends Configurable<RendererSettings> {
-  protected frameCallback: FrameCallback;
-
-  // TODO: consider using eventbus for this
-  protected mouseClickCallback: MouseClickCallback;
+  protected callbacks: {
+    frame: FrameCallback;
+    mouseClick: MouseClickCallback;
+  };
 
   constructor() {
     super("Renderer", rendererSettingsSchema);
 
-    this.frameCallback = () => {};
-    this.mouseClickCallback = () => {};
+    this.callbacks = {
+      frame: () => {},
+      mouseClick: () => {},
+    };
   }
 
   public setFrameCallback(callback: FrameCallback): void {
-    this.frameCallback = callback;
+    this.callbacks.frame = callback;
   }
 
   public setMouseClickCallback(callback: MouseClickCallback): void {
-    this.mouseClickCallback = callback;
+    this.callbacks.mouseClick = callback;
   }
 
   public abstract start(): void;

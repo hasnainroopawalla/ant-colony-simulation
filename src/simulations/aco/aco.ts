@@ -1,10 +1,9 @@
 import { Simulation } from "../simulation";
 import { Ant } from "./ant";
-import { PheromoneType } from "./pheromone";
 import { World } from "../../world";
 import { MathUtils, Vector } from "../../math";
 import { acoSettingsSchema, type AcoSettings } from "./aco.settings";
-import { PheromoneField } from "./pheromone-field";
+import { PheromoneField, PheromoneType } from "./pheromone-field";
 import * as AcoConstants from "./aco.constants";
 import { Antenna } from "./antenna";
 import { AcoSimulationView } from "../../render/renderer";
@@ -60,7 +59,8 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
       // TODO: better colony assignment
       const colony = this.world.colonies[0];
       // Uniform disk sampling: sqrt(rand) prevents clustering at the center.
-      const r = Math.sqrt(MathUtils.randomFloat());
+      const r =
+        Math.sqrt(MathUtils.randomFloat()) * AcoConstants.ANT_SPAWN_RADIUS;
       const spawnPos = colony.position.add(
         MathUtils.fromAngle(MathUtils.randomFloat(0, Math.PI * 2)).mult(r),
       );

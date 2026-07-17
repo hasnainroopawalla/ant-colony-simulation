@@ -1,18 +1,23 @@
 import { Colony } from "./colony";
 import { FoodItem } from "./food-item";
 import { Obstacle } from "./obstacle";
-import { MathUtils, Vector, Quadtree } from "../math";
-import type { Circle, Dimensions, Position } from "../math";
+import {
+  MathUtils,
+  Vector,
+  Quadtree,
+  Dimensions,
+  Position,
+  Circle,
+} from "../math";
 import * as WorldConstants from "./world.constants";
 
 export class World {
   public colonies: Colony[];
   public foodItems: FoodItem[];
   public obstacles: Obstacle[];
+  public foodQuadtree: Quadtree<FoodItem>;
 
   public dims: Dimensions;
-
-  private foodQuadtree: Quadtree<FoodItem>;
 
   constructor(dims: Dimensions) {
     this.dims = dims;

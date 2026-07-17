@@ -2,9 +2,9 @@ import * as AcoConstants from "./aco.constants";
 import type { AcoSettings } from "./aco.settings";
 import { Vector, MathUtils, Circle } from "../../math";
 import type { Colony, FoodItem, World } from "../../world";
-import { PheromoneType } from "./pheromone";
 import type { AntColonySimulation } from "./aco";
 import { Antenna } from "./antenna";
+import { PheromoneType } from "./pheromone-field";
 
 export enum AntStateKind {
   Wandering,
@@ -98,6 +98,15 @@ export class Ant {
     this.clampToBounds();
   }
 
+  public getPerception(): Circle {
+    return {
+      center: this.position.add(
+        this.velocity.normalize().mult(this.settings.antPerceptionRange),
+      ),
+      radius: this.settings.antPerceptionRange,
+    };
+  }
+
   private decide(dt: number): void {
     switch (this.state.kind) {
       case AntStateKind.Wandering:
@@ -132,15 +141,6 @@ export class Ant {
     );
   }
 
-  private getPerception(): Circle {
-    return {
-      center: this.position.add(
-        this.velocity.normalize().mult(this.settings.antPerceptionRange),
-      ),
-      radius: this.settings.antPerceptionRange,
-    };
-  }
-
   private handleObstacles(dt: number): void {
     const speed = this.velocity.getMagnitude();
     const lookahead = Math.max(
@@ -148,7 +148,6 @@ export class Ant {
       speed * dt * 2,
     );
 
-    // TODO: add jitter
     for (const step of Ant.OBSTACLE_SWEEP_OFFSETS) {
       const angle = step * AcoConstants.ANT_OBSTACLE_ANGLE_RANGE;
       const candidate = this.desiredVelocity.rotate(angle);

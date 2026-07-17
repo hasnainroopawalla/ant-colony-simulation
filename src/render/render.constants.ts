@@ -15,6 +15,9 @@ export const OBSTACLE_COLOR = "#3B3838";
 export const ANT_SIZE = 2;
 export const HOME_ANT_COLOR = "#FFEA00";
 export const FOOD_ANT_COLOR = "#E85454";
+export const ANT_PERCEPTION_COLOR_GRAY = 255;
+export const ANT_PERCEPTION_COLOR_ALPHA = 30;
+export const ANT_PERCEPTION_STROKE_WEIGHT = 1;
 
 // Food
 export const FOOD_ITEM_COLOR = [57, 255, 20];
@@ -26,3 +29,7 @@ export const HOME_PHEROMONE_COLOR_RGB = [26, 166, 236];
 
 // Pheromone Field overlay
 export const PHEROMONE_FIELD_MAX_ALPHA = 200; // max overlay opacity (0-255)
+
+// Quadtree
+export const QUADTREE_HIGHLIGHTED_COLOR = "#FF0000";
+export const QUADTREE_HIGHLIGHTED_STROKE_WEIGHT = 2;

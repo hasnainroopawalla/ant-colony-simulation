@@ -9,7 +9,6 @@ import type { World } from "./world";
 export type Stats = {
   fps: number;
   antCount: number;
-  pheromoneCount: number;
 };
 
 export class Simulator {
@@ -93,8 +92,6 @@ export class Simulator {
       this.emit("stats.update", {
         fps: fps,
         antCount: view.ants.length,
-        // TODO: check
-        pheromoneCount: 100,
       });
     }
   }
@@ -102,6 +99,7 @@ export class Simulator {
   private getScene(view: SimulationView): Scene {
     return {
       foodItems: this.world.foodItems,
+      foodQuadtree: this.world.foodQuadtree,
       obstacles: this.world.obstacles,
       colonies: this.world.colonies,
       simulation: view,
