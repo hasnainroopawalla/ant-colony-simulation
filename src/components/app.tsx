@@ -8,7 +8,7 @@ import { StatsPanel } from "./stats-panel";
 import { SimulatorProvider } from "./contexts/simulator-context";
 import { SettingsProvider } from "./contexts/settings-context";
 
-function App() {
+export function App() {
   const [simulator, setSimulator] = React.useState<Simulator | null>(null);
 
   const [canvas, setCanvas, canvasRef] = useStateRef<HTMLDivElement | null>(
@@ -39,8 +39,4 @@ function App() {
       )}
     </>
   );
-}
-
-export function ContextualApp() {
-  return <App />;
 }

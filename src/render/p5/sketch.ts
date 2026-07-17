@@ -5,10 +5,6 @@ import p5 from "p5";
 
 type P5Sketch = (p: p5) => void;
 
-export const updateAcoConfig = () => {};
-
-export const setCanvasInteraction = () => {};
-
 export function createSketch(
   container: HTMLElement,
   callbacks: {
@@ -16,11 +12,11 @@ export function createSketch(
     onMouseClick: (position: Position) => void;
   },
 ): P5Sketch {
-  function bindCanvasInteraction(p: p5, canvas: p5.Renderer) {
+  const bindCanvasInteraction = (p: p5, canvas: p5.Renderer) => {
     canvas.mouseClicked(() =>
       callbacks.onMouseClick({ x: p.mouseX, y: p.mouseY }),
     );
-  }
+  };
 
   return (p: p5) => {
     const getContainerSize = () => ({

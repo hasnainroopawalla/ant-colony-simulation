@@ -25,7 +25,7 @@ export const FOOD_ITEM_STROKE_WEIGHT = 0;
 
 // Pheromone
 export const FOOD_PHEROMONE_COLOR_RGB = [210, 31, 61];
-export const HOME_PHEROMONE_COLOR_RGB = [26, 166, 236];
+// export const HOME_PHEROMONE_COLOR_RGB = [26, 166, 236];
 
 // Pheromone Field overlay
 export const PHEROMONE_FIELD_MAX_ALPHA = 200; // max overlay opacity (0-255)
