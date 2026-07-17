@@ -9,7 +9,13 @@ import type { World } from "./world";
 export type Stats = {
   fps: number;
   antCount: number;
+  foodAmount: number;
 };
+
+export enum PlacementMode {
+  Food,
+  Obstacle,
+}
 
 export class Simulator {
   public world: World;
@@ -21,6 +27,8 @@ export class Simulator {
 
   private fpsMonitor: FpsMonitor;
 
+  private placementMode: PlacementMode;
+
   constructor(world: World, simulation: Simulation, renderer: Renderer) {
     this.world = world;
     this.simulation = simulation;
@@ -28,6 +36,8 @@ export class Simulator {
 
     this.eventBus = new EventBus();
     this.fpsMonitor = new FpsMonitor();
+
+    this.placementMode = PlacementMode.Food;
 
     this.renderer.setFrameCallback(() => this.update());
 
@@ -71,8 +81,23 @@ export class Simulator {
     );
   }
 
+  public setPlacementMode(mode: PlacementMode): void {
+    this.placementMode = mode;
+  }
+
+  public getPlacementMode(): PlacementMode {
+    return this.placementMode;
+  }
+
   private onMouseClick(position: Position): void {
-    this.world.createFoodCluster(position);
+    switch (this.placementMode) {
+      case PlacementMode.Food:
+        this.world.createFoodCluster(position);
+        break;
+      case PlacementMode.Obstacle:
+        this.world.createObstacle(position);
+        break;
+    }
   }
 
   private update(): void {
@@ -89,9 +114,15 @@ export class Simulator {
     const fps = this.fpsMonitor.update(dt);
 
     if (fps !== null) {
+      const foodAmount = this.world.foodItems.reduce(
+        (sum, foodItem) => sum + foodItem.quantity,
+        0,
+      );
+
       this.emit("stats.update", {
         fps: fps,
         antCount: view.ants.length,
+        foodAmount,
       });
     }
   }

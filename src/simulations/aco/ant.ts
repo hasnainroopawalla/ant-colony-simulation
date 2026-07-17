@@ -96,6 +96,7 @@ export class Ant {
 
     this.move(dt);
     this.clampToBounds();
+    this.escapeObstacle();
   }
 
   public getPerception(): Circle {
@@ -168,6 +169,23 @@ export class Ant {
     const perception = this.position.add(direction.normalize().mult(lookahead));
 
     return !this.world.isPathBlocked(this.position, perception);
+  }
+
+  // Frees the ant if it ends up inside an obstacle (e.g. one placed on top of
+  // it): snap to the nearest edge and steer outward so it walks away instead
+  // of staying trapped inside.
+  private escapeObstacle(): void {
+    const escaped = this.world.escapeObstacle(this.position);
+    if (!escaped) {
+      return;
+    }
+
+    const outward = escaped.sub(this.position).normalize();
+    const speed = this.velocity.getMagnitude();
+
+    this.position = escaped;
+    this.desiredVelocity = outward;
+    this.velocity = outward.setMagnitude(speed);
   }
 
   private depositPheromone(pheromoneType: PheromoneType): void {

@@ -2,12 +2,23 @@ import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import { ControlPanel } from "./control-panel";
 import { SettingItem } from "./setting-item";
+import { SimulatorProvider } from "../contexts/simulator-context";
+import type { Simulator } from "../../simulator";
 
 const CONTROL_PANEL_CONTAINER = "control-panel-container";
 
+const mockSimulator = {
+  getPlacementMode: vi.fn(() => "food"),
+  setPlacementMode: vi.fn(),
+} as unknown as Simulator;
+
 describe("ControlPanel", () => {
   beforeEach(() => {
-    render(<ControlPanel />);
+    render(
+      <SimulatorProvider simulator={mockSimulator}>
+        <ControlPanel />
+      </SimulatorProvider>,
+    );
   });
 
   afterEach(() => {
