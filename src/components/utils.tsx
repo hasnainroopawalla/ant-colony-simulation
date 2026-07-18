@@ -31,3 +31,10 @@ export const useStateRef = <T,>(initial: T) => {
 
   return [state, set, ref] as const;
 };
+
+export function formatElapsed(seconds: number): string {
+  const total = Math.floor(seconds);
+  const mm = Math.floor(total / 60);
+  const ss = total % 60;
+  return `${mm.toString().padStart(2, "0")}:${ss.toString().padStart(2, "0")}`;
+}

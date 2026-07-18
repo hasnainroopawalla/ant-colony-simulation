@@ -108,6 +108,10 @@ export class Ant {
     };
   }
 
+  public isCarryingFood(): boolean {
+    return this.state.kind === AntStateKind.ReturningHomeWithFood;
+  }
+
   private decide(dt: number): void {
     switch (this.state.kind) {
       case AntStateKind.Wandering:

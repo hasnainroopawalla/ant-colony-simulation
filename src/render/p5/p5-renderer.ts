@@ -2,7 +2,7 @@ import { Renderer, Scene } from "../renderer";
 import p5 from "p5";
 import { createSketch } from "./sketch";
 import * as RenderConstants from "../render.constants";
-import { Antenna, AntStateKind } from "../../simulations";
+import type { Antenna } from "../../simulations";
 import { MathUtils, type Position } from "../../math";
 import { WorldConstants } from "../../world";
 
@@ -15,7 +15,7 @@ export class P5Renderer extends Renderer {
 
     const sketch = createSketch(canvas, {
       frame: () => this.callbacks.frame(),
-      onMouseClick: (position: Position) => this.onMouseClick(position),
+      mouseClick: (position: Position) => this.onMouseClick(position),
     });
 
     this.p = new p5(sketch, canvas);
@@ -29,7 +29,12 @@ export class P5Renderer extends Renderer {
   }
 
   public getDeltaTime(): number {
-    return this.p.deltaTime / 1000; // convert to seconds
+    // convert to seconds
+    const dt = this.p.deltaTime / 1000;
+
+    // Clamp to avoid huge steps after pause/resume or a backgrounded tab,
+    // which would otherwise make ants "teleport".
+    return Math.min(dt, 1 / 30); // cap at one 30 FPS frame (~33ms)
   }
 
   public start(): void {
@@ -72,10 +77,9 @@ export class P5Renderer extends Renderer {
 
   private renderAnts(scene: Scene): void {
     scene.simulation.ants.forEach((ant) => {
-      const antColor =
-        ant.state.kind === AntStateKind.ReturningHomeWithFood
-          ? RenderConstants.FOOD_ANT_COLOR
-          : RenderConstants.HOME_ANT_COLOR;
+      const antColor = ant.isCarryingFood()
+        ? RenderConstants.FOOD_ANT_COLOR
+        : RenderConstants.HOME_ANT_COLOR;
 
       this.p.push();
       this.p.stroke(antColor);

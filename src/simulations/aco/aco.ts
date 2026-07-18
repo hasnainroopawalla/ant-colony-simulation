@@ -7,6 +7,7 @@ import { PheromoneField, PheromoneType } from "./pheromone-field";
 import * as AcoConstants from "./aco.constants";
 import { Antenna } from "./antenna";
 import { SimulationView } from "../../render";
+import { Stats } from "../../events";
 
 export class AntColonySimulation extends Simulation<AcoSettings> {
   private pheromoneField: PheromoneField;
@@ -23,6 +24,7 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
   public getView(): SimulationView {
     return {
       ants: this.ants,
+      antCount: this.getAntCount(),
       pheromoneField: this.pheromoneField,
     };
   }
@@ -67,5 +69,19 @@ export class AntColonySimulation extends Simulation<AcoSettings> {
 
       return new Ant(colony, this.world, this, spawnPos, this.settings);
     });
+  }
+
+  private getAntCount(): Stats["antCount"] {
+    return this.ants.reduce(
+      (acc, ant) => {
+        if (ant.isCarryingFood()) {
+          acc.food += 1;
+        } else {
+          acc.home += 1;
+        }
+        return acc;
+      },
+      { home: 0, food: 0 },
+    );
   }
 }
