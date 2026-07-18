@@ -6,7 +6,7 @@ import type { AntColonySimulation } from "./aco";
 import { Antenna } from "./antenna";
 import { PheromoneType } from "./pheromone-field";
 
-export enum AntStateKind {
+enum AntStateKind {
   Wandering,
   ApproachingFood,
   ReturningHomeWithFood,
