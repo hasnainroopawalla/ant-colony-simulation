@@ -5,12 +5,17 @@ import { RendererSettings, rendererSettingsSchema } from "./renderer.settings";
 import type { Position, Quadtree } from "../math";
 import type { PheromoneField } from "../simulations/aco";
 
-export type FrameCallback = () => void;
-
-export type MouseClickCallback = (position: Position) => void;
+export type RendererCallbacks = {
+  frame: () => void;
+  mouseClick: (position: Position) => void;
+};
 
 export type SimulationView = {
   ants: Ant[];
+  antCount: {
+    home: number;
+    food: number;
+  };
   pheromoneField: PheromoneField;
 };
 
@@ -24,10 +29,7 @@ export type Scene = {
 };
 
 export abstract class Renderer extends Configurable<RendererSettings> {
-  protected callbacks: {
-    frame: FrameCallback;
-    mouseClick: MouseClickCallback;
-  };
+  protected callbacks: RendererCallbacks;
 
   constructor() {
     super("Renderer", rendererSettingsSchema);
@@ -38,12 +40,8 @@ export abstract class Renderer extends Configurable<RendererSettings> {
     };
   }
 
-  public setFrameCallback(callback: FrameCallback): void {
-    this.callbacks.frame = callback;
-  }
-
-  public setMouseClickCallback(callback: MouseClickCallback): void {
-    this.callbacks.mouseClick = callback;
+  public setCallbacks(callbacks: RendererCallbacks): void {
+    this.callbacks = callbacks;
   }
 
   public abstract start(): void;

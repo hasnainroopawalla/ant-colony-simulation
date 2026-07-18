@@ -1,6 +1,6 @@
 import * as React from "react";
-import { useSimulator } from "./contexts/simulator-context";
-import type { Stats } from "../simulator";
+import { formatElapsed } from "./utils";
+import { useStats } from "./use-stats";
 
 type StatRowProps = {
   label: string;
@@ -28,7 +28,7 @@ function StatRow({
 export function StatsPanel() {
   const [isOpen, setIsOpen] = React.useState(true);
 
-  const { fps, antCount, foodAmount } = useStats();
+  const { antCount, foodAmount, elapsedTime } = useStats();
 
   if (!isOpen) {
     return (
@@ -55,35 +55,27 @@ export function StatsPanel() {
     >
       <div className="flex min-w-28 flex-col gap-0.5 px-2 py-1.5">
         <StatRow
-          label="FPS"
-          value={fps.toFixed(0)}
-          accentClassName="text-emerald-400"
+          label="Elapsed"
+          value={formatElapsed(elapsedTime)}
+          accentClassName="text-sky-300"
         />
-        <StatRow label="Ants" value={antCount} />
-        <StatRow label="Food" value={foodAmount} />
+        <div className="my-1 border-t border-white/10" />
+        <StatRow
+          label="Food"
+          value={foodAmount}
+          accentClassName="text-lime-400"
+        />
+        <StatRow
+          label="Ants"
+          value={
+            <span className="inline-flex items-center gap-1.5">
+              <span className="text-amber-300">{antCount.home}</span>
+              <span className="text-white/25">/</span>
+              <span className="text-rose-400">{antCount.food}</span>
+            </span>
+          }
+        />
       </div>
     </button>
   );
 }
-
-const useStats = () => {
-  const sim = useSimulator();
-
-  const [stats, setStats] = React.useState<Stats>({
-    fps: 0,
-    antCount: 0,
-    foodAmount: 0,
-  });
-
-  React.useEffect(() => {
-    const unsubscribe = sim.on("stats.update", (data) => {
-      setStats(data);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [sim]);
-
-  return stats;
-};

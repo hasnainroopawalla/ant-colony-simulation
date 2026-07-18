@@ -21,19 +21,28 @@ export function ControlPanel() {
         <ControlPanelContent />
       </div>
 
-      <div className="flex items-center justify-between border-t border-white/5 bg-white/2 px-4 py-2 font-mono text-[10px] text-white/40">
-        <span>by Hasnain Roopawalla</span>
-        <a
-          href="https://github.com/hasnainroopawalla/ant-colony-simulation"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="View source on GitHub"
-          title="View source on GitHub"
-          className="cursor-pointer transition hover:text-white/80"
-        >
-          <i className="fa fa-github text-sm" />
-        </a>
-      </div>
+      <Footer />
     </aside>
+  );
+}
+
+function Footer() {
+  return (
+    <div className="flex items-center justify-between border-t border-white/5 bg-white/2 px-4 py-2.5">
+      <a
+        href="https://github.com/hasnainroopawalla/ant-colony-simulation"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="View source on GitHub"
+        title="View source on GitHub"
+        className="group flex items-center gap-2 font-mono text-[10px] text-white/40 transition hover:text-white/80"
+      >
+        <i className="fa fa-github text-base text-white/60 transition group-hover:text-white" />
+        <span>Hasnain Roopawalla</span>
+      </a>
+      <span className="font-mono text-[10px] tabular-nums text-white/30">
+        v{__APP_VERSION__}
+      </span>
+    </div>
   );
 }

@@ -6,12 +6,6 @@ import { Configurable } from "./settings";
 import { Simulation } from "./simulations";
 import type { World } from "./world";
 
-export type Stats = {
-  fps: number;
-  antCount: number;
-  foodAmount: number;
-};
-
 export enum PlacementMode {
   Food,
   Obstacle,
@@ -29,6 +23,8 @@ export class Simulator {
 
   private placementMode: PlacementMode;
 
+  private elapsedTime: number = 0;
+
   constructor(world: World, simulation: Simulation, renderer: Renderer) {
     this.world = world;
     this.simulation = simulation;
@@ -39,11 +35,10 @@ export class Simulator {
 
     this.placementMode = PlacementMode.Food;
 
-    this.renderer.setFrameCallback(() => this.update());
-
-    this.renderer.setMouseClickCallback((position) =>
-      this.onMouseClick(position),
-    );
+    this.renderer.setCallbacks({
+      frame: () => this.update(),
+      mouseClick: (position) => this.onMouseClick(position),
+    });
   }
 
   public on<K extends keyof IEvents>(
@@ -102,6 +97,7 @@ export class Simulator {
 
   private update(): void {
     const dt = this.renderer.getDeltaTime();
+    this.elapsedTime += dt;
 
     this.simulation.update(dt);
 
@@ -121,8 +117,9 @@ export class Simulator {
 
       this.emit("stats.update", {
         fps: fps,
-        antCount: view.ants.length,
+        antCount: view.antCount,
         foodAmount,
+        elapsedTime: this.elapsedTime,
       });
     }
   }

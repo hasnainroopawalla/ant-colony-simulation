@@ -6,7 +6,7 @@ import type { AntColonySimulation } from "./aco";
 import { Antenna } from "./antenna";
 import { PheromoneType } from "./pheromone-field";
 
-export enum AntStateKind {
+enum AntStateKind {
   Wandering,
   ApproachingFood,
   ReturningHomeWithFood,
@@ -106,6 +106,10 @@ export class Ant {
       ),
       radius: this.settings.antPerceptionRange,
     };
+  }
+
+  public isCarryingFood(): boolean {
+    return this.state.kind === AntStateKind.ReturningHomeWithFood;
   }
 
   private decide(dt: number): void {

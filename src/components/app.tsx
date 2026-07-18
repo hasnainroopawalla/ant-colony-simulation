@@ -5,6 +5,7 @@ import { StartSimulatorAction } from "./start-simulator-action";
 import { useStateRef } from "./utils";
 import { ControlPanel } from "./control-panel";
 import { StatsPanel } from "./stats-panel";
+import { FpsIndicator } from "./fps-indicator";
 import { SimulatorProvider } from "./contexts/simulator-context";
 import { SettingsProvider } from "./contexts/settings-context";
 
@@ -23,6 +24,7 @@ export function App() {
             <SettingsProvider>
               <ControlPanel />
               <StatsPanel />
+              <FpsIndicator />
             </SettingsProvider>
           </SimulatorProvider>
         ) : (

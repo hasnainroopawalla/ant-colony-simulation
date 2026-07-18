@@ -4,12 +4,17 @@ export const WORLD_BACKGROUND = "#1A1A1A";
 
 // Colony
 export const COLONY_RADIUS = 35;
-export const COLONY_COLOR = "#ffffff";
-export const COLONY_STROKE_WEIGHT = 1;
+export const COLONY_FILL_COLOR = "#2A2205";
+export const COLONY_BORDER_COLOR = "#FFEA00";
+export const COLONY_BORDER_WEIGHT = 2.5;
+export const COLONY_GLOW_COLOR = "rgba(255, 234, 0, 0.18)";
+export const COLONY_GLOW_WEIGHT = 6;
 export const COLONY_TEXT_SIZE = 20;
+export const COLONY_TEXT_COLOR = "#FFEA00";
 
 // Obstacle
 export const OBSTACLE_COLOR = "#3B3838";
+export const OBSTACLE_STROKE_WEIGHT = 1;
 
 // Ant
 export const ANT_SIZE = 2;

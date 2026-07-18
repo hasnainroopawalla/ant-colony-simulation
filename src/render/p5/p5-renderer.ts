@@ -2,7 +2,7 @@ import { Renderer, Scene } from "../renderer";
 import p5 from "p5";
 import { createSketch } from "./sketch";
 import * as RenderConstants from "../render.constants";
-import { Antenna, AntStateKind } from "../../simulations";
+import type { Antenna } from "../../simulations";
 import { MathUtils, type Position } from "../../math";
 import { WorldConstants } from "../../world";
 
@@ -15,7 +15,7 @@ export class P5Renderer extends Renderer {
 
     const sketch = createSketch(canvas, {
       frame: () => this.callbacks.frame(),
-      onMouseClick: (position: Position) => this.onMouseClick(position),
+      mouseClick: (position: Position) => this.onMouseClick(position),
     });
 
     this.p = new p5(sketch, canvas);
@@ -29,7 +29,12 @@ export class P5Renderer extends Renderer {
   }
 
   public getDeltaTime(): number {
-    return this.p.deltaTime / 1000; // convert to seconds
+    // convert to seconds
+    const dt = this.p.deltaTime / 1000;
+
+    // Clamp to avoid huge steps after pause/resume or a backgrounded tab,
+    // which would otherwise make ants "teleport".
+    return Math.min(dt, 1 / 30); // cap at one 30 FPS frame (~33ms)
   }
 
   public start(): void {
@@ -72,10 +77,9 @@ export class P5Renderer extends Renderer {
 
   private renderAnts(scene: Scene): void {
     scene.simulation.ants.forEach((ant) => {
-      const antColor =
-        ant.state.kind === AntStateKind.ReturningHomeWithFood
-          ? RenderConstants.FOOD_ANT_COLOR
-          : RenderConstants.HOME_ANT_COLOR;
+      const antColor = ant.isCarryingFood()
+        ? RenderConstants.FOOD_ANT_COLOR
+        : RenderConstants.HOME_ANT_COLOR;
 
       this.p.push();
       this.p.stroke(antColor);
@@ -102,21 +106,32 @@ export class P5Renderer extends Renderer {
 
   private renderColonies(scene: Scene): void {
     scene.colonies.forEach((colony) => {
+      const { x, y } = colony.position;
+
+      // Soft yellow glow halo
       this.p.push();
-      this.p.strokeWeight(RenderConstants.COLONY_STROKE_WEIGHT);
-      this.p.fill(RenderConstants.COLONY_COLOR);
-      this.p.circle(
-        colony.position.x,
-        colony.position.y,
-        RenderConstants.COLONY_RADIUS * 2,
-      );
+      this.p.noFill();
+      this.p.strokeWeight(RenderConstants.COLONY_GLOW_WEIGHT);
+      this.p.stroke(RenderConstants.COLONY_GLOW_COLOR);
+      this.p.circle(x, y, RenderConstants.COLONY_RADIUS * 2 + 8);
+      this.p.pop();
+
+      // Body with bright yellow rim
+      this.p.push();
+      this.p.strokeWeight(RenderConstants.COLONY_BORDER_WEIGHT);
+      this.p.stroke(RenderConstants.COLONY_BORDER_COLOR);
+      this.p.fill(RenderConstants.COLONY_FILL_COLOR);
+      this.p.circle(x, y, RenderConstants.COLONY_RADIUS * 2);
       this.p.pop();
 
       // food count
       this.p.push();
+      this.p.noStroke();
+      this.p.fill(RenderConstants.COLONY_TEXT_COLOR);
       this.p.textAlign(this.p.CENTER, this.p.CENTER);
       this.p.textSize(RenderConstants.COLONY_TEXT_SIZE);
-      this.p.text(colony.foodCount, colony.position.x, colony.position.y);
+      this.p.textStyle(this.p.BOLD);
+      this.p.text(colony.foodCount, x, y);
       this.p.pop();
     });
   }
@@ -148,7 +163,7 @@ export class P5Renderer extends Renderer {
 
   private renderObstacles(scene: Scene): void {
     this.p.push();
-    this.p.strokeWeight(RenderConstants.COLONY_STROKE_WEIGHT);
+    this.p.strokeWeight(RenderConstants.OBSTACLE_STROKE_WEIGHT);
     this.p.stroke(RenderConstants.OBSTACLE_COLOR);
     this.p.fill(RenderConstants.OBSTACLE_COLOR);
     scene.obstacles.forEach((obstacle) => {

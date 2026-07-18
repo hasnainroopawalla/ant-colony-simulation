@@ -1,2 +1,2 @@
 export { EventBus, type Unsubscribe } from "./event-bus";
-export type { IEvents } from "./events";
+export type { IEvents, Stats } from "./events";
