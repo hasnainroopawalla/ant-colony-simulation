@@ -9,7 +9,6 @@ export const COLONY_BORDER_COLOR = "#FFEA00";
 export const COLONY_BORDER_WEIGHT = 2.5;
 export const COLONY_GLOW_COLOR = "rgba(255, 234, 0, 0.18)";
 export const COLONY_GLOW_WEIGHT = 6;
-export const COLONY_STROKE_WEIGHT = 1;
 export const COLONY_TEXT_SIZE = 20;
 export const COLONY_TEXT_COLOR = "#FFEA00";
 
