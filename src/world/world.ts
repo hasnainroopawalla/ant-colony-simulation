@@ -52,7 +52,8 @@ export class World {
       new Obstacle({ x: 430, y: 400, w: 60, h: 40 }),
     ];
 
-    this.createFoodCluster({ x: 500, y: 700 }, 10);
+    this.createFoodCluster({ x: 400, y: 700 }, 10);
+    this.createFoodCluster({ x: 800, y: 350 }, 8);
   }
 
   public createFoodCluster(position: Position, clusterSize: number = 10) {

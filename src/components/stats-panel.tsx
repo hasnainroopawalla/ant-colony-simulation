@@ -57,7 +57,7 @@ export function StatsPanel() {
         <StatRow
           label="Elapsed"
           value={formatElapsed(elapsedTime)}
-          accentClassName="text-sky-300"
+          accentClassName="text-white/80"
         />
         <div className="my-1 border-t border-white/10" />
         <StatRow

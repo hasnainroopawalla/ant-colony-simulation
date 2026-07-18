@@ -9,7 +9,7 @@ export class Colony {
     this.foodCount = 0;
   }
 
-  public incrementFoodCount(): void {
-    this.foodCount++;
+  public receiveFood(): void {
+    this.foodCount += 1;
   }
 }

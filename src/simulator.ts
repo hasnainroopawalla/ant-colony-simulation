@@ -21,7 +21,7 @@ export class Simulator {
 
   private fpsMonitor: FpsMonitor;
 
-  private placementMode: PlacementMode;
+  private placementMode: PlacementMode = PlacementMode.Food;
 
   private elapsedTime: number = 0;
 
@@ -32,8 +32,6 @@ export class Simulator {
 
     this.eventBus = new EventBus();
     this.fpsMonitor = new FpsMonitor();
-
-    this.placementMode = PlacementMode.Food;
 
     this.renderer.setCallbacks({
       frame: () => this.update(),

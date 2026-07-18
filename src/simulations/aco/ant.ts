@@ -282,10 +282,11 @@ export class Ant {
       this.approachTarget(this.colony.position);
 
       if (this.hasReached(this.colony.position)) {
-        this.colony.incrementFoodCount();
+        this.colony.receiveFood();
         this.flipDirection();
         this.state = { kind: AntStateKind.Wandering };
       }
+
       return;
     }
 
